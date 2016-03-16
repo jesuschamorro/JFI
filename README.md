@@ -1,0 +1,2 @@
+# JFI
+Java Fuzzy Imaging
