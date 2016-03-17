@@ -48,14 +48,10 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         
         
         Contour c = new Contour();
-        c.add(p);
-        c.getCurvature(20,2);
-        
+        c.add(p);       
         
         FuzzyContour fc = new FuzzyContour();
-        fc.add(fp);
-        fc.getCurvature(20,2);
-        
+        fc.add(fp);        
              
         for(Point2D pi:c){
             System.out.println(pi);
@@ -171,7 +167,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
               
               for(Point2D p:c)
                   System.out.println(p);
-              c.getCurvature();
+              
               
               BufferedImage img = c.toImage();
               VentanaImagen vim = new VentanaImagen();

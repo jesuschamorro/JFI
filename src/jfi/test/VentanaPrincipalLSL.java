@@ -25,6 +25,7 @@ import javax.swing.JFileChooser;
 import jfi.shape.Contour;
 import jfi.shape.CurvatureFunction;
 import jfi.shape.FuzzyContour;
+import jfi.shape.FuzzyContourFactory;
 import jfi.shape.FuzzyPoint;
 
 
@@ -42,31 +43,7 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
     public VentanaPrincipalLSL() {
         initComponents();
         this.setSize(1340, 800);
-        setLocationRelativeTo(null);
-        
-        /*
-        Point p = new Point(1,1);
-        FuzzyPoint fp = new FuzzyPoint(2,2,0.5f);
-        
-        
-        Contour c = new Contour();
-        c.add(p);
-        c.getCurvature();
-        
-        
-        FuzzyContour fc = new FuzzyContour();
-        fc.add(fp);
-        fc.getCurvature();
-        
-             
-        for(Point pi:c){
-            System.out.println(pi);
-        }
-       
-         for(Point pi:fc){
-            System.out.println(pi);
-        }*/
-        
+        setLocationRelativeTo(null);        
     }
 
     /** This method is called from within the constructor to
@@ -137,17 +114,12 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
                 this.escritorio.add(vi2);
                 vi2.setVisible(true);
                 
-                //CURVATURA
-                BufferedImage dest;
-                dest = createCompatibleDestImage(img,null);
-                WritableRaster destRaster = dest.getRaster();
-                
                 //Parametros del sistema
-                int windowSize = contour.size()/15;
-                double exponent = 3;
-                double vv_min = 0.1;
-                double vv_max = 0.6;
-                double tolerance = 0.95;
+                //int windowSize = contour.size()/15;
+                //double exponent = 3;
+                //double vv_min = 0.1;
+                //double vv_max = 0.6;
+                //double tolerance = 0.95;
                 
                 ArrayList<Double> mask = new ArrayList<Double>();
                 mask.add(0.05);
@@ -158,147 +130,39 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
                 
                 Contour filteredContour = contour.filter(mask);
                 
-                CurvatureFunction curvature = filteredContour.getCurvature(windowSize,0);
-                curvature.normalize();
-                CurvatureFunction[] linearity = filteredContour.getLinearity(windowSize, 0,exponent);  
+                FuzzyContour curvature = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_CURVATURE);
+                FuzzyContour linearity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_LINEARITY);
+                FuzzyContour verticity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_VERTICITY);
                 
                 try{
-                    PrintWriter out = new PrintWriter("C:\\tmp\\curvatura.txt");
-                    for (int i = 0; i < contour.size(); i++){
-                        out.println(i+"\t"+curvature.apply(i));
+                    PrintWriter out = new PrintWriter("C:\\tmp\\curvature.txt");
+                    for (int i = 0; i < curvature.size(); i++){
+                        FuzzyPoint fp = (FuzzyPoint) curvature.get(i);
+                        out.println(i+"\t"+ fp.getDegree());
                     }
                     out.close();                
                 }
                 catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
                 
                 try{
-                    PrintWriter out = new PrintWriter("C:\\tmp\\linealidad.txt");
-                    for (int i = 0; i < contour.size(); i++){
-                        out.println(i+"\t"/*+linearity[0].apply(i)+"\t"+linearity[1].apply(i)+"\t"*/+(1-escalon(linearity[2].apply(i),0.8,0.95)));
+                    PrintWriter out = new PrintWriter("C:\\tmp\\linearity.txt");
+                    for (int i = 0; i < linearity.size(); i++){
+                        FuzzyPoint fp = (FuzzyPoint) linearity.get(i);
+                        out.println(i+"\t"+ fp.getDegree());
                     }
                     out.close();                
                 }
                 catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
                 
-                CurvatureFunction verticity = filteredContour.getVerticity(windowSize,exponent,vv_min, vv_max);
-                boolean localMax;
-                double max;
-                ArrayList<Integer> maxList = new ArrayList<>();
-                int numPoints = filteredContour.size();
-                for (int i = 0; i < numPoints; i++){
-                    localMax = true;
-                    max = verticity.apply(i);
-                    for (int j = 0; j < 2*windowSize && localMax; j++){
-                        if (verticity.apply((i+j-windowSize+numPoints)%numPoints) >= max && (i+j-windowSize+numPoints)%numPoints != i)
-                            localMax = false;
-                    }                   
-                    if (localMax){
-                        maxList.add(i);
-                        //i += windowSize/2 -1; //Si es maximo, no puede haber mas hasta salir de la ventana
-                    }
-                }
                 try{
-                    PrintWriter out = new PrintWriter("C:\\tmp\\vertices.txt");
-                    for (int i = 0; i < filteredContour.size(); i++){
-                        out.println(i+"\t"+verticity.apply(i));
+                    PrintWriter out = new PrintWriter("C:\\tmp\\verticity.txt");
+                    for (int i = 0; i < verticity.size(); i++){
+                        FuzzyPoint fp = (FuzzyPoint) verticity.get(i);
+                        out.println(i+"\t"+ fp.getDegree());
                     }
                     out.close();                
-                }       
-                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
-                
-                float TOPE = 5f;
-                
-                //White
-                for (int i = 0; i < destRaster.getWidth(); i++)
-                    for (int j = 0; j < destRaster.getHeight(); j++){
-                        destRaster.setSample(i,j,0,255);
-                        destRaster.setSample(i,j,1,255);
-                        destRaster.setSample(i,j,2,255);
-                    }
-                
-                //Verticity
-                for (int i = 0; i < filteredContour.size(); i++){
-                    for (int j = 0; j < 25; j++){
-                    
-                        destRaster.setSample((int)filteredContour.get(i).getX()+j%5-2+30,
-                                         (int)filteredContour.get(i).getY()+j/5-2+30,
-                                         0,Math.ceil(verticity.apply(i)*255));
-                        destRaster.setSample((int)filteredContour.get(i).getX()+j%5-2+30,
-                                         (int)filteredContour.get(i).getY()+j/5-2+30,
-                                         1,0);
-                        destRaster.setSample((int)filteredContour.get(i).getX()+j%5-2+30,
-                                         (int)filteredContour.get(i).getY()+j/5-2+30,
-                                         2,0);
-                
-                    }
-                }  
-                    //crosses
-                for(int k = 0; k < maxList.size();k++){
-                    System.out.println("Maximo encontrado: "+  escalon(verticity.apply(maxList.get(k)),0,tolerance));
-                    for(int i = -8; i < 9; i++)
-                        for (int j = 0; j < 4; j++){
-                    
-                        destRaster.setSample((int)filteredContour.get(maxList.get(k)).getX()+j%2+i+30,
-                                         (int)filteredContour.get(maxList.get(k)).getY()+j/2+i+30,
-                                         0,0);
-                        destRaster.setSample((int)filteredContour.get(maxList.get(k)).getX()+j%2+i+30,
-                                         (int)filteredContour.get(maxList.get(k)).getY()+j/2+i+30,
-                                         1,255);
-                        destRaster.setSample((int)filteredContour.get(maxList.get(k)).getX()+j%2+i+30,
-                                         (int)filteredContour.get(maxList.get(k)).getY()+j/2+i+30,
-                                         2,0);
-                        
-                        destRaster.setSample((int)filteredContour.get(maxList.get(k)).getX()+j%2+i+30,
-                                         (int)filteredContour.get(maxList.get(k)).getY()+j/2-i+30,
-                                         0,0);
-                        destRaster.setSample((int)filteredContour.get(maxList.get(k)).getX()+j%2+i+30,
-                                         (int)filteredContour.get(maxList.get(k)).getY()+j/2-i+30,
-                                         1,255);
-                        destRaster.setSample((int)filteredContour.get(maxList.get(k)).getX()+j%2+i+30,
-                                         (int)filteredContour.get(maxList.get(k)).getY()+j/2-i+30,
-                                         2,0);
-                
-                    }
                 }
-                    
-//                    if(curvature.apply(i)>=TOPE)
-//                        destRaster.setSample(contour.get(i).x,
-//                                         contour.get(i).y,
-//                                         0,255);
-//                    else if (curvature.apply(i) <= -TOPE)
-//                        destRaster.setSample(contour.get(i).x,
-//                                         contour.get(i).y,
-//                                         1,255);
-//                    else{
-//                        destRaster.setSample(contour.get(i).x,
-//                                         contour.get(i).y,
-//                                         0,255);
-//                        destRaster.setSample(contour.get(i).x,
-//                                         contour.get(i).y,
-//                                         1,255);
-//                        destRaster.setSample(contour.get(i).x,
-//                                         contour.get(i).y,
-//                                         2,255);
-//                    }
-//                }
-                
-//                for(int i = 0; i < maxList.size();i++){
-//                    destRaster.setSample(contour.get(maxList.get(i)).x,
-//                                    contour.get(maxList.get(i)).y,
-//                                    0,0);
-//                    destRaster.setSample(contour.get(maxList.get(i)).x,
-//                                    contour.get(maxList.get(i)).y,
-//                                    2,0);
-//                    System.out.println("Maximo encontrado en la posición: "+maxList.get(i));
-//                }
-                
-                System.out.println("Suma: "+suma(verticity,0, maxList));
-                VentanaImagen vi3 = new VentanaImagen();
-                vi3.lienzoImagen.setImage(dest);
-                this.escritorio.add(vi3);
-                vi3.setVisible(true);
-                
-                ImageIO.write(dest, "png", new File("C:\\Users\\el_5_\\Documents\\Fig\\Figure1\\output.png"));
+                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
                 
             }catch(Exception ex){
                 System.err.println("Error al leer la imagen: " + ex);
