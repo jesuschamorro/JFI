@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Collection;
+import jfi.utils.JFIMath;
 
 public class Contour extends ArrayList<Point2D> { 
     /**
@@ -104,6 +105,7 @@ public class Contour extends ArrayList<Point2D> {
      * Applies a mask to the contour
      * 
      * @param mask
+     * 
      * @return filtered contour.
      */
     public Contour filter(ArrayList<Double> mask){
@@ -120,6 +122,87 @@ public class Contour extends ArrayList<Point2D> {
             filteredContour.add(point);
         }
         return filteredContour;
+    }
+    
+    /**
+     * Calculates the curvature of the contour
+     * 
+     * @return Curvature of the contour
+     */
+    public CurvatureFunction getCurvature(){
+        int windowSize = this.size()/15;
+        int offset = 0;
+        
+        return getCurvature(windowSize, offset);
+    }
+    
+    /**
+     * Calculates the curvature of the contour
+     * 
+     * @param windowSize Size of the segments used to calculate the curvature
+     * @param offset distance between the point where curvature is calculated and the start of the segment
+     * 
+     * @return Curvature of the contour
+     */
+    public CurvatureFunction getCurvature(int windowSize, int offset){
+        CurvatureFunction curvature = new CurvatureFunction();
+        
+        double currentCurvature;
+        double arc_cos, arc_cos2;
+        Point2D.Double firstDirectionVector, secondDirectionVector;
+        
+        int numPoints = this.size();
+        
+        if (windowSize > numPoints)
+            windowSize = numPoints;
+
+        for (int i = 0; i < numPoints; i++) {
+
+            secondDirectionVector = JFIMath.getDirectionVector(this.getSegment(i+offset, windowSize));
+            firstDirectionVector = JFIMath.getDirectionVector(this.getSegment((i-offset+numPoints)%numPoints,-windowSize));
+            
+            arc_cos = ( (firstDirectionVector.y < 0) ? -Math.acos( (double) firstDirectionVector.x) :
+                               Math.acos( (double) firstDirectionVector.x));
+            arc_cos2 =( (secondDirectionVector.y < 0) ? -Math.acos( (double) secondDirectionVector.x) :
+                                Math.acos( (double) secondDirectionVector.x));
+            currentCurvature = arc_cos - arc_cos2;
+
+            if (arc_cos2 > arc_cos)
+                currentCurvature += (float) (Math.PI);
+            else
+                currentCurvature -= (float) Math.PI;
+            
+            curvature.add(currentCurvature);
+        }
+        
+        return curvature;
+    }
+    
+    /**
+     * Return a segment of the contour
+     * 
+     * If windowSize is negative, the segment will be the previous "-windowSize" points
+     * 
+     * @param start Starting point
+     * @param windowSize Size of the generated segment.   
+     * 
+     * @return ArrayList with the points of the segment
+     */
+    public ArrayList<Point2D> getSegment(int start, int windowSize){
+        ArrayList<Point2D> segment = new ArrayList<>();
+        
+        if (windowSize > 0){
+            for(int i = 0; i < windowSize; i++){
+                segment.add(this.get((start + i) % this.size()));
+            }
+        }
+        else{
+            for(int i = 0; i > windowSize; i--){
+                segment.add(this.get((start + i +this.size())%this.size()));
+            }
+        }
+        
+        return segment;
     }
     
     private boolean isFrontierPoint(int direction, Point actual, BufferedImage image){

@@ -129,16 +129,15 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
                 mask.add(0.05);
                 
                 Contour filteredContour = contour.filter(mask);
-                
-                FuzzyContour curvature = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_CURVATURE);
+
                 FuzzyContour linearity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_LINEARITY);
                 FuzzyContour verticity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_VERTICITY);
+                CurvatureFunction curvature = filteredContour.getCurvature();
                 
                 try{
                     PrintWriter out = new PrintWriter("C:\\tmp\\curvature.txt");
-                    for (int i = 0; i < curvature.size(); i++){
-                        FuzzyPoint fp = (FuzzyPoint) curvature.get(i);
-                        out.println(i+"\t"+ fp.getDegree());
+                    for (int i = 0; i < contour.size(); i++){
+                        out.println(i+"\t"+ curvature.apply(i));
                     }
                     out.close();                
                 }
