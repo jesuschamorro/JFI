@@ -55,6 +55,20 @@ public class FuzzyContourFactory {
         return fuzzyContour;
     }
     
+    //For testing...
+    private static FuzzyContourNew getInstanceLinearity_new(Contour contour){
+        FuzzyContourNew fuzzyContour = new FuzzyContourNew();
+        
+        ArrayList<Float> linearity = getLinearity(contour);       
+        
+        for(int i = 0; i < contour.size(); i++){
+            fuzzyContour.add(contour.get(i), linearity.get(i));
+        }
+        
+        return fuzzyContour;
+    }
+    
+    
     /**
      * Create a new FuzzyContour using verticity as truth value
      * 
@@ -71,6 +85,19 @@ public class FuzzyContourFactory {
         for(int i = 0; i < contour.size(); i++){
             fp = new FuzzyPoint(contour.get(i), verticity.get(i));
             fuzzyContour.add(fp);
+        }
+        
+        return fuzzyContour;
+    }
+    
+    //For testing...
+    private static FuzzyContourNew getInstanceVerticity_new(Contour contour){
+        FuzzyContourNew fuzzyContour = new FuzzyContourNew();
+        
+        ArrayList<Float> verticity = getVerticity(contour);
+        
+        for(int i = 0; i < contour.size(); i++){
+            fuzzyContour.add(contour.get(i), verticity.get(i));
         }
         
         return fuzzyContour;

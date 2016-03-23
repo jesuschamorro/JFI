@@ -1,14 +1,10 @@
-/**
- * An interface reprsenting a fuzzy set on a given domain
- *
- *
- * @author Jose Manuel Soto Hidalgo - UCO
- * @author Jesús Chamorro Martínez - UGR
- */
 package jfi.fuzzy;
-
-import java.util.Collection;
-
+/**
+ * An interface representing a fuzzy set on a given domain
+ *
+ * @author Jesús Chamorro Martínez
+ * @param <Domain> 
+ */
 public interface FuzzySet<Domain> {
 
     /**
@@ -26,30 +22,33 @@ public interface FuzzySet<Domain> {
     public void setLabel(String label);
 
     /**
-     * Return the alpha-cut of the fuzzy set for a given alpha
-     * 
-     * @param alpha the alpha
-     * @return the alpha-cut
-     */
-    public Collection<Domain> getAlphaCut(float alpha);
-
-    /**
-     * Return the kernel of the fuzzy set
-     * @return the kernel of the fuzzy set
-     */
-    public Collection<Domain> getKernel();
-
-    /**
-     * Return the support of the fuzzy set
-     * @return the support of the fuzzy set
-     */
-    public Collection<Domain> getSupport();
-
-
-    /**
      * Return the membership degree of the element <tt>e</tt> to the fuzzy set
+     *
      * @param e an element of the fuzzy set domain
      * @return the membership degree
      */
     public double getMembershipValue(Domain e);
+
+    /**
+     * Return the alpha-cut of the fuzzy set for a given alpha
+     *
+     * @param alpha the alpha
+     * @return the alpha-cut
+     */
+    public Object getAlphaCut(double alpha);
+
+    /**
+     * Return the kernel of the fuzzy set
+     *
+     * @return the kernel of the fuzzy set
+     */
+    public Object getKernel();
+
+    /**
+     * Return the support of the fuzzy set
+     *
+     * @return the support of the fuzzy set
+     */
+    public Object getSupport();
+
 }

@@ -34,6 +34,7 @@ public class FuzzyContour extends Contour implements FuzzySet<Point2D> {
      */
     public FuzzyContour(ImageMask mask) {
         super(mask);
+        //NOTA: La llamada anterior no asigna grados
     }
 
     /**
@@ -155,7 +156,7 @@ public class FuzzyContour extends Contour implements FuzzySet<Point2D> {
      * @return the alpha-cut
      */
     @Override
-    public Contour getAlphaCut(float alpha) {
+    public Contour getAlphaCut(double alpha) {
         FuzzyPoint fp;
         Contour alpha_cut = new Contour();
         for (Point2D p : this) {

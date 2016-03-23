@@ -17,8 +17,10 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+import jfi.fuzzy.DiscreteFuzzySet;
 import jfi.fuzzy.membershipfunction.TriangularFunction;
 import jfi.shape.Contour;
 import jfi.shape.FuzzyContour;
@@ -76,7 +78,40 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         
         System.out.print(" "+ f.apply((double)1.6) + "  ");
         
+        
+        //
+        testFuzzySets();
     }
+    
+    
+    private void testFuzzySets(){
+        DiscreteFuzzySet<Point2D> fcontorno;
+        fcontorno = new DiscreteFuzzySet<>();
+        Point2D p;
+        
+        for(int i=0; i<10; i++){
+            p = new Point(i,i);
+            fcontorno.add(p,(double)i/10);
+        }
+        
+        fcontorno.add(new Point(7,7),1.0);
+        fcontorno.remove(new Point(8,8));
+        
+        System.out.println();
+        Iterator<Point2D> it = fcontorno.iterator();
+        while (it.hasNext()) {
+            p = it.next();
+            System.out.println(p.toString()+ fcontorno.getMembershipValue(p));
+        }
+        
+        System.out.println(fcontorno.getReferenceSet().toString());
+        
+        System.out.println(fcontorno.getAlphaCut(0.2).toString());
+        System.out.println(fcontorno.getKernel().toString());
+        System.out.println(fcontorno.getSupport().toString());
+    } 
+    
+    
 
     /** This method is called from within the constructor to
      * initialize the form.

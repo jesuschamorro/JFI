@@ -4,7 +4,7 @@ import java.security.InvalidParameterException;
 
 /**
  * 
- * @author Jesús Chamorro
+ * @author Jesús Chamorro Martínez
  */
 public class TrapezoidalFunction implements MembershipFunction<Double> {
 
