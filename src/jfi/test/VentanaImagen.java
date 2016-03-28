@@ -34,6 +34,7 @@ public class VentanaImagen extends javax.swing.JInternalFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         lienzoImagen = new jfi.test.LienzoImagen();
 
+        setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
         setResizable(true);

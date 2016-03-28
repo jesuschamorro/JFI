@@ -24,9 +24,9 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import jfi.shape.Contour;
 import jfi.shape.CurvatureFunction;
-import jfi.shape.FuzzyContour;
-import jfi.shape.FuzzyContourFactory;
-import jfi.shape.FuzzyPoint;
+
+import jfi.shape.fuzzy.FuzzyContourFactory;
+
 
 
 
@@ -130,38 +130,38 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
                 
                 Contour filteredContour = contour.filter(mask);
 
-                FuzzyContour linearity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_LINEARITY);
-                FuzzyContour verticity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_VERTICITY);
-                CurvatureFunction curvature = filteredContour.getCurvature();
-                
-                try{
-                    PrintWriter out = new PrintWriter("C:\\tmp\\curvature.txt");
-                    for (int i = 0; i < contour.size(); i++){
-                        out.println(i+"\t"+ curvature.apply(i));
-                    }
-                    out.close();                
-                }
-                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
-                
-                try{
-                    PrintWriter out = new PrintWriter("C:\\tmp\\linearity.txt");
-                    for (int i = 0; i < linearity.size(); i++){
-                        FuzzyPoint fp = (FuzzyPoint) linearity.get(i);
-                        out.println(i+"\t"+ fp.getDegree());
-                    }
-                    out.close();                
-                }
-                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
-                
-                try{
-                    PrintWriter out = new PrintWriter("C:\\tmp\\verticity.txt");
-                    for (int i = 0; i < verticity.size(); i++){
-                        FuzzyPoint fp = (FuzzyPoint) verticity.get(i);
-                        out.println(i+"\t"+ fp.getDegree());
-                    }
-                    out.close();                
-                }
-                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
+//                FuzzyContourOld linearity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_LINEARITY);
+//                FuzzyContourOld verticity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_VERTICITY);
+//                CurvatureFunction curvature = filteredContour.getCurvature();
+//                
+//                try{
+//                    PrintWriter out = new PrintWriter("C:\\tmp\\curvature.txt");
+//                    for (int i = 0; i < contour.size(); i++){
+//                        out.println(i+"\t"+ curvature.apply(i));
+//                    }
+//                    out.close();                
+//                }
+//                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
+//                
+//                try{
+//                    PrintWriter out = new PrintWriter("C:\\tmp\\linearity.txt");
+//                    for (int i = 0; i < linearity.size(); i++){
+//                        FuzzyPoint fp = (FuzzyPoint) linearity.get(i);
+//                        out.println(i+"\t"+ fp.getDegree());
+//                    }
+//                    out.close();                
+//                }
+//                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
+//                
+//                try{
+//                    PrintWriter out = new PrintWriter("C:\\tmp\\verticity.txt");
+//                    for (int i = 0; i < verticity.size(); i++){
+//                        FuzzyPoint fp = (FuzzyPoint) verticity.get(i);
+//                        out.println(i+"\t"+ fp.getDegree());
+//                    }
+//                    out.close();                
+//                }
+//                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
                 
             }catch(Exception ex){
                 System.err.println("Error al leer la imagen: " + ex);

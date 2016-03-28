@@ -2,13 +2,17 @@ package jfi.utils;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
-import jfi.shape.Contour;
 
 /**
  *
  * @author Luis Suárez Lloréns
  */
 public class JFIMath {
+    
+    /**
+     * Epsilon constant
+     */
+    public static final double EPSILON = Double.MIN_VALUE; 
     
     /**
      * 

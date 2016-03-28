@@ -17,18 +17,15 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import jfi.fuzzy.DiscreteFuzzySet;
-import jfi.fuzzy.membershipfunction.TriangularFunction;
 import jfi.shape.Contour;
-import jfi.shape.FuzzyContour;
-import jfi.shape.FuzzyPoint;
-
-
-
-
+import jfi.shape.fuzzy.FuzzyContour;
 
 
 
@@ -44,75 +41,12 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         this.setSize(1340, 800);
         setLocationRelativeTo(null);
         
-        
-        Point p = new Point(1,1);
-        FuzzyPoint fp = new FuzzyPoint(2,2,0.5f);
-        
-        
-        Contour c = new Contour();
-        c.add(p);       
-        
-        FuzzyContour fc = new FuzzyContour();
-        fc.add(fp);        
-             
-        for(Point2D pi:c){
-            System.out.println(pi);
-        }
-       
-         for(Point2D pi:fc){
-            System.out.println(pi);
-        }
-         
-         
-        TriangularFunction f;
-        f = new TriangularFunction(1,2,3);
-        
-        TriangularFunction f1d = new TriangularFunction(2,2,6);
-        
-        //f.setParameters(2,2,6);
-        
-        for(int i=0; i<8;i++)  {      
-            System.out.print(i+" "+ f.apply((double)i) + "  ");
-            
-        }
-        
-        System.out.print(" "+ f.apply((double)1.6) + "  ");
-        
-        
-        //
-        testFuzzySets();
+        //Pruebas
+        //testFuzzySets();
+        //testFuzzyContour();
     }
     
     
-    private void testFuzzySets(){
-        DiscreteFuzzySet<Point2D> fcontorno;
-        fcontorno = new DiscreteFuzzySet<>();
-        Point2D p;
-        
-        for(int i=0; i<10; i++){
-            p = new Point(i,i);
-            fcontorno.add(p,(double)i/10);
-        }
-        
-        fcontorno.add(new Point(7,7),1.0);
-        fcontorno.remove(new Point(8,8));
-        
-        System.out.println();
-        Iterator<Point2D> it = fcontorno.iterator();
-        while (it.hasNext()) {
-            p = it.next();
-            System.out.println(p.toString()+ fcontorno.getMembershipValue(p));
-        }
-        
-        System.out.println(fcontorno.getReferenceSet().toString());
-        
-        System.out.println(fcontorno.getAlphaCut(0.2).toString());
-        System.out.println(fcontorno.getKernel().toString());
-        System.out.println(fcontorno.getSupport().toString());
-    } 
-    
-    
-
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -126,6 +60,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         menuAbrir = new javax.swing.JMenuItem();
+        menuGuardar = new javax.swing.JMenuItem();
         menuMascara = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -141,6 +76,14 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
             }
         });
         jMenu1.add(menuAbrir);
+
+        menuGuardar.setText("Guardar");
+        menuGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuGuardarActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuGuardar);
 
         menuMascara.setText("Máscara");
         menuMascara.addActionListener(new java.awt.event.ActionListener() {
@@ -192,55 +135,146 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
               vi.setVisible(true);
               
               //Pruebas
-              
-              FuzzyContour c = new FuzzyContour(mask);
-              
-              for(int i=0; i<200 && i<c.size(); i++){
-                  FuzzyPoint fp = (FuzzyPoint)c.get(i);
-                  fp.degree = i<100 ? 0.5f : 0.25f;
-              }
-              
-              for(Point2D p:c)
-                  System.out.println(p);
-              
-              
-              BufferedImage img = c.toImage();
-              VentanaImagen vim = new VentanaImagen();
-              vim.lienzoImagen.setImage(img);
-              vim.setTitle("Contorno");
-              this.escritorio.add(vim);
-              vim.setVisible(true);
-              
-              Contour alpha_cut = c.getAlphaCut(0.4f);
-              img = alpha_cut.toImage();
-              vim = new VentanaImagen();
-              vim.lienzoImagen.setImage(img);
-              vim.setTitle("Alfa-corte");
-              this.escritorio.add(vim);
-              vim.setVisible(true);
-              
-              Contour kernel = c.getKernel();
-              img = kernel.toImage();
-              vim = new VentanaImagen();
-              vim.lienzoImagen.setImage(img);
-              vim.setTitle("Kernel");
-              this.escritorio.add(vim);
-              vim.setVisible(true);
-              
-              Contour soporte = c.getSupport();
-              img = soporte.toImage();
-              vim = new VentanaImagen();
-              vim.lienzoImagen.setImage(img);
-              vim.setTitle("Soporte");
-              this.escritorio.add(vim);
-              vim.setVisible(true);
-              
+              prueba_contornoDifuso(mask);
               
            }catch(Exception ex){
              System.err.println("Error al leer la imagen ("+ex.getMessage()+")");
            }
         }
     }//GEN-LAST:event_menuMascaraActionPerformed
+
+    private void menuGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuGuardarActionPerformed
+        VentanaImagen vi = (VentanaImagen) escritorio.getSelectedFrame();
+        if (vi != null) {
+            JFileChooser dlg = new JFileChooser();
+            int resp = dlg.showSaveDialog(this);
+            if (resp == JFileChooser.APPROVE_OPTION) {
+                File f = dlg.getSelectedFile();
+
+                try {
+                    LienzoImagen lienzo = (LienzoImagen) vi.lienzoImagen;
+                    BufferedImage img = lienzo.getImage();
+                    if (img != null) {
+                        ImageIO.write(img, "png", f);
+                        vi.setTitle(f.getName());
+                    }
+                } catch (Exception ex) {
+                    System.err.println("Error al guardar la imagen");
+                }
+            }
+        }
+    }//GEN-LAST:event_menuGuardarActionPerformed
+
+    
+    
+    //// Pruebas
+    //// -------
+    
+    
+    
+    private void testFuzzySets(){
+        DiscreteFuzzySet<Point2D> fcontorno;
+        fcontorno = new DiscreteFuzzySet<>();
+        Point2D p;
+        
+        for(int i=0; i<10; i++){
+            p = new Point(i,i);
+            fcontorno.add(p,(double)i/10);
+        }
+        
+        fcontorno.add(new Point(7,7),1.0);
+        fcontorno.remove(new Point(8,8));
+        
+        System.out.println();
+        Iterator<Point2D> it = fcontorno.iterator();
+        while (it.hasNext()) {
+            p = it.next();
+            System.out.println(p.toString()+ fcontorno.getMembershipValue(p));
+        }
+        
+        System.out.println(fcontorno.getReferenceSet().toString());
+        System.out.println(fcontorno.getAlphaCut(0.2).toString());
+        System.out.println(fcontorno.getKernel().toString());
+        System.out.println(fcontorno.getSupport().toString());
+    } 
+    
+    
+    private void testFuzzyContour(){
+        FuzzyContour fcontorno = new FuzzyContour();
+        
+        Point2D p;
+        
+        for(int i=0; i<10; i++){
+            p = new Point(i,i);
+            fcontorno.add(p,(double)i/10);
+        }
+     
+        System.out.println();
+        Iterator<Point2D> it = fcontorno.iterator();
+        while (it.hasNext()) {
+            p = it.next();
+            System.out.println(p.toString()+ fcontorno.getMembershipValue(p));
+        }
+        
+        
+    }
+
+    
+    void prueba_contornoDifuso(ImageMask mask) {
+        FuzzyContour c = new FuzzyContour("",mask);
+        Point2D p;
+
+        int i = 0;
+        Iterator<Point2D> it = c.iterator();
+        while (it.hasNext()) {
+            p = it.next();
+            c.setMembershipValue(p, (double)(i++%11)/10.0 );            
+            System.out.println("["+i+"] "+p.toString()+ c.getMembershipValue(p));
+        }
+
+        BufferedImage img = c.toImage();
+        VentanaImagen vim = new VentanaImagen();
+        vim.lienzoImagen.setImage(img);
+        vim.setTitle("Contorno");
+        this.escritorio.add(vim);
+        vim.setVisible(true);
+
+        Set alpha_cut = c.getAlphaCut(0.4f);
+        Contour alpha_cut_contour = new Contour(alpha_cut);
+        img = alpha_cut_contour.toImage();
+        vim = new VentanaImagen();
+        vim.lienzoImagen.setImage(img);
+        vim.setTitle("Alfa-corte");
+        this.escritorio.add(vim);
+        vim.setVisible(true);
+
+        Set kernel = c.getKernel();
+        Contour kernel_contour = new Contour(kernel);
+        img = kernel_contour.toImage();
+        vim = new VentanaImagen();
+        vim.lienzoImagen.setImage(img);
+        vim.setTitle("Kernel");
+        this.escritorio.add(vim);
+        vim.setVisible(true);
+
+        Set soporte = c.getSupport();
+        Contour soporte_contour = new Contour(soporte);
+        img = soporte_contour.toImage();
+        vim = new VentanaImagen();
+        vim.lienzoImagen.setImage(img);
+        vim.setTitle("Soporte");
+        this.escritorio.add(vim);
+        vim.setVisible(true);
+        
+        Set reference_set = c.getReferenceSet();
+        Contour reference_set_contour = new Contour(reference_set);
+        img = reference_set_contour.toImage();
+        vim = new VentanaImagen();
+        vim.lienzoImagen.setImage(img);
+        vim.setTitle("Conjutno referente");
+        this.escritorio.add(vim);
+        vim.setVisible(true);
+    }
 
 
     /**
@@ -290,6 +324,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem menuAbrir;
+    private javax.swing.JMenuItem menuGuardar;
     private javax.swing.JMenuItem menuMascara;
     // End of variables declaration//GEN-END:variables
 

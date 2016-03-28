@@ -1,10 +1,10 @@
 package jfi.fuzzy;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import jfi.utils.JFIMath;
 
 /**
  *
@@ -12,7 +12,7 @@ import java.util.Set;
  * @author Jesús Chamorro Martínez
  * @param <Domain>
  */
-public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain> {
+public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Domain> {
 
     private String label;
     private final LinkedHashMap<Domain, Double> dataMap; //Ordered map
@@ -40,8 +40,8 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain> {
      * present. If the element <tt>e</tt> is previously contained, the
      * memmership degree is updated to <tt>degree</tt>
      *
-     * @param e
-     * @param degree
+     * @param e the new element to be added
+     * @param degree the memebership degree of the new element
      * @return <tt>true</tt> if this set did not already contain the specified
      * element
      */
@@ -73,6 +73,7 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain> {
      *
      * @return an iterator over the elements in this fuzzy set
      */
+    @Override
     public Iterator<Domain> iterator(){
         return dataMap.keySet().iterator();
     }
@@ -124,17 +125,31 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain> {
     public double getMembershipValue(Domain e) {
         return dataMap.get(e);
     }
+    
+    /**
+     * Set a new membership degree to the element <tt>e</tt>, if it exists 
+     * 
+     * @param e the element to be modified
+     * @param degree the new memebership degree
+     * @return <tt>true</tt> if this set contains the specified element
+     */
+    public boolean setMembershipValue(Domain e, double degree){
+        return dataMap.replace(e, degree) != null;
+    } 
 
     /**
-     * Return the alpha-cut of the fuzzy set for a given alpha
+     * Return the alpha-cut of the fuzzy set for a given alpha.
+     * 
+     * Thee iteration ordering of the ouput crisp set is the order in which 
+     * elements were inserted into the fuzzy set (insertion-order)
      *
      * @param alpha the alpha
      * @return the alpha-cut
      */
     @Override
-    public Collection<Domain> getAlphaCut(double alpha) {
+    public Set<Domain> getAlphaCut(double alpha) {
         Domain element;
-        HashSet<Domain> alpha_cut = new HashSet<>();
+        LinkedHashSet<Domain> alpha_cut = new LinkedHashSet<>();
 
         Iterator<Domain> set = dataMap.keySet().iterator();
         while (set.hasNext()) {
@@ -152,8 +167,8 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain> {
      * @return the kernel of the fuzzy set
      */
     @Override
-    public Collection<Domain> getKernel() {
-        return getAlphaCut(1.0f);
+    public Set<Domain> getKernel() {
+        return getAlphaCut(1.0);
     }
 
     /**
@@ -162,8 +177,8 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain> {
      * @return the support of the fuzzy set
      */
     @Override
-    public Collection<Domain> getSupport() {
-        return getAlphaCut(0.0f);
+    public Set<Domain> getSupport() {
+        return getAlphaCut(0.0+JFIMath.EPSILON);
     }
 
 }

@@ -1,12 +1,12 @@
 /*
-    Factory for creating FuzzyContour
+    Factory for creating FuzzyContourOld
 
     @author Luis Suárez Lloréns
  */
-package jfi.shape;
+package jfi.shape.fuzzy;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import jfi.shape.Contour;
 import jfi.utils.JFIMath;
 
 public class FuzzyContourFactory {
@@ -15,12 +15,12 @@ public class FuzzyContourFactory {
     public static final int TYPE_VERTICITY = 2;
     
     /**
-     * Create a new FuzzyContour
+     * Create a new FuzzyContourOld
      * 
-     * @param contour Contour used to create the new FuzzyContour
-     * @param type Type of FuzzyContour
+     * @param contour Contour used to create the new FuzzyContourOld
+     * @param type Type of FuzzyContourOld
      * 
-     * @return A new instance of FuzzyContour
+     * @return A new instance of FuzzyContourOld
      */
     public static FuzzyContour getInstance(Contour contour, int type){
 
@@ -37,27 +37,12 @@ public class FuzzyContourFactory {
     /**
      * Create a new FuzzyContour using linearity as truth value
      * 
-     * @param contour Contour used to create the new FuzzyContour
+     * @param contour Contour used to create the new FuzzyContourOld
      * 
-     * @return A new instance of FuzzyContour
+     * @return A new instance of FuzzyContourOld
      */
     private static FuzzyContour getInstanceLinearity(Contour contour){
         FuzzyContour fuzzyContour = new FuzzyContour();
-        FuzzyPoint fp;
-        
-        ArrayList<Float> linearity = getLinearity(contour);       
-        
-        for(int i = 0; i < contour.size(); i++){
-            fp = new FuzzyPoint(contour.get(i), linearity.get(i));
-            fuzzyContour.add(fp);
-        }
-        
-        return fuzzyContour;
-    }
-    
-    //For testing...
-    private static FuzzyContourNew getInstanceLinearity_new(Contour contour){
-        FuzzyContourNew fuzzyContour = new FuzzyContourNew();
         
         ArrayList<Float> linearity = getLinearity(contour);       
         
@@ -68,31 +53,15 @@ public class FuzzyContourFactory {
         return fuzzyContour;
     }
     
-    
     /**
-     * Create a new FuzzyContour using verticity as truth value
+     * Create a new FuzzyContourOld using verticity as truth value
      * 
-     * @param contour Contour used to create the new FuzzyContour
+     * @param contour Contour used to create the new FuzzyContourOld
      * 
-     * @return A new instance of FuzzyContour
-     */
+     * @return A new instance of FuzzyContourOld
+     */    
     private static FuzzyContour getInstanceVerticity(Contour contour){
         FuzzyContour fuzzyContour = new FuzzyContour();
-        FuzzyPoint fp;
-        
-        ArrayList<Float> verticity = getVerticity(contour);
-        
-        for(int i = 0; i < contour.size(); i++){
-            fp = new FuzzyPoint(contour.get(i), verticity.get(i));
-            fuzzyContour.add(fp);
-        }
-        
-        return fuzzyContour;
-    }
-    
-    //For testing...
-    private static FuzzyContourNew getInstanceVerticity_new(Contour contour){
-        FuzzyContourNew fuzzyContour = new FuzzyContourNew();
         
         ArrayList<Float> verticity = getVerticity(contour);
         

@@ -24,6 +24,14 @@ public class ContinuousFuzzySet<Domain extends Number> implements FuzzySet<Domai
     }
 
     /**
+     *
+     * @param mfunction
+     */
+    public ContinuousFuzzySet(MembershipFunction<Domain> mfunction) {
+        this("",mfunction);
+    }
+    
+    /**
      * Return the membership function of the fuzzy set
      *
      * @return the membership function of the fuzzy set
