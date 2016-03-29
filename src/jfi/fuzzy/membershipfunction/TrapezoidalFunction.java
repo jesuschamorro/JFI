@@ -1,12 +1,14 @@
 package jfi.fuzzy.membershipfunction;
 
 import java.security.InvalidParameterException;
+import jfi.utils.Interval;
 
 /**
  * 
  * @author Jesús Chamorro Martínez
+ * @param <Domain> unidimensional domain of the function
  */
-public class TrapezoidalFunction implements MembershipFunction<Double> {
+public class TrapezoidalFunction<Domain extends Number> implements MembershipFunction<Domain> {
 
     /**
      *
@@ -42,10 +44,11 @@ public class TrapezoidalFunction implements MembershipFunction<Double> {
      * @return
      */
     @Override
-    public Double apply(Double x) {
+    public Double apply(Domain x) {
+        double xd = x.doubleValue();
         //Si a==b recta con pendiente; si no, función escalón
-        double f1 = b != a ? (x - a) / (b - a) : (x >= a ? 1.0 : 0.0);
-        double f2 = d != c ? (d - x) / (d - c) : (x <= c ? 1.0 : 0.0);
+        double f1 = b != a ? (xd - a) / (b - a) : (xd >= a ? 1.0 : 0.0);
+        double f2 = d != c ? (d - xd) / (d - c) : (xd <= c ? 1.0 : 0.0);
         return (Math.max(Math.min(Math.min(f1, 1), f2), 0));
 
     }
@@ -74,5 +77,18 @@ public class TrapezoidalFunction implements MembershipFunction<Double> {
     public double[] getParameters() {
         double p[] = {a, b, c, d};
         return p;
+    }
+    
+    /**
+     * Return an alpha-cut associated to a trapezoidal membership function
+     *
+     * @param alpha the alpha
+     * @return the alpha-cut
+     */
+    @Override
+    public Interval<Number> getAlphaCut(double alpha) {
+        Double interval_a = (b - a)*alpha + a;
+        Double interval_b = d - (d - c)*alpha;
+        return new Interval<>((Domain)interval_a, (Domain)interval_b);
     }
 }

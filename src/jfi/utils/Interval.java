@@ -1,33 +1,66 @@
 /*
-  Interval of numbers
+  Closed interval of numbers
 
   @author Jesús Chamorro Martínez - UGR
+ */
+
+/*
+La implementación actual es para el caso 1D. Pendiente la generalización a ND
 */
 
 package jfi.utils;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-public class Interval<N extends Number> implements Collection<N>{
+public class Interval<N extends Number> {
 
     /**
      *
      */
-    private N low;
+    private N a;
     /**
      *
      */
-    private N high;
+    private N b;
 
     /**
      *
-     * @param low
-     * @param high
+     * @param a
+     * @param b
      */
-    public Interval(N low, N high) {
-        this.low = low;
-        this.high = high;
+    public Interval(N a, N b) {
+        this.a = a;
+        this.b = b;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public N getA() {
+        return a;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public N getB() {
+        return b;
+    }
+
+    /**
+     *
+     * @param a
+     */
+    public void setA(N a) {
+        this.a = a;
+    }
+
+    /**
+     *
+     * @param b
+     */
+    public void setB(N b) {
+        this.b = b;
     }
 
     /**
@@ -36,117 +69,31 @@ public class Interval<N extends Number> implements Collection<N>{
      * @return
      */
     public boolean contains(N number) {
-        return (number.doubleValue() >= low.doubleValue() && number.doubleValue() <= high.doubleValue());
+        return (number.doubleValue() >= a.doubleValue() && number.doubleValue() <= b.doubleValue());
     }
-
-    /**
-     *
-     * @return
-     */
-    public N getLow() {
-        return low;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public N getHigh() {
-        return low;
-    }
-
-    /**
-     *
-     * @param low
-     */
-    public void setLow(N low) {
-        this.low = low;
-    }
-
-    /**
-     *
-     * @param high
-     */
-    public void setHigh(N high) {
-        this.high = high;
-    }
-
     
-    // <editor-fold defaultstate="collapsed" desc="Collection methods">    
-    /* 
-        The following methods must be implemented in order to be a Collection.
-    
-        Note that an interval can be viewed as a "continous collection" but not 
-        a classical one (in the sense of a group of finite elements), so much of
-        the Collection interface methods has no sense
+    /**
+     * Return the centre (midpoint) of interval
+     * @return the centre of interval
      */
-    @Override
-    public int size() {
-        return high.intValue() - low.intValue();
+    public N center(){
+        Double center = (a.doubleValue()+b.doubleValue())/2;
+        return (N)center;
+    }
+    
+    /**
+     * Return the length of the interval
+     * @return the length of the interval 
+     */
+    public double length() {
+        return Math.abs(b.doubleValue() - a.doubleValue());
     }
 
-    @Override
+    /**
+     * Check if the interval is empty
+     * @return <tt>true</tt> if the interval is empty
+     */
     public boolean isEmpty() {
-        return size() <= 0;
+        return a.doubleValue() > b.doubleValue();
     }
-
-    @Override
-    public boolean contains(Object o) {
-        if (!(o instanceof Number)) {
-            throw new IllegalArgumentException("Not a number");
-        } else {
-            return this.contains(o);
-        }
-    }
-
-    @Override
-    public Iterator<N> iterator() {
-        throw new UnsupportedOperationException("Not supported for intervals");
-    }
-
-    @Override
-    public Object[] toArray() {
-        throw new UnsupportedOperationException("Not supported for intervals");
-    }
-
-    @Override
-    public <T> T[] toArray(T[] a) {
-        throw new UnsupportedOperationException("Not supported for intervals");
-    }
-
-    @Override
-    public boolean add(N e) {
-        throw new UnsupportedOperationException("Not supported for intervals");
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        throw new UnsupportedOperationException("Not supported for intervals");
-    }
-
-    @Override
-    public boolean containsAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Not supported for intervals");
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends N> c) {
-        throw new UnsupportedOperationException("Not supported for intervals");
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Not supported for intervals");
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> c) {
-        throw new UnsupportedOperationException("Not supported for intervals");
-    }
-
-    @Override
-    public void clear() {
-        throw new UnsupportedOperationException("Not supported for intervals");
-    }
-    // </editor-fold>
 }

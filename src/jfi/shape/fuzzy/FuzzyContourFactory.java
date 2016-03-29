@@ -15,12 +15,12 @@ public class FuzzyContourFactory {
     public static final int TYPE_VERTICITY = 2;
     
     /**
-     * Create a new FuzzyContourOld
+     * Create a new FuzzyContour
      * 
-     * @param contour Contour used to create the new FuzzyContourOld
-     * @param type Type of FuzzyContourOld
+     * @param contour Contour used to create the new FuzzyContour
+     * @param type Type of FuzzyContour
      * 
-     * @return A new instance of FuzzyContourOld
+     * @return A new instance of FuzzyContour
      */
     public static FuzzyContour getInstance(Contour contour, int type){
 

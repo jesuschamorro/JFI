@@ -14,8 +14,8 @@ import jfi.utils.JFIMath;
  */
 public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Domain> {
 
-    private String label;
-    private final LinkedHashMap<Domain, Double> dataMap; //Ordered map
+    protected String label;
+    protected final LinkedHashMap<Domain, Double> dataMap; //Ordered map
 
     /**
      * Constructs an empty fuzzy set.

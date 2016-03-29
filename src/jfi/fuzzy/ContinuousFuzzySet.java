@@ -2,16 +2,17 @@ package jfi.fuzzy;
 
 import jfi.fuzzy.membershipfunction.MembershipFunction;
 import jfi.utils.Interval;
+import jfi.utils.JFIMath;
 
 /**
  *
- * @author Jesús
+ * @author Jesús Chamorro
  * @param <Domain>
  */
-public class ContinuousFuzzySet<Domain extends Number> implements FuzzySet<Domain> {
+public class ContinuousFuzzySet<Domain> implements FuzzySet<Domain> {
 
-    private String label;
-    private final MembershipFunction<Domain> mfunction;
+    protected String label;
+    protected MembershipFunction<Domain> mfunction;
 
     /**
      *
@@ -40,6 +41,15 @@ public class ContinuousFuzzySet<Domain extends Number> implements FuzzySet<Domai
         return mfunction;
     }
 
+    /**
+     * Set a new membership function for the fuzzy set
+     *
+     * @param mfunction the new membership function
+     */
+    public void setMembershipFunction(MembershipFunction mfunction) {
+        this.mfunction = mfunction;
+    }
+    
     /**
      * Return the label associated to the fuzzy set
      *
@@ -79,9 +89,8 @@ public class ContinuousFuzzySet<Domain extends Number> implements FuzzySet<Domai
      * @return the alpha-cut
      */
     @Override
-    public Interval<Domain> getAlphaCut(double alpha) {
-        //TODO. It will depend on the membership function
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Interval<Number> getAlphaCut(double alpha) {
+        return mfunction.getAlphaCut(alpha);
     }
 
     /**
@@ -90,7 +99,7 @@ public class ContinuousFuzzySet<Domain extends Number> implements FuzzySet<Domai
      * @return the kernel of the fuzzy set
      */
     @Override
-    public Interval<Domain> getKernel() {
+    public Interval<Number> getKernel() {
         return getAlphaCut(1.0f);
     }
 
@@ -100,8 +109,8 @@ public class ContinuousFuzzySet<Domain extends Number> implements FuzzySet<Domai
      * @return the support of the fuzzy set
      */
     @Override
-    public Interval<Domain> getSupport() {
-        return getAlphaCut(0.0f);
+    public Interval<Number> getSupport() {
+        return getAlphaCut(0.0+JFIMath.EPSILON);
     }
 
 }

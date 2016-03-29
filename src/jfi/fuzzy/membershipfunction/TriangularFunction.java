@@ -1,12 +1,14 @@
 package jfi.fuzzy.membershipfunction;
 
 import java.security.InvalidParameterException;
+import jfi.utils.Interval;
 
 /**
- * 
+ *
  * @author Jesús Chamorro
+ * @param <Domain> unidimensional domain of the function
  */
-public class TriangularFunction implements MembershipFunction<Double> {
+public class TriangularFunction<Domain extends Number> implements MembershipFunction<Domain> {
 
     /**
      *
@@ -37,10 +39,11 @@ public class TriangularFunction implements MembershipFunction<Double> {
      * @return
      */
     @Override
-    public Double apply(Double x) {
+    public Double apply(Domain x) {
+        double xd = x.doubleValue();
         //Si a==b recta con pendiente; si no, función escalón
-        double f1 = a != b ? (x - a)/(b - a) : (x>=a?1.0:0.0);
-        double f2 = b != c ? (c - x)/(c - b) : (x<=c?1.0:0.0);
+        double f1 = a != b ? (xd - a) / (b - a) : (xd >= a ? 1.0 : 0.0);
+        double f2 = b != c ? (c - xd) / (c - b) : (xd <= c ? 1.0 : 0.0);
         return Math.max(Math.min(f1, f2), 0.0);
     }
 
@@ -51,7 +54,7 @@ public class TriangularFunction implements MembershipFunction<Double> {
      * @param c
      */
     public final void setParameters(double a, double b, double c) {
-        if (a>b || b>c) {
+        if (a > b || b > c) {
             throw new InvalidParameterException("The parameters must satisfy the following condition: a<=b<=c");
         }
         this.a = a;
@@ -68,4 +71,16 @@ public class TriangularFunction implements MembershipFunction<Double> {
         return p;
     }
 
+    /**
+     * Return an alpha-cut associated to a triangular membership function
+     *
+     * @param alpha the alpha
+     * @return the alpha-cut
+     */
+    @Override
+    public Interval<Number> getAlphaCut(double alpha) {
+        Double interval_a = (b - a)*alpha + a;
+        Double interval_b = c - (c - b)*alpha;
+        return new Interval<>((Domain)interval_a, (Domain)interval_b);
+    }
 }
