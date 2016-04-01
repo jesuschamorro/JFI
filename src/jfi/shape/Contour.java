@@ -22,7 +22,7 @@ public class Contour extends ArrayList<Point2D> {
     public static double windowRatio = 1.0/15;
     
     /**
-     *  Default offset for computing curvature.
+     *  Default offset.
      */
     public static int offset = 0;
     
@@ -82,7 +82,7 @@ public class Contour extends ArrayList<Point2D> {
                     while ( (!pointFound) && (iter < 3)) {
                         if (pointFound = isFrontierPoint((8 + (S - 1)) % 8, currentPoint,mask)) {
                             currentPoint = freemanStep((8 + (S - 1)) % 8,currentPoint);
-                            S = (8 + (S - 2)) % 8;  //Chage direction
+                            S = (8 + (S - 2)) % 8;  //Change direction
                         }
                         else {
                             if (pointFound = isFrontierPoint(S, currentPoint, mask)){
@@ -92,7 +92,7 @@ public class Contour extends ArrayList<Point2D> {
                                 if (pointFound = isFrontierPoint((S + 1) % 8, currentPoint, mask)){
                                     currentPoint = freemanStep((S + 1) % 8,currentPoint);
                                 }
-                                else S = (S + 2) % 8;  //Chage direction
+                                else S = (S + 2) % 8;  //Change direction
                             }
                         }
                         iter = iter++;
@@ -253,8 +253,18 @@ public class Contour extends ArrayList<Point2D> {
         return segment;
     }
     
-    private boolean isFrontierPoint(int direction, Point actual, BufferedImage image){
-        Point nextStep = freemanStep(direction,actual);
+    /**
+     * Checks if the point at a given direction from a point is part of the figure
+     * 
+     * The direction uses Freeman's chain code.
+     * 
+     * @param direction
+     * @param actualPoint
+     * @param image
+     * @return true if the point is part of the figure. false in other case. 
+     */
+    private boolean isFrontierPoint(int direction, Point actualPoint, BufferedImage image){
+        Point nextStep = freemanStep(direction,actualPoint);
 
         if(0 <= nextStep.x && nextStep.x < image.getWidth() && 
            0 <= nextStep.y && nextStep.y < image.getHeight())
@@ -263,7 +273,17 @@ public class Contour extends ArrayList<Point2D> {
 
         return false;
     }
-      
+    
+    /**
+     * Calculates the point at given direction from a point
+     * 
+     * The direction uses Freeman's chain code.
+     * 
+     * @param direction 
+     * @param actualPoint
+     * 
+     * @return Point at given direction from actualPoint
+     */
     private Point freemanStep(int direction, Point actualPoint){
         Point nextStep = new Point(actualPoint);
         

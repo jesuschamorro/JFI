@@ -15,9 +15,10 @@ public class JFIMath {
     public static final double EPSILON = Double.MIN_VALUE; 
     
     /**
+     * Calculates the error of lineal regression of a segment
      * 
      * @param segment
-     * @return 
+     * @return error of the regression
      */
     public static double getSegmentRegressionError(Collection<Point2D> segment){
 
@@ -45,6 +46,12 @@ public class JFIMath {
         return 1-(residuo/total);
     }
     
+    /**
+     * Calculates the direction of a segment
+     * 
+     * @param segment
+     * @return Direction vector of segment
+     */
     public static Point2D.Double getDirectionVector(Collection<Point2D> segment){
 
         double mod;
@@ -78,6 +85,12 @@ public class JFIMath {
         return directionVector;
     }
     
+    /**
+     * Calculates the linear Regression of a segment
+     * 
+     * @param segment
+     * @return Refression line
+     */
     public static JFILine linearRegression(Collection<Point2D> segment){
         double meanX, meanY, Sxy, Sxx, Syy;
         double aux, aux1;
@@ -113,20 +126,17 @@ public class JFIMath {
         delta = (float) Math.sqrt( (double) delta);
         
         if (delta > 0.00001) {
-          /* --- if(delta!=0) ---- Si Sxy==0 && (Sxx==0 || Syy==0) y m�s ....*/
             a = (lambda - Syy) / delta;
             b = Sxy / delta;
         }
         else
-            if (Syy < Sxx) { /*linea horizontal */
+            if (Syy < Sxx) { /*horizontal line */
               a = (float) 0.0;
               b = (float) 1.0;
-              //if (unflag) printf ("Nos metemos en horizontal");
             }
-            else {
+            else {           /*vertical line*/
               a = (float) 1.0;
               b = (float) 0.0;
-              //if (unflag) printf ("Nos metemos en vertical");
             }
         
         c = - ( (a) * meanX + (b) * meanY);
@@ -142,7 +152,7 @@ public class JFIMath {
     }
     
     /**
-     * Calculate the projection of a point on a line
+     * Calculates the projection of a point on a line
      * 
      * @param point A point
      * @param line  A line
@@ -157,7 +167,7 @@ public class JFIMath {
     }
     
     /**
-     * Calculate euclidean distance between points a and b
+     * Calculates euclidean distance between points a and b
      * 
      * @param a A point
      * @param b A point

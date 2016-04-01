@@ -12,11 +12,21 @@ import jfi.utils.JFIMath;
 
 public class FuzzyContourFactory {
     
+    /**
+     *  Exponent used to calculate linearity
+     */
     public static final int K = 3;
     
-    public static double vv_min = 0.1;
-    public static double vv_max = 0.6;
+    /**
+     * Parameters used to check if the segment is curved enough
+     * in verticity calculations
+     */
+    public static final double VERTICITY_MIN = 0.1;
+    public static final double VERTICITY_MAX = 0.6;
     
+    /**
+     * Types of FuzzyContour available
+     */
     public static final int TYPE_LINEARITY = 1;
     public static final int TYPE_VERTICITY = 2;
     
@@ -102,6 +112,15 @@ public class FuzzyContourFactory {
         return linearity;
     }
     
+    /**
+     * Calculates the linearity of a contour
+     * 
+     * @param contour
+     * @param offset
+     * @param windowSize
+     * 
+     * @return Contour's linearity
+     */
     private static ArrayList<Float> getLinearity(Contour contour, int offset, int windowSize) {
 
         ArrayList<Float> linearity =  new ArrayList<>();
@@ -121,7 +140,7 @@ public class FuzzyContourFactory {
     /**
      * Compute the verticity of contour
      * 
-     * @param contour Contour used
+     * @param contour
      * 
      * @return Contour's verticity
      */
@@ -130,7 +149,7 @@ public class FuzzyContourFactory {
         ArrayList<Float> verticity = new ArrayList<>();
         int windowSize = (int) (Contour.windowRatio * contour.size());
         
-        TrapezoidalFunction trapezoidal_function = new TrapezoidalFunction(vv_min,vv_max,1,1.1);
+        TrapezoidalFunction trapezoidal_function = new TrapezoidalFunction(VERTICITY_MIN,VERTICITY_MAX,1,1.1);
         
         ArrayList<Float> left_linearity = getLinearity(contour,1-windowSize-Contour.offset,windowSize);
         ArrayList<Float> right_linearity = getLinearity(contour,Contour.offset,windowSize);
