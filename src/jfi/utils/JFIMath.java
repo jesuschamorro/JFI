@@ -19,10 +19,10 @@ public class JFIMath {
      * @param segment
      * @return 
      */
-    public static double getSegmentLinearity(Collection<Point2D> segment){
+    public static double getSegmentRegressionError(Collection<Point2D> segment){
 
         JFILine line;
-        line = JFIMath.linearRegresion(segment);
+        line = JFIMath.linearRegression(segment);
         Point2D.Double projectedPoint;
         
         Point2D.Float mean = new Point2D.Float(0.0f,0.0f);
@@ -42,7 +42,7 @@ public class JFIMath {
             total += JFIMath.distance(point,mean);
         }
         
-        return Math.pow(1-(residuo/total),3);
+        return 1-(residuo/total);
     }
     
     public static Point2D.Double getDirectionVector(Collection<Point2D> segment){
@@ -54,7 +54,7 @@ public class JFIMath {
         Point2D.Double meanPoint;
         Point2D.Double directionVector;
         
-        line = JFIMath.linearRegresion(segment);
+        line = JFIMath.linearRegression(segment);
             
         projectedInitialPoint = JFIMath.projection(segment.iterator().next(),line);
 
@@ -78,7 +78,7 @@ public class JFIMath {
         return directionVector;
     }
     
-    public static JFILine linearRegresion(Collection<Point2D> segment){
+    public static JFILine linearRegression(Collection<Point2D> segment){
         double meanX, meanY, Sxy, Sxx, Syy;
         double aux, aux1;
         int j;
@@ -136,9 +136,9 @@ public class JFIMath {
           c = -c;
         }
         
-        JFILine regresionLine = new JFILine(a,b,c);
+        JFILine regressionLine = new JFILine(a,b,c);
 
-        return regresionLine;
+        return regressionLine;
     }
     
     /**

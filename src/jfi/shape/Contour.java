@@ -7,6 +7,7 @@ package jfi.shape;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -15,6 +16,17 @@ import java.util.Collection;
 import jfi.utils.JFIMath;
 
 public class Contour extends ArrayList<Point2D> { 
+    
+    /**
+     *  Default ratio for window creation.
+     */
+    public static double windowRatio = 1.0/15;
+    
+    /**
+     *  Default offset for computing curvature.
+     */
+    public static int offset = 0;
+    
     /**
      * Constructs an empty contour.
      */
@@ -91,16 +103,46 @@ public class Contour extends ArrayList<Point2D> {
      * @return an image with the contour drawn
      */
     public BufferedImage toImage(){
-        Dimension size;
-        size = this.imageSize();
-        
-        BufferedImage img = new BufferedImage(size.width,size.height,BufferedImage.TYPE_BYTE_BINARY);
+        Rectangle bounds = this.getBounds();
+        BufferedImage img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_BYTE_GRAY);
+        int x,y;
+
         WritableRaster imgRaster = img.getRaster();
         for (Point2D point : this) {
-            imgRaster.setSample((int)point.getX(), (int)point.getY(), 0, 1);
+            x = (int) point.getX()-bounds.x;
+            y = (int) point.getY()-bounds.y;
+            imgRaster.setSample(x, y, 0, 255);
         } 
         return img;
     }
+    
+    /**
+     * Returns an integer Rectangle that completely encloses the contour
+     *
+     * @return an integer Rectangle that completely encloses the contour.
+     */
+    public Rectangle getBounds() {
+        int maxX = 0, maxY = 0;
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+
+        for (Point2D point : this) {
+            if (maxX < point.getX()) {
+                maxX = (int) point.getX();
+            }
+            if (minX > point.getX()) {
+                minX = (int) point.getX();
+            }
+            if (maxY < point.getY()) {
+                maxY = (int) point.getY();
+            }
+            if (minY > point.getY()) {
+                minY = (int) point.getY();
+            }
+        }
+        return new Rectangle(minX, minY, maxX-minX+1, maxY-minY+1);
+    }
+    
     /**
      * Applies a mask to the contour
      * 
@@ -130,8 +172,7 @@ public class Contour extends ArrayList<Point2D> {
      * @return Curvature of the contour
      */
     public CurvatureFunction getCurvature(){
-        int windowSize = this.size()/15;
-        int offset = 0;
+        int windowSize = (int) windowRatio * this.size();
         
         return getCurvature(windowSize, offset);
     }
