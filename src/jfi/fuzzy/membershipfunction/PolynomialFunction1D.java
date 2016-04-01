@@ -5,13 +5,13 @@ import jfi.utils.Interval;
 
 /**
  *
- * @author Jesús Chamorro
+ * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
  */
-public class PolynomialFunction1D implements MembershipFunction<Double>{
+public class PolynomialFunction1D implements PolynomialFunction<Double>{
 
     private int polynomial_degree;
-    double coeficients[];
-    double alpha, beta;
+    private double coeficients[];
+    private double alpha, beta;
     
     /**
      * Constructs a polynominal membership function 
@@ -34,12 +34,34 @@ public class PolynomialFunction1D implements MembershipFunction<Double>{
      * 
      * @param coeficients the new coeficients
      */
+    @Override
     public final void setCoeficients(double coeficients[]){
         if(coeficients==null || coeficients.length==0){
             throw new InvalidParameterException("Empty coeficient set.");
         }
         polynomial_degree = coeficients.length-1;
         this.coeficients = coeficients;
+    }
+    
+    /**
+     *  Return the coeficients of the polynomial
+     *
+     * @return the coeficients of the polynomial 
+     */
+    
+    @Override
+    public double[] getCoeficients() {
+        return this.coeficients;
+    }
+    
+    /**
+     * Return the degree of the polynomial
+     *
+     * @return the degree of the polynomial
+     */
+    @Override
+    public int getPolynomialDegree() {
+        return this.polynomial_degree;
     }
     
     /**

@@ -1,30 +1,26 @@
 package jfi.texture.fuzzy;
 
 import java.awt.image.BufferedImage;
-import jfi.fuzzy.ContinuousFuzzySet;
-import jfi.fuzzy.membershipfunction.MembershipFunction;
-import jfi.texture.TextureMeasure;
+import jfi.fuzzy.FunctionBasedFuzzySet;
 
-/**
- *
- * @author Jesús Chamorro
- */
 
-/*
-    Pendiente: adaptación a n-dimensiones
-*/
 
-public class FuzzyTexture extends ContinuousFuzzySet<Double>{
-    protected TextureMeasure measure;
-    
-    public FuzzyTexture(String label, MembershipFunction<Double> mfunction, TextureMeasure measure) {
+public class FuzzyTexture extends FunctionBasedFuzzySet<BufferedImage> {
+
+    /**
+     *
+     * @param label
+     * @param mfunction
+     */
+    public FuzzyTexture(String label, TextureMembershipFunction mfunction) {
         super(label, mfunction);
-        this.measure = measure;
     }
-    
-    public double getMembershipValue(BufferedImage image) {
-        double measure_value = measure.apply(image);
-        return mfunction.apply(measure_value);
+
+    /**
+     *
+     * @param mfunction
+     */
+    public FuzzyTexture(TextureMembershipFunction mfunction) {
+        super(mfunction);
     }
-    
 }

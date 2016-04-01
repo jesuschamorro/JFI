@@ -4,8 +4,8 @@ import java.util.function.Function;
 import jfi.utils.Interval;
 /**
  * 
- * @author Jesús Chamorro
- * @param <Domain> 
+ * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
+ * @param <Domain> domain of the membership function
  */
 public interface MembershipFunction<Domain> extends Function<Domain, Double> {
     /**

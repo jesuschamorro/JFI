@@ -6,10 +6,10 @@ import jfi.utils.JFIMath;
 
 /**
  *
- * @author Jesús Chamorro
+ * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
  * @param <Domain>
  */
-public class ContinuousFuzzySet<Domain> implements FuzzySet<Domain> {
+public class FunctionBasedFuzzySet<Domain> implements FuzzySet<Domain> {
 
     protected String label;
     protected MembershipFunction<Domain> mfunction;
@@ -19,7 +19,7 @@ public class ContinuousFuzzySet<Domain> implements FuzzySet<Domain> {
      * @param label
      * @param mfunction
      */
-    public ContinuousFuzzySet(String label, MembershipFunction<Domain> mfunction) {
+    public FunctionBasedFuzzySet(String label, MembershipFunction<Domain> mfunction) {
         this.label = label;
         this.mfunction = mfunction;
     }
@@ -28,7 +28,7 @@ public class ContinuousFuzzySet<Domain> implements FuzzySet<Domain> {
      *
      * @param mfunction
      */
-    public ContinuousFuzzySet(MembershipFunction<Domain> mfunction) {
+    public FunctionBasedFuzzySet(MembershipFunction<Domain> mfunction) {
         this("",mfunction);
     }
     

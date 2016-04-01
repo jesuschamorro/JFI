@@ -17,8 +17,6 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import javax.imageio.ImageIO;
@@ -26,6 +24,7 @@ import javax.swing.JFileChooser;
 import jfi.fuzzy.DiscreteFuzzySet;
 import jfi.shape.Contour;
 import jfi.shape.fuzzy.FuzzyContour;
+import jfi.texture.fuzzy.FuzzyTextureFactory;
 
 
 
@@ -44,6 +43,11 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         //Pruebas
         //testFuzzySets();
         //testFuzzyContour();
+        
+        
+        
+        
+        
     }
     
     

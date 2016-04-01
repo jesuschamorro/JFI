@@ -9,7 +9,7 @@ import jfi.utils.JFIMath;
 /**
  *
  *
- * @author Jesús Chamorro Martínez
+ * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
  * @param <Domain>
  */
 public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Domain> {

@@ -6,7 +6,7 @@ import java.awt.image.WritableRaster;
 /**
  *
  * @author Pedro M. Martínez Jiménez
- * @author Jesús Chamorro Martínez
+ * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
  */
 public class AmadasunCoarsenessMeasure implements TextureMeasure {
 

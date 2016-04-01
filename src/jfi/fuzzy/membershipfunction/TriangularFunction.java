@@ -5,7 +5,7 @@ import jfi.utils.Interval;
 
 /**
  *
- * @author Jesús Chamorro
+ * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
  * @param <Domain> unidimensional domain of the function
  */
 public class TriangularFunction<Domain extends Number> implements MembershipFunction<Domain> {
@@ -34,9 +34,9 @@ public class TriangularFunction<Domain extends Number> implements MembershipFunc
     }
 
     /**
-     *
-     * @param x
-     * @return
+     * Applies this membership function to the given argument.
+     * @param x the function argument
+     * @return the function result
      */
     @Override
     public Double apply(Domain x) {
