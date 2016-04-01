@@ -5,8 +5,8 @@
 */
 package jfi.shape;
 
-import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
@@ -15,6 +15,17 @@ import java.util.Collection;
 import jfi.utils.JFIMath;
 
 public class Contour extends ArrayList<Point2D> { 
+    
+    /**
+     *  Default ratio for window creation.
+     */
+    public static double windowRatio = 1.0/15;
+    
+    /**
+     *  Default offset.
+     */
+    public static int offset = 0;
+    
     /**
      * Constructs an empty contour.
      */
@@ -44,44 +55,52 @@ public class Contour extends ArrayList<Point2D> {
         super(); 
         if(mask!=null){
                         
-            int r, c, S = 6, iter;  //Pos es 1 pq el vector d puntos empieza en 1 ya que la componente 0 es para el tama�o
+            int r, c, S = 6, iter; 
             Point currentPoint;
             boolean pointFound, firstIteration = true;
             Point initialPoint = null;
 
-            
+            //Get the first point of the contour
             for (r = 0, pointFound = false; r < mask.getHeight() && !pointFound; r++)
               for (c = 0; c < mask.getWidth() && !pointFound; c++)
                 if (mask.getRaster().getSample(c, r, 0) != 0) {
                   initialPoint = new Point(c,r);
                   pointFound = true;
                 }
-            /*if (!pointFound)return null; salir*/
             
-            // Comienza el recorrido del contorno
-            currentPoint = new Point(initialPoint);
-            while ( ( (currentPoint.x != initialPoint.x) || (currentPoint.y != initialPoint.y)) || (firstIteration)) {
-                this.add(new Point(currentPoint)); //Guardamos el actual fuera
-                pointFound = false;
-                iter = 0; // iteramos
-                while ( (!pointFound) && (iter < 3)) {
-                    if (pointFound = isFrontierPoint((8 + (S - 1)) % 8, currentPoint,mask)) {
-                        S = (8 + (S - 2)) % 8;
-                    }
-                    else {
-                        if (pointFound = isFrontierPoint(S, currentPoint, mask))
-                            S = S;
-                        else {
-                            if (pointFound = isFrontierPoint((S + 1) % 8, currentPoint, mask))
-                                S = S;
-                            else S = (S + 2) % 8;
-                        }
-                    }
-                    iter = iter++;
-                }
+            if (pointFound){
+            
+                currentPoint = new Point(initialPoint);
 
-                firstIteration = false;
-            }         
+                while ( ( (currentPoint.x != initialPoint.x) || (currentPoint.y != initialPoint.y)) || (firstIteration)) {
+
+                    this.add(new Point(currentPoint));
+
+                    pointFound = false;
+                    iter = 0;
+
+                    while ( (!pointFound) && (iter < 3)) {
+                        if (pointFound = isFrontierPoint((8 + (S - 1)) % 8, currentPoint,mask)) {
+                            currentPoint = freemanStep((8 + (S - 1)) % 8,currentPoint);
+                            S = (8 + (S - 2)) % 8;  //Change direction
+                        }
+                        else {
+                            if (pointFound = isFrontierPoint(S, currentPoint, mask)){
+                                currentPoint = freemanStep(S,currentPoint);
+                            }
+                            else {
+                                if (pointFound = isFrontierPoint((S + 1) % 8, currentPoint, mask)){
+                                    currentPoint = freemanStep((S + 1) % 8,currentPoint);
+                                }
+                                else S = (S + 2) % 8;  //Change direction
+                            }
+                        }
+                        iter = iter++;
+                    }
+
+                    firstIteration = false;
+                } 
+            }
         }
     }
     
@@ -91,16 +110,46 @@ public class Contour extends ArrayList<Point2D> {
      * @return an image with the contour drawn
      */
     public BufferedImage toImage(){
-        Dimension size;
-        size = this.imageSize();
-        
-        BufferedImage img = new BufferedImage(size.width,size.height,BufferedImage.TYPE_BYTE_BINARY);
+        Rectangle bounds = this.getBounds();
+        BufferedImage img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_BYTE_GRAY);
+        int x,y;
+
         WritableRaster imgRaster = img.getRaster();
         for (Point2D point : this) {
-            imgRaster.setSample((int)point.getX(), (int)point.getY(), 0, 1);
+            x = (int) point.getX()-bounds.x;
+            y = (int) point.getY()-bounds.y;
+            imgRaster.setSample(x, y, 0, 255);
         } 
         return img;
     }
+    
+    /**
+     * Returns an integer Rectangle that completely encloses the contour
+     *
+     * @return an integer Rectangle that completely encloses the contour.
+     */
+    public Rectangle getBounds() {
+        int maxX = 0, maxY = 0;
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+
+        for (Point2D point : this) {
+            if (maxX < point.getX()) {
+                maxX = (int) point.getX();
+            }
+            if (minX > point.getX()) {
+                minX = (int) point.getX();
+            }
+            if (maxY < point.getY()) {
+                maxY = (int) point.getY();
+            }
+            if (minY > point.getY()) {
+                minY = (int) point.getY();
+            }
+        }
+        return new Rectangle(minX, minY, maxX-minX+1, maxY-minY+1);
+    }
+    
     /**
      * Applies a mask to the contour
      * 
@@ -130,8 +179,7 @@ public class Contour extends ArrayList<Point2D> {
      * @return Curvature of the contour
      */
     public CurvatureFunction getCurvature(){
-        int windowSize = this.size()/15;
-        int offset = 0;
+        int windowSize = (int) windowRatio * this.size();
         
         return getCurvature(windowSize, offset);
     }
@@ -205,28 +253,41 @@ public class Contour extends ArrayList<Point2D> {
         return segment;
     }
     
-    private boolean isFrontierPoint(int direction, Point actual, BufferedImage image){
-        Point nextStep = freemanStep(direction,actual);
+    /**
+     * Checks if the point at a given direction from a point is part of the figure
+     * 
+     * The direction uses Freeman's chain code.
+     * 
+     * @param direction
+     * @param actualPoint
+     * @param image
+     * @return true if the point is part of the figure. false in other case. 
+     */
+    private boolean isFrontierPoint(int direction, Point actualPoint, BufferedImage image){
+        Point nextStep = freemanStep(direction,actualPoint);
 
         if(0 <= nextStep.x && nextStep.x < image.getWidth() && 
-           0 <= nextStep.y && nextStep.y < image.getHeight()){
-
-            if (image.getRaster().getSample(nextStep.x, nextStep.y, 0) !=0 ) {
-                actual.x = nextStep.x;
-                actual.y = nextStep.y;
+           0 <= nextStep.y && nextStep.y < image.getHeight())
+            if (image.getRaster().getSample(nextStep.x, nextStep.y, 0) !=0 )
                 return true;
-            }
-            else
-                return false;
-        }
-        else
-            return false;
+
+        return false;
     }
-      
+    
+    /**
+     * Calculates the point at given direction from a point
+     * 
+     * The direction uses Freeman's chain code.
+     * 
+     * @param direction 
+     * @param actualPoint
+     * 
+     * @return Point at given direction from actualPoint
+     */
     private Point freemanStep(int direction, Point actualPoint){
         Point nextStep = new Point(actualPoint);
         
-        switch (direction){ /* Dependiendo del valor de S...*/
+        switch (direction){
             case 0:
                 nextStep.x++;
                 break;
@@ -258,26 +319,6 @@ public class Contour extends ArrayList<Point2D> {
         }
         
         return nextStep;
-    }
-
-
-    private Dimension imageSize(){
-        Dimension dimension = new Dimension();
-        
-        double maxX = 0;
-        double maxY = 0;
-        
-        for (Point2D point: this){
-            if (maxX < point.getX())
-                maxX = point.getX();
-            if (maxY < point.getY())
-                maxY = point.getY();
-        }
-        
-        dimension.width = (int)Math.ceil(maxX)+1;
-        dimension.height = (int) Math.ceil(maxY)+1;
-        
-        return dimension;
     }
 
 }

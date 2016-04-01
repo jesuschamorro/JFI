@@ -6,11 +6,27 @@
 package jfi.shape.fuzzy;
 
 import java.util.ArrayList;
+import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
 import jfi.shape.Contour;
 import jfi.utils.JFIMath;
 
 public class FuzzyContourFactory {
     
+    /**
+     *  Exponent used to calculate linearity
+     */
+    public static final int K = 3;
+    
+    /**
+     * Parameters used to check if the segment is curved enough
+     * in verticity calculations
+     */
+    public static final double VERTICITY_MIN = 0.1;
+    public static final double VERTICITY_MAX = 0.6;
+    
+    /**
+     * Types of FuzzyContour available
+     */
     public static final int TYPE_LINEARITY = 1;
     public static final int TYPE_VERTICITY = 2;
     
@@ -42,7 +58,7 @@ public class FuzzyContourFactory {
      * @return A new instance of FuzzyContourOld
      */
     private static FuzzyContour getInstanceLinearity(Contour contour){
-        FuzzyContour fuzzyContour = new FuzzyContour();
+        FuzzyContour fuzzyContour = new FuzzyContour("Linearity");
         
         ArrayList<Float> linearity = getLinearity(contour);       
         
@@ -61,7 +77,7 @@ public class FuzzyContourFactory {
      * @return A new instance of FuzzyContourOld
      */    
     private static FuzzyContour getInstanceVerticity(Contour contour){
-        FuzzyContour fuzzyContour = new FuzzyContour();
+        FuzzyContour fuzzyContour = new FuzzyContour("Verticity");
         
         ArrayList<Float> verticity = getVerticity(contour);
         
@@ -84,31 +100,38 @@ public class FuzzyContourFactory {
         ArrayList<Float> linearity =  new ArrayList<>();
         
         int numPoints = contour.size();
-        int windowSize = contour.size()/15;
-        int k = 3;
+        int windowSize = (int) (Contour.windowRatio * contour.size());
         
         if (windowSize > numPoints)
             windowSize = numPoints;
-
-        for (int i = 0; i < numPoints; i++) {
-            linearity.add((float) JFIMath.getSegmentLinearity(contour.getSegment((i-windowSize+1 + numPoints) % numPoints,2*windowSize)));
+        
+        for (int i = 0; i < numPoints; i++) {          
+            linearity.add((float) Math.pow(JFIMath.getSegmentRegressionError(contour.getSegment((i-windowSize+1 + numPoints) % numPoints,2*windowSize)),K));
         }
         
         return linearity;
     }
     
+    /**
+     * Calculates the linearity of a contour
+     * 
+     * @param contour
+     * @param offset
+     * @param windowSize
+     * 
+     * @return Contour's linearity
+     */
     private static ArrayList<Float> getLinearity(Contour contour, int offset, int windowSize) {
 
         ArrayList<Float> linearity =  new ArrayList<>();
         
         int numPoints = contour.size();
-        int k = 3;
         
         if (windowSize > numPoints)
             windowSize = numPoints;
 
         for (int i = 0; i < numPoints; i++) {
-            linearity.add((float) JFIMath.getSegmentLinearity(contour.getSegment((i+offset+numPoints) % numPoints, windowSize)));
+            linearity.add((float) Math.pow(JFIMath.getSegmentRegressionError(contour.getSegment((i+offset+numPoints) % numPoints, windowSize)),K));
         }
         
         return linearity;
@@ -117,38 +140,30 @@ public class FuzzyContourFactory {
     /**
      * Compute the verticity of contour
      * 
-     * @param contour Contour used
+     * @param contour
      * 
      * @return Contour's verticity
      */
     private static ArrayList<Float> getVerticity(Contour contour) {
         
         ArrayList<Float> verticity = new ArrayList<>();
-        int windowSize = contour.size()/15;
-        double vv_min = 0.1;
-        double vv_max = 0.6;
+        int windowSize = (int) (Contour.windowRatio * contour.size());
         
-        ArrayList<Float> left_linearity = getLinearity(contour,1-windowSize,windowSize);
-        ArrayList<Float> right_linearity = getLinearity(contour,0,windowSize);
+        TrapezoidalFunction trapezoidal_function = new TrapezoidalFunction(VERTICITY_MIN,VERTICITY_MAX,1,1.1);
+        
+        ArrayList<Float> left_linearity = getLinearity(contour,1-windowSize-Contour.offset,windowSize);
+        ArrayList<Float> right_linearity = getLinearity(contour,Contour.offset,windowSize);
         ArrayList<Float> centered_linearity = getLinearity(contour);
         
         double actualVerticity; 
         
         for (int i = 0; i < left_linearity.size(); i++){
-            actualVerticity = Math.min(escalon(left_linearity.get(i),0,1),escalon(right_linearity.get(i),0,1));
-            actualVerticity = Math.min(actualVerticity,escalon(1-centered_linearity.get(i),vv_min,vv_max));
+            actualVerticity = Math.min(left_linearity.get(i),right_linearity.get(i));
+            actualVerticity = Math.min(actualVerticity,trapezoidal_function.apply(1-centered_linearity.get(i)));
             verticity.add((float) actualVerticity);
         }
         
         return verticity;
     }
     
-    private static double escalon(double x, double alpha, double beta){
-        if (x < alpha)
-            return 0;
-        else if (x < beta)
-            return (x-alpha)/(beta-alpha);
-        
-        return 1;
-    }
 }
