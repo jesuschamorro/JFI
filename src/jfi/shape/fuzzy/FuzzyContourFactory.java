@@ -17,7 +17,7 @@ public class FuzzyContourFactory {
     /**
      *  Exponent used to calculate linearity
      */
-    public static final int K = 3;
+    public static final int DEFAULT_K = 3;
     
     //************************************** K parámetro en método y lo anterior valor por defecto?
     
@@ -34,17 +34,22 @@ public class FuzzyContourFactory {
     
     
     /**
-     * Types of FuzzyContour available
+     * Type representing the linearity fuzzy property
      */
     public static final int TYPE_LINEARITY = 1;
+    
+    /**
+     * Type representing the verticity fuzzy property
+     */
     public static final int TYPE_VERTICITY = 2;
     
     /**
-     * Create a new <code>FuzzyContour</code>
+     * Creates a new <code>FuzzyContour</code> modeling a given fuzzy property
+     * for a given contour
      * 
      * @param contour contour used to create the new <code>FuzzyContour</code>
-     * @param type type of FuzzyContour
-     * @return a new instance of FuzzyContour
+     * @param type type of property to be modeled
+     * @return a new instance of <code>FuzzyContour</code>
      */
     public static FuzzyContour getInstance(Contour contour, int type){
         switch (type) {
@@ -58,7 +63,7 @@ public class FuzzyContourFactory {
     }
 
     /**
-     * Create a new FuzzyContour using linearity as truth value
+     * Creates a new FuzzyContour using linearity as truth value
      *
      * @param contour Contour used to create the new FuzzyContourOld
      * @return A new instance of FuzzyContourOld
@@ -73,33 +78,60 @@ public class FuzzyContourFactory {
     }
     
     
-    
+    /**
+     * Creates a new <code>FuzzyContour</code> modeling the linearity property
+     * for a given contour
+     * 
+     * @param contour contour used to create the linearity fuzzy set
+     * @return 
+     */
     private static FuzzyContour getLinearityInstance_new(Contour contour){
         FuzzyContour fuzzyContour = new FuzzyContour("Contour.Linearity", contour);
         setLinearityDegrees(fuzzyContour);
         return fuzzyContour;
     }
-    
-    private static void setLinearityDegrees(FuzzyContour fcontour) {  //Parámetros: windowRatio, k
-        int numPoints = fcontour.size();
-        int windowSize = (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * numPoints);       
+    /**
+     * Calculates and set the membership degrees corresponding to the linearity
+     * property. This calculation is performed on the reference set (which is a
+     * contour)
+     * 
+     * @param fcontour fuzzy contour on which to calculate and set the linearity
+     * @param exponent exponent in the linearity formula
+     * @param segment_size the segment size around each contour point for linearity 
+     * calculation 
+     */
+    public static void setLinearityDegrees(FuzzyContour fcontour, int exponent, int segment_size) {  //¿tiene sentido el offset?
+        ArrayList segment;
         double degree;
-        Contour c = fcontour.toCrispContour();  //Porque getSegment está en Contour
-        int i = 0;                              //Porque usa índices para el tamaño de las ventanas
-        for(Point2D point:fcontour){
-            degree = Math.pow(JFIMath.getRegressionError(c.getSegment((i-windowSize+1 + numPoints) % numPoints,2*windowSize)),K);
+        Contour ccontour = fcontour.getContourReferenceSet(); 
+ 
+        for(Point2D point:ccontour){
+            segment = ccontour.getSegment(ccontour.getPointBeside(point,-segment_size+1), 2*segment_size);
+            degree = Math.pow(JFIMath.getRegressionError(segment),exponent);
             fcontour.setMembershipValue(point,degree);
-            i++;
         }
+    }
+    /**
+     * Calculates and set the membership degrees corresponding to the linearity
+     * property using the default parameters.
+     * 
+     * @param fcontour fuzzy contour on which to calculate and set the linearity 
+     */
+    public static void setLinearityDegrees(FuzzyContour fcontour) {
+        setLinearityDegrees(fcontour, DEFAULT_K, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * fcontour.size()) );
     }
     
     
+    
+    
+    
+    
     /**
-     * Create a new FuzzyContourOld using verticity as truth value
+     * Create a new FuzzyContour using verticity as truth value
      * 
      * @param contour Contour used to create the new FuzzyContourOld
      * 
-     * @return A new instance of FuzzyContourOld
+     * @return A new instance of FuzzyContour
      */    
     private static FuzzyContour getVerticityInstance(Contour contour){
         FuzzyContour fuzzyContour = new FuzzyContour("Contour.Verticity");
@@ -124,7 +156,7 @@ public class FuzzyContourFactory {
         if (windowSize > numPoints)
             windowSize = numPoints;       
         for (int i = 0; i < numPoints; i++) {          
-            linearity.add((float) Math.pow(JFIMath.getRegressionError(contour.getSegment((i-windowSize+1 + numPoints) % numPoints,2*windowSize)),K));
+            linearity.add((float) Math.pow(JFIMath.getRegressionError(contour.getSegment((i-windowSize+1 + numPoints) % numPoints,2*windowSize)),DEFAULT_K));
         }       
         return linearity;
     }
@@ -143,7 +175,7 @@ public class FuzzyContourFactory {
         if (windowSize > numPoints)
             windowSize = numPoints;
         for (int i = 0; i < numPoints; i++) {
-            linearity.add((float) Math.pow(JFIMath.getRegressionError(contour.getSegment((i+offset+numPoints) % numPoints, windowSize)),K));
+            linearity.add((float) Math.pow(JFIMath.getRegressionError(contour.getSegment((i+offset+numPoints) % numPoints, windowSize)),DEFAULT_K));
         }       
         return linearity;
     }

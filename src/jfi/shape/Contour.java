@@ -8,7 +8,7 @@
   Comentar con Luis:
     * getSegment (y el interface Segmentable")
     * Replanteamiento getCurvature
-    * En getCurvature: "iter=iter++", "format"
+    * En maskToContour: "iter=iter++", "format"
     * clockwise (¿desde máscara es true?)
 
 */
@@ -127,16 +127,16 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
      * 
      * @return an image with the contour drawn
      */
-    public BufferedImage toImage(){
+    public BufferedImage toImage() {
         Rectangle bounds = this.getBounds();
         BufferedImage img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_BYTE_GRAY);
-        int x,y;
+        int x, y;
         WritableRaster imgRaster = img.getRaster();
         for (Point2D point : this) {
-            x = (int) point.getX()-bounds.x;
-            y = (int) point.getY()-bounds.y;
+            x = (int) point.getX() - bounds.x;
+            y = (int) point.getY() - bounds.y;
             imgRaster.setSample(x, y, 0, 255);
-        } 
+        }
         return img;
     }
     
@@ -163,7 +163,7 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
                 minY = (int) point.getY();
             }
         }
-        return new Rectangle(minX, minY, maxX-minX+1, maxY-minY+1);
+        return new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
     }
     
     /**
@@ -221,8 +221,8 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
         //Usando foreach. Aunque es más "intuitivo", en la práctica es menos eficiente
         //porque implica llamadas a indexOf (que contiene un bucle)
 //        for(Point2D p:this){
-//           ArrayList leftSegment = this.getSegment(beside(p,offset), windowSize, true);  
-//           ArrayList rightSegment =this.getSegment(beside(p,-offset), windowSize, false); 
+//           ArrayList leftSegment = this.getSegment(getPointBeside(p,offset), windowSize, true);  
+//           ArrayList rightSegment =this.getSegment(getPointBeside(p,-offset), windowSize, false); 
 //           secondDirectionVector = JFIMath.getDirectionVector(leftSegment);
 //           firstDirectionVector = JFIMath.getDirectionVector(rightSegment); 
 //           
@@ -355,11 +355,22 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
             throw new InvalidParameterException("Points must be contained in the contour.");
         }
         ArrayList<Point2D> segment = new ArrayList<>();            
-        ContourIterator it = new ContourIterator(this,start);
+        ContourIterator it = new ContourIterator(this,start,clockwise);
         while(!it.isPrevious(end)){
             segment.add(it.next());         
         }
         return segment;
+    }
+    
+    public ArrayList<Point2D> getSegment(int start, int end, boolean clockwise){
+         ArrayList<Point2D> segment = new ArrayList<>(); 
+         int i=start;
+         while(i!=end){
+             //TODO
+             //segment.add(get(i));
+             //i= clockwise ? (i+1)%size() : (i-1+size())%size();
+         }
+         return segment;
     }
     
     /**
@@ -397,7 +408,7 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
      * @return the point located an <code>offset</code> distance from the element
      * at the specified position
      */
-    public Point2D beside(int index, int offset) {
+    public Point2D getPointBeside(int index, int offset) {
         if (index >= this.size())
             throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size());
         offset = offset % this.size();
@@ -421,8 +432,8 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
      * @return the point located an <code>offset</code> distance from the element
      * at the specified position
      */
-    public Point2D beside(Point2D point, int offset){
-        return beside(indexOf(point),offset);
+    public Point2D getPointBeside(Point2D point, int offset){
+        return getPointBeside(indexOf(point),offset);
     }
     
 }

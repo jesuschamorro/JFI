@@ -158,8 +158,8 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
      * Return the crisp contour corresponding to the reference set 
      * @return the crisp contour corresponding to the reference set 
      */
-    public Contour toCrispContour(){
-        Set reference_set = this.getReferenceSet();
+    public Contour getContourReferenceSet(){
+        Set reference_set = super.getReferenceSet();
         return new Contour(reference_set);
     }
 }

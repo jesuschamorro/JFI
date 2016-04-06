@@ -1,7 +1,7 @@
 package jfi.shape;
 
 import java.awt.geom.Point2D;
-import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  *
@@ -15,7 +15,7 @@ public interface Segmentable {
      * @param clockwise
      * @return 
      */
-    public Collection<Point2D> getSegment(Point2D start, Point2D end, boolean clockwise);
+    public ArrayList<Point2D> getSegment(Point2D start, Point2D end, boolean clockwise);
     /**
      * 
      * @param start
@@ -23,14 +23,14 @@ public interface Segmentable {
      * @param clockwise
      * @return 
      */
-    public Collection<Point2D> getSegment(Point2D start, int segment_size, boolean clockwise);
+    public ArrayList<Point2D> getSegment(Point2D start, int segment_size, boolean clockwise);
     /**
      * 
      * @param start
      * @param end
      * @return 
      */
-    default public Collection<Point2D> getSegment(Point2D start, Point2D end){
+    default public ArrayList<Point2D> getSegment(Point2D start, Point2D end){
         return getSegment(start, end, true);
     }
     /**
@@ -39,7 +39,7 @@ public interface Segmentable {
      * @param segment_size
      * @return 
      */
-    default public Collection<Point2D> getSegment(Point2D start, int segment_size){
+    default public ArrayList<Point2D> getSegment(Point2D start, int segment_size){
         return getSegment(start, segment_size, true);
     }
 }
