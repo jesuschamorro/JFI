@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 /**
  *
- * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
 public interface TextureMeasure extends Function<BufferedImage, Double>{
     /**

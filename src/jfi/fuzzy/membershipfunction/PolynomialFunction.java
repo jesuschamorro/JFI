@@ -2,7 +2,7 @@ package jfi.fuzzy.membershipfunction;
 
 /**
  *
- * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  * @param <Domain>
  */
 public interface PolynomialFunction<Domain> extends MembershipFunction<Domain> {

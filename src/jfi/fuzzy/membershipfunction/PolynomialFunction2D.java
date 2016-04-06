@@ -6,7 +6,7 @@ import jfi.utils.Interval;
 
 /**
  *
- * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
 public class PolynomialFunction2D implements PolynomialFunction<Point2D.Double>{
     private int polynomial_degree;

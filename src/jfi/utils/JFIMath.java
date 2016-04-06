@@ -20,7 +20,7 @@ public class JFIMath {
      * @param segment
      * @return error of the regression
      */
-    public static double getSegmentRegressionError(Collection<Point2D> segment){
+    public static double getRegressionError(Collection<Point2D> segment){
 
         JFILine line;
         line = JFIMath.linearRegression(segment);

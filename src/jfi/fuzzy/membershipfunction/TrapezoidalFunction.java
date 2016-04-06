@@ -5,7 +5,7 @@ import jfi.utils.Interval;
 
 /**
  * 
- * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  * @param <Domain> unidimensional domain of the function
  */
 public class TrapezoidalFunction<Domain extends Number> implements MembershipFunction<Domain> {

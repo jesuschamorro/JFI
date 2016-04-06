@@ -2,7 +2,7 @@ package jfi.fuzzy;
 /**
  * An interface representing a fuzzy set on a given domain
  *
- * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  * @param <Domain> 
  */
 public interface FuzzySet<Domain> {

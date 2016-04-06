@@ -10,7 +10,7 @@ import jfi.texture.TextureMeasure;
 /**
  * Class for fuzzy texture templates generation.
  * 
- * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
 public class FuzzyTextureFactory {
 
@@ -32,12 +32,6 @@ public class FuzzyTextureFactory {
             default:
                 return null;
         }
-    }
-
-    public static enum TYPE{
-        COARSENESS_AMADASUN,
-        COARSENESS_CORRELATION,
-        COARSENESS_AMADASUN_CORRELATION
     }
 
     /**

@@ -4,7 +4,7 @@ import java.awt.image.BufferedImage;
 
 /**
  *
- * @author Jesús Chamorro Martínez <jesus@decsai.ugr.es>
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
 public class CorrelationCoarsenessMeasure implements TextureMeasure {
 

@@ -10,8 +10,19 @@ import jfi.shape.Contour;
 import jfi.shape.ImageMask;
 
 /**
+ * A <code>FuzzyContour</code> represents a fuzzy set over the countour-points
+ * domain. It has two main uses:
+ * <ul>
+ * <li>To represent a fuzzy property associated to the contour-points (for example, 
+ *     the verticity degree of each point in the contour)
+ * </li>
+ * <li>To model a contour in a fuzzy way (i.e, in which degree a given point 
+ *     belongs to a contour shape)
+ * </li>
+ * </ul>
  *
- * @author Jesús Chamorro Martínez
+ *
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
 public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
 
