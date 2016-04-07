@@ -3,6 +3,7 @@ package jfi.fuzzy;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 import jfi.utils.JFIMath;
 
@@ -122,7 +123,7 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Doma
      * @return the membership degree
      */
     @Override
-    public double getMembershipValue(Domain e) {
+    public double membershipDegree(Domain e) {
         return dataMap.get(e);
     }
     
@@ -133,7 +134,7 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Doma
      * @param degree the new memebership degree
      * @return <tt>true</tt> if this set contains the specified element
      */
-    public boolean setMembershipValue(Domain e, double degree){
+    public boolean setMembershipDegree(Domain e, double degree){
         return dataMap.replace(e, degree) != null;
     } 
 
@@ -147,7 +148,7 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Doma
      * @return the alpha-cut
      */
     @Override
-    public Set<Domain> getAlphaCut(double alpha) {
+    public Set<Domain> alphaCut(double alpha) {
         Domain element;
         LinkedHashSet<Domain> alpha_cut = new LinkedHashSet<>();
 
@@ -167,8 +168,8 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Doma
      * @return the kernel of the fuzzy set
      */
     @Override
-    public Set<Domain> getKernel() {
-        return getAlphaCut(1.0);
+    public Set<Domain> kernel() {
+        return alphaCut(1.0);
     }
 
     /**
@@ -177,8 +178,25 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Doma
      * @return the support of the fuzzy set
      */
     @Override
-    public Set<Domain> getSupport() {
-        return getAlphaCut(0.0+JFIMath.EPSILON);
+    public Set<Domain> support() {
+        return alphaCut(0.0+JFIMath.EPSILON);
     }
 
+    /**
+     * Returns a {@link Set} view of the mappings contained in this fuzzy set, 
+     * that is, a set of pairs (element, degree).
+     * 
+     * The set is backed by the fuzzy set, so changes to the fuzzy set are
+     * reflected in the entry set, and vice-versa. If the fuzzy set is
+     * modified while an iteration over the entry set is in progress, the
+     * results of the iteration are undefined. The entry set supports
+     * element removal, which removes the corresponding mapping from the fuzzy
+     * set; It does not support the add operation.
+     * 
+     * @return a set view of the mappings contained in this map
+     */
+    public Set<Entry<Domain,Double>> entrySet() {
+        return dataMap.entrySet();
+    }
+    
 }

@@ -27,7 +27,7 @@ public interface FuzzySet<Domain> {
      * @param e an element of the fuzzy set domain
      * @return the membership degree
      */
-    public double getMembershipValue(Domain e);
+    public double membershipDegree(Domain e);
 
     /**
      * Return the alpha-cut of the fuzzy set for a given alpha
@@ -35,20 +35,20 @@ public interface FuzzySet<Domain> {
      * @param alpha the alpha
      * @return the alpha-cut
      */
-    public Object getAlphaCut(double alpha);
+    public Object alphaCut(double alpha);
 
     /**
      * Return the kernel of the fuzzy set
      *
      * @return the kernel of the fuzzy set
      */
-    public Object getKernel();
+    public Object kernel();
 
     /**
      * Return the support of the fuzzy set
      *
      * @return the support of the fuzzy set
      */
-    public Object getSupport();
+    public Object support();
 
 }

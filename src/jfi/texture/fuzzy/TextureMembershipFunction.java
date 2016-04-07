@@ -30,20 +30,20 @@ public class TextureMembershipFunction implements MembershipFunction<BufferedIma
         this.measure2 = measure2;
     }
     
-    public TextureMembershipFunction(PolynomialFunction mfunction, TextureMeasure measures[]){
-        this.mfunction = mfunction;
-        this.measures = measures;
-    }
+//    public TextureMembershipFunction(PolynomialFunction mfunction, TextureMeasure measures[]){
+//        this.mfunction = mfunction;
+//        this.measures = measures;
+//    }
    
     
     @Override
     public Double apply(BufferedImage image) {
         
         
-        for(TextureMeasure measure : measures) {
-            measure.apply(image);
-        }
-        mfunction.apply(this);
+//        for(TextureMeasure measure : measures) {
+//            measure.apply(image);
+//        }
+//        mfunction.apply(this);
         
         Double m1_value, m2_value, output;
         m1_value = measure1.apply(image);

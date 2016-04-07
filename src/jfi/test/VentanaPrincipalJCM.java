@@ -17,11 +17,18 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import jfi.fuzzy.DiscreteFuzzySet;
+import jfi.fuzzy.cardinal.SigmaCount;
 import jfi.shape.Contour;
 import jfi.shape.fuzzy.FuzzyContour;
 import jfi.texture.fuzzy.FuzzyTextureFactory;
@@ -44,7 +51,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         //testFuzzySets();
         //testFuzzyContour();
         
-        
+        pruebas_cardinales();
         
         
         
@@ -174,6 +181,39 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
     //// Pruebas
     //// -------
     
+    private void pruebas_cardinales(){
+        DiscreteFuzzySet fset = new DiscreteFuzzySet();
+        
+        Point p;
+        for(int i=0; i<10; i++){
+            p = new Point(i,i);
+            fset.add(p,(double)((10-i)%11)/10.0);
+            System.out.println("["+i+"] "+p.toString()+ fset.membershipDegree(p));
+        }
+        
+        SigmaCount sigma = new SigmaCount(fset);
+        System.out.println(sigma.getValue());
+        
+        
+       
+        
+        //Set<Entry<Point,Double>> s = fset.entrySet();
+       
+        
+        
+        ArrayList<Entry> al = new ArrayList(fset.entrySet());
+        Comparator comp = Map.Entry.comparingByValue();
+        Collections.sort(al, Collections.reverseOrder(comp));
+        
+        for(Entry e:al){
+            System.out.print(e.getValue()+" ");
+        }
+        System.out.println();
+    
+        System.out.println(al.toString());
+        
+    }
+    
     
     
     private void testFuzzySets(){
@@ -193,13 +233,13 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         Iterator<Point2D> it = fcontorno.iterator();
         while (it.hasNext()) {
             p = it.next();
-            System.out.println(p.toString()+ fcontorno.getMembershipValue(p));
+            System.out.println(p.toString()+ fcontorno.membershipDegree(p));
         }
         
         System.out.println(fcontorno.getReferenceSet().toString());
-        System.out.println(fcontorno.getAlphaCut(0.2).toString());
-        System.out.println(fcontorno.getKernel().toString());
-        System.out.println(fcontorno.getSupport().toString());
+        System.out.println(fcontorno.alphaCut(0.2).toString());
+        System.out.println(fcontorno.kernel().toString());
+        System.out.println(fcontorno.support().toString());
     } 
     
     
@@ -217,12 +257,11 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         Iterator<Point2D> it = fcontorno.iterator();
         while (it.hasNext()) {
             p = it.next();
-            System.out.println(p.toString()+ fcontorno.getMembershipValue(p));
+            System.out.println(p.toString()+ fcontorno.membershipDegree(p));
         }
         
         
     }
-
     
     void prueba_contornoDifuso(ImageMask mask) {
         FuzzyContour c = new FuzzyContour("",mask);
@@ -232,8 +271,8 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         Iterator<Point2D> it = c.iterator();
         while (it.hasNext()) {
             p = it.next();
-            c.setMembershipValue(p, (double)(i++%11)/10.0 );            
-            System.out.println("["+i+"] "+p.toString()+ c.getMembershipValue(p));
+            c.setMembershipDegree(p, (double)(i++%11)/10.0 );            
+            System.out.println("["+i+"] "+p.toString()+ c.membershipDegree(p));
         }
 
         BufferedImage img = c.toImage();
@@ -243,7 +282,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         this.escritorio.add(vim);
         vim.setVisible(true);
 
-        Set alpha_cut = c.getAlphaCut(0.4f);
+        Set alpha_cut = c.alphaCut(0.4f);
         Contour alpha_cut_contour = new Contour(alpha_cut);
         img = alpha_cut_contour.toImage();
         vim = new VentanaImagen();
@@ -252,7 +291,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         this.escritorio.add(vim);
         vim.setVisible(true);
 
-        Set kernel = c.getKernel();
+        Set kernel = c.kernel();
         Contour kernel_contour = new Contour(kernel);
         img = kernel_contour.toImage();
         vim = new VentanaImagen();
@@ -261,7 +300,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         this.escritorio.add(vim);
         vim.setVisible(true);
 
-        Set soporte = c.getSupport();
+        Set soporte = c.support();
         Contour soporte_contour = new Contour(soporte);
         img = soporte_contour.toImage();
         vim = new VentanaImagen();

@@ -121,7 +121,7 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
         for (Point2D point : this) {
             x = (int) point.getX()-bounds.x;
             y = (int) point.getY()-bounds.y;
-            grey_level = (int)(255.0 * this.getMembershipValue(point));
+            grey_level = (int)(255.0 * this.membershipDegree(point));
             imgRaster.setSample(x,y,0, grey_level);
         }
         return img;

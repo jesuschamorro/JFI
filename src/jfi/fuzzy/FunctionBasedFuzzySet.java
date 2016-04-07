@@ -77,7 +77,7 @@ public class FunctionBasedFuzzySet<Domain> implements FuzzySet<Domain> {
      * @return the membership degree
      */
     @Override
-    public double getMembershipValue(Domain e) {
+    public double membershipDegree(Domain e) {
         return mfunction.apply(e);
 
     }
@@ -89,7 +89,7 @@ public class FunctionBasedFuzzySet<Domain> implements FuzzySet<Domain> {
      * @return the alpha-cut
      */
     @Override
-    public Interval<Number> getAlphaCut(double alpha) {
+    public Interval<Number> alphaCut(double alpha) {
         return mfunction.getAlphaCut(alpha);
     }
 
@@ -99,8 +99,8 @@ public class FunctionBasedFuzzySet<Domain> implements FuzzySet<Domain> {
      * @return the kernel of the fuzzy set
      */
     @Override
-    public Interval<Number> getKernel() {
-        return getAlphaCut(1.0f);
+    public Interval<Number> kernel() {
+        return alphaCut(1.0f);
     }
 
     /**
@@ -109,8 +109,8 @@ public class FunctionBasedFuzzySet<Domain> implements FuzzySet<Domain> {
      * @return the support of the fuzzy set
      */
     @Override
-    public Interval<Number> getSupport() {
-        return getAlphaCut(0.0+JFIMath.EPSILON);
+    public Interval<Number> support() {
+        return alphaCut(0.0+JFIMath.EPSILON);
     }
 
 }

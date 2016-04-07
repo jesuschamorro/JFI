@@ -108,7 +108,7 @@ public class FuzzyContourFactory {
         for(Point2D point:ccontour){
             segment = ccontour.getSegment(ccontour.getPointBeside(point,-segment_size+1), 2*segment_size);
             degree = Math.pow(JFIMath.getRegressionError(segment),exponent);
-            fcontour.setMembershipValue(point,degree);
+            fcontour.setMembershipDegree(point,degree);
         }
     }
     /**
