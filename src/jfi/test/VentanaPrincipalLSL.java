@@ -20,10 +20,12 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import jfi.shape.Contour;
 import jfi.shape.CurvatureFunction;
+import jfi.shape.fuzzy.FuzzyContour;
 
 import jfi.shape.fuzzy.FuzzyContourFactory;
 
@@ -121,14 +123,57 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
                 //double vv_max = 0.6;
                 //double tolerance = 0.95;
                 
-                ArrayList<Double> mask = new ArrayList<Double>();
-                mask.add(0.05);
-                mask.add(0.25);
-                mask.add(0.4);
-                mask.add(0.25);
-                mask.add(0.05);
+//                ArrayList<Double> mask = new ArrayList<Double>();
+//                mask.add(0.05);
+//                mask.add(0.25);
+//                mask.add(0.4);
+//                mask.add(0.25);
+//                mask.add(0.05);
+//                
+//                Contour filteredContour = contour.filter(mask);
+                FuzzyContour c = FuzzyContourFactory.getInstance(contour, FuzzyContourFactory.TYPE_LINEARITY);
+                img = c.toImage();
+                VentanaImagen vim = new VentanaImagen();
+                vim.lienzoImagen.setImage(img);
+                vim.setTitle("Contorno");
+                this.escritorio.add(vim);
+                vim.setVisible(true);
+
+                Set alpha_cut = c.alphaCut(0.7);
+                Contour alpha_cut_contour = new Contour(alpha_cut);
+                img = alpha_cut_contour.toImage();
+                vim = new VentanaImagen();
+                vim.lienzoImagen.setImage(img);
+                vim.setTitle("Alfa-corte");
+                this.escritorio.add(vim);
+                vim.setVisible(true);
+
+                Contour soporte_contour = c.getContourReferenceSet();
+                img = soporte_contour.toImage();
+                vim = new VentanaImagen();
+                vim.lienzoImagen.setImage(img);
+                vim.setTitle("Soporte");
+                this.escritorio.add(vim);
+                vim.setVisible(true);
+
+                Set reference_set = c.getReferenceSet();
+                Contour reference_set_contour = new Contour(reference_set);
+                img = reference_set_contour.toImage();
+                vim = new VentanaImagen();
+                vim.lienzoImagen.setImage(img);
+                vim.setTitle("Conjutno referente");
+                this.escritorio.add(vim);
+                vim.setVisible(true);
                 
-                Contour filteredContour = contour.filter(mask);
+                Set kernel = c.kernel();
+                Contour kernel_contour = new Contour(kernel);
+                img = kernel_contour.toImage();
+                vim = new VentanaImagen();
+                vim.lienzoImagen.setImage(img);
+                vim.setTitle("Kernel");
+                this.escritorio.add(vim);
+                vim.setVisible(true);
+
 
 //                FuzzyContourOld linearity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_LINEARITY);
 //                FuzzyContourOld verticity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_VERTICITY);

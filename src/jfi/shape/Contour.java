@@ -114,7 +114,7 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
                                 else S = (S + 2) % 8;  //Change direction
                             }
                         }
-                        iter = iter++;
+                        iter++;
                     }
                     firstIteration = false;
                 } 
@@ -286,29 +286,29 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
                 break;
             case 1: 
                 nextStep.x++;
-                nextStep.y--;
+                nextStep.y++;
                 break;
             case 2:
-                nextStep.y--;
+                nextStep.y++;
                 break;
             case 3: 
                 nextStep.x--;
-                nextStep.y--;
+                nextStep.y++;
                 break;
             case 4:
                 nextStep.x--;
                 break;
             case 5: 
                 nextStep.x--;
-                nextStep.y++;
+                nextStep.y--;
                 break;
             case 6:
-                nextStep.y++;
+                nextStep.y--;
                 break;
             case 7: 
                 nextStep.x++;
-                nextStep.y++;
-                break;
+                nextStep.y--;
+                break;   
         }      
         return nextStep;
     }
