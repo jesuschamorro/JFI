@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import jfi.fuzzy.DiscreteFuzzySet;
+import jfi.fuzzy.cardinal.EDCardinal;
 import jfi.fuzzy.cardinal.SigmaCount;
 import jfi.shape.Contour;
 import jfi.shape.fuzzy.FuzzyContour;
@@ -184,34 +185,33 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
     private void pruebas_cardinales(){
         DiscreteFuzzySet fset = new DiscreteFuzzySet();
         
-        Point p;
-        for(int i=0; i<10; i++){
-            p = new Point(i,i);
-            fset.add(p,(double)((10-i)%11)/10.0);
-            System.out.println("["+i+"] "+p.toString()+ fset.membershipDegree(p));
-        }
+//        Point p;
+//        for(int i=0; i<10; i++){
+//            p = new Point(i,i);
+//            fset.add(p,(double)((10-i)%11)/10.0);
+//            System.out.println("["+i+"] "+p.toString()+ fset.membershipDegree(p));
+//        }
+           
+        
+        fset.add(new Point(1,1),0.0);
+        fset.add(new Point(2,1),0.1);
+        fset.add(new Point(3,1),0.5);
+        fset.add(new Point(4,1),0.9);
         
         SigmaCount sigma = new SigmaCount(fset);
         System.out.println(sigma.getValue());
         
-        
-       
-        
-        //Set<Entry<Point,Double>> s = fset.entrySet();
-       
-        
-        
         ArrayList<Entry> al = new ArrayList(fset.entrySet());
         Comparator comp = Map.Entry.comparingByValue();
         Collections.sort(al, Collections.reverseOrder(comp));
-        
         for(Entry e:al){
             System.out.print(e.getValue()+" ");
         }
         System.out.println();
-    
         System.out.println(al.toString());
         
+        EDCardinal ed = new EDCardinal(fset);
+        System.out.println(ed.toString());
     }
     
     
