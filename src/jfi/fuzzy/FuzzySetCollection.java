@@ -12,24 +12,30 @@ import java.util.Collection;
 public class FuzzySetCollection<Domain> extends ArrayList<FuzzySet<Domain>> {
 
     /**
-     *
+     * Constructs an empty fuzzy set collection
      */
     public FuzzySetCollection() {
         super();
     }
 
     /**
+     * Constructs a new fuzzy set collection containing the elements of the 
+     * specified collection, in the order they are returned by the collection's
+     * iterator.
      *
-     * @param fuzzySets
+     * @param fuzzySets the collection whose elements are to be placed into this 
+     * fuzzy sets collection.
+     * @throws NullPointerException if the specified collection is null
      */
     public FuzzySetCollection(Collection<FuzzySet<Domain>> fuzzySets) {
         super(fuzzySets);
     }
 
     /**
-     *
-     * @param e
-     * @return
+     * Return the possibility distribution of the specified element.
+     * 
+     * @param e the element
+     * @return the possibility distribution of the specified element.
      */
     public ArrayList<PossibilityDistributionItem> getPossibilityDistribution(Domain e) {
         double degree;
@@ -48,10 +54,22 @@ public class FuzzySetCollection<Domain> extends ArrayList<FuzzySet<Domain>> {
      * Item of a possibility distribution
      */
     public class PossibilityDistributionItem {
-
+        /**
+         * Membership degree tho the fuzzy set
+         */
         public double degree;
+        
+        /**
+         * The fuzzy set
+         */
         public FuzzySet fuzzySet;
 
+        /**
+         * Constructs a new possibility distribution item
+         * 
+         * @param degree degree 
+         * @param fuzzySet fuzzy set
+         */
         public PossibilityDistributionItem(double degree, FuzzySet fuzzySet) {
             this.degree = degree;
             this.fuzzySet = fuzzySet;

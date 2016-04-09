@@ -32,6 +32,7 @@ import jfi.fuzzy.cardinal.EDCardinal;
 import jfi.fuzzy.cardinal.SigmaCount;
 import jfi.shape.Contour;
 import jfi.shape.fuzzy.FuzzyContour;
+import jfi.shape.fuzzy.FuzzyContourFactory;
 import jfi.texture.fuzzy.FuzzyTextureFactory;
 
 
@@ -147,7 +148,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
               vi.setVisible(true);
               
               //Pruebas
-              prueba_contornoDifuso(mask);
+              testVerticity(mask);
               
            }catch(Exception ex){
              System.err.println("Error al leer la imagen ("+ex.getMessage()+")");
@@ -183,20 +184,18 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
     //// -------
     
     private void pruebas_cardinales(){
-        DiscreteFuzzySet fset = new DiscreteFuzzySet();
-        
-//        Point p;
-//        for(int i=0; i<10; i++){
-//            p = new Point(i,i);
-//            fset.add(p,(double)((10-i)%11)/10.0);
-//            System.out.println("["+i+"] "+p.toString()+ fset.membershipDegree(p));
-//        }
-           
+        DiscreteFuzzySet fset = new DiscreteFuzzySet();   
         
         fset.add(new Point(1,1),0.0);
-        fset.add(new Point(2,1),0.1);
+        fset.add(new Point(2,1),0.2);
         fset.add(new Point(3,1),0.5);
         fset.add(new Point(4,1),0.9);
+        fset.add(new Point(5,1),0.9);        
+        fset.add(new Point(6,1),0.9);
+        fset.add(new Point(7,1),0.9);
+        fset.add(new Point(8,1),1.0);
+        fset.add(new Point(9,1),1.0);
+        fset.add(new Point(10,1),1.0);
         
         SigmaCount sigma = new SigmaCount(fset);
         System.out.println(sigma.getValue());
@@ -204,14 +203,15 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         ArrayList<Entry> al = new ArrayList(fset.entrySet());
         Comparator comp = Map.Entry.comparingByValue();
         Collections.sort(al, Collections.reverseOrder(comp));
-        for(Entry e:al){
-            System.out.print(e.getValue()+" ");
-        }
-        System.out.println();
         System.out.println(al.toString());
         
         EDCardinal ed = new EDCardinal(fset);
         System.out.println(ed.toString());
+        
+         System.out.print("Más probable: ");
+         for(int i=0;i<ed.mostLikely().length;i++)
+             System.out.print(ed.mostLikely()[i]+" ");
+        
     }
     
     
@@ -242,6 +242,26 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         System.out.println(fcontorno.support().toString());
     } 
     
+    
+    private void testVerticity(ImageMask mask){
+        
+        Contour contour = new Contour(mask);
+        FuzzyContour fcontour = FuzzyContourFactory.getInstance(contour, FuzzyContourFactory.TYPE_VERTICITY);
+         
+        SigmaCount sigma = new SigmaCount(fcontour);
+        System.out.println("Sigma-count: "+sigma.getValue());
+       
+        EDCardinal ed = new EDCardinal(fcontour);
+        System.out.println("ED: "+ed.toString());        
+        
+        BufferedImage img = fcontour.toImage();
+        VentanaImagen vim = new VentanaImagen();
+        vim.lienzoImagen.setImage(img);
+        vim.setTitle("Verticidad");
+        this.escritorio.add(vim);
+        vim.setVisible(true);
+        
+    }
     
     private void testFuzzyContour(){
         FuzzyContour fcontorno = new FuzzyContour();
