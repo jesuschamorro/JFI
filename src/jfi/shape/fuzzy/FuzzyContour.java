@@ -5,6 +5,7 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Set;
+import java.util.Map.Entry;
 import jfi.fuzzy.DiscreteFuzzySet;
 import jfi.shape.Contour;
 import jfi.shape.ImageMask;
@@ -118,10 +119,10 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
         int x,y,grey_level;
 
         WritableRaster imgRaster = img.getRaster();
-        for (Point2D point : this) {
-            x = (int) point.getX()-bounds.x;
-            y = (int) point.getY()-bounds.y;
-            grey_level = (int)(255.0 * this.membershipDegree(point));
+        for (Entry<Point2D,Double> e : this) {
+            x = (int) e.getKey().getX()-bounds.x;
+            y = (int) e.getKey().getY()-bounds.y;
+            grey_level = (int)(255.0 * e.getValue());
             imgRaster.setSample(x,y,0, grey_level);
         }
         return img;
@@ -137,7 +138,8 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
 
-        for (Point2D point : this) {
+        for (Entry<Point2D,Double> e : this) {
+            Point2D point = e.getKey();
             if (maxX < point.getX()) {
                 maxX = (int) point.getX();
             }

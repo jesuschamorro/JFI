@@ -52,8 +52,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         //Pruebas
         //testFuzzySets();
         //testFuzzyContour();
-        
-        pruebas_cardinales();
+        //pruebas_cardinales();
         
         
         
@@ -149,6 +148,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
               
               //Pruebas
               testVerticity(mask);
+              //prueba_contornoDifuso(mask);
               
            }catch(Exception ex){
              System.err.println("Error al leer la imagen ("+ex.getMessage()+")");
@@ -187,7 +187,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         DiscreteFuzzySet fset = new DiscreteFuzzySet();   
         
         fset.add(new Point(1,1),0.0);
-        fset.add(new Point(2,1),0.2);
+        fset.add(new Point(2,1),0.3);
         fset.add(new Point(3,1),0.5);
         fset.add(new Point(4,1),0.9);
         fset.add(new Point(5,1),0.9);        
@@ -230,10 +230,12 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         fcontorno.remove(new Point(8,8));
         
         System.out.println();
-        Iterator<Point2D> it = fcontorno.iterator();
+        Iterator<Entry<Point2D,Double>> it = fcontorno.iterator();
+        Entry<Point2D,Double> e;
         while (it.hasNext()) {
-            p = it.next();
-            System.out.println(p.toString()+ fcontorno.membershipDegree(p));
+            e = it.next();
+            p =e.getKey();
+            System.out.println(p.toString()+ e.getValue());
         }
         
         System.out.println(fcontorno.getReferenceSet().toString());
@@ -248,11 +250,12 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         Contour contour = new Contour(mask);
         FuzzyContour fcontour = FuzzyContourFactory.getInstance(contour, FuzzyContourFactory.TYPE_VERTICITY);
          
+        System.out.println("\nTamaño del contorno: "+fcontour.size());     
         SigmaCount sigma = new SigmaCount(fcontour);
-        System.out.println("Sigma-count: "+sigma.getValue());
-       
+        System.out.println("Sigma-count sobre original: "+sigma.getValue());
         EDCardinal ed = new EDCardinal(fcontour);
-        System.out.println("ED: "+ed.toString());        
+        System.out.println("ED sobre original : "+ed.toString());  
+        System.out.println("Más probable: "+ed.mostLikely()[0]+" con probablididad "+ed.probability(ed.mostLikely()[0]));  
         
         BufferedImage img = fcontour.toImage();
         VentanaImagen vim = new VentanaImagen();
@@ -260,6 +263,36 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         vim.setTitle("Verticidad");
         this.escritorio.add(vim);
         vim.setVisible(true);
+        
+        DiscreteFuzzySet<Point2D> maximos = new DiscreteFuzzySet<>();;
+        ArrayList<Entry> entry_list = new ArrayList(fcontour.entrySet());
+        double id,idw,ipd,isd;
+        int wsize,idw_index,w;
+        boolean es_maximo;
+                
+        wsize=(int) (Contour.DEFAULT_WINDOW_RATIO_SIZE * entry_list.size()); 
+        
+        System.out.println("Wsize: " +wsize);
+        
+        for(int i=0; i<entry_list.size(); i++){
+            
+            id = (Double)entry_list.get(i).getValue();
+            for(w=-wsize, es_maximo=true; w<=wsize && es_maximo; w++){
+                idw_index = (i + w + entry_list.size()) % entry_list.size();
+                idw = (Double)entry_list.get(idw_index).getValue();
+                if(w!=0 && id<=idw) es_maximo = false;
+            }
+            if(es_maximo){
+                maximos.add((Point2D)entry_list.get(i).getKey(), id);
+            }
+        }
+        
+        System.out.println("Tamaño del conjunto de máximos: "+maximos.size());
+        sigma = new SigmaCount(maximos);
+        System.out.println("Sigma-count sobre máximos: "+sigma.getValue());
+        ed = new EDCardinal(maximos);
+        System.out.println("ED sobre máximos : "+ed.toString());  
+        System.out.println("Más probable: "+ed.mostLikely()[0]+" con probablididad "+ed.probability(ed.mostLikely()[0]));  
         
     }
     
@@ -274,10 +307,11 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         }
      
         System.out.println();
-        Iterator<Point2D> it = fcontorno.iterator();
+        Iterator<Entry<Point2D,Double>> it = fcontorno.iterator();
+        Entry<Point2D,Double> e;
         while (it.hasNext()) {
-            p = it.next();
-            System.out.println(p.toString()+ fcontorno.membershipDegree(p));
+            e = it.next();
+            System.out.println(e.getKey().toString()+ e.getValue());
         }
         
         
@@ -288,9 +322,11 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         Point2D p;
 
         int i = 0;
-        Iterator<Point2D> it = c.iterator();
+        Iterator<Entry<Point2D,Double>> it = c.iterator();
+        Entry<Point2D,Double> e;
         while (it.hasNext()) {
-            p = it.next();
+            e = it.next();
+            p = e.getKey();
             c.setMembershipDegree(p, (double)(i++%11)/10.0 );            
             System.out.println("["+i+"] "+p.toString()+ c.membershipDegree(p));
         }

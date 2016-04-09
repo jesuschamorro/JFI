@@ -1,5 +1,6 @@
 package jfi.fuzzy.cardinal;
 
+import java.util.Map.Entry;
 import jfi.fuzzy.DiscreteFuzzySet;
 
 /**
@@ -12,7 +13,7 @@ public class SigmaCount {
     /**
      * Sigma-count value
      */
-    private Double sigma;
+    private Double sigma = 0.0;
 
     /**
      * Constructs a new sigma-count cardinal
@@ -20,9 +21,8 @@ public class SigmaCount {
      * @param set the fuzzy set
      */
     public SigmaCount(DiscreteFuzzySet set) {
-        sigma = 0.0;
         for (Object e : set) {
-            sigma += set.membershipDegree(e);
+            sigma += (Double)((Entry)e).getValue();
         }
     }
 

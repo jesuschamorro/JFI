@@ -13,7 +13,7 @@ import jfi.utils.JFIMath;
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  * @param <Domain>
  */
-public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Domain> {
+public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entry<Domain,Double>> {
 
     protected String label;
     protected final LinkedHashMap<Domain, Double> dataMap; //Ordered map
@@ -69,14 +69,15 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Doma
     }
     
     /**
-     * Returns an iterator over the elements in this fuzzy set.  The elements 
+     * Returns an iterator over the elements in this fuzzy set.  The elements are
+     * represented as a pair (element of the domain, membership degree) and they 
      * are returned in the order in which they were inserted into the set.
      *
      * @return an iterator over the elements in this fuzzy set
      */
     @Override
-    public Iterator<Domain> iterator(){
-        return dataMap.keySet().iterator();
+    public Iterator<Entry<Domain,Double>> iterator(){
+        return dataMap.entrySet().iterator();
     }
     
     /**
