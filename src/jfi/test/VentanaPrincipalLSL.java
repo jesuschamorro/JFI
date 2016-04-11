@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import jfi.shape.Contour;
+import jfi.shape.ContourIterator;
 import jfi.shape.CurvatureFunction;
 import jfi.shape.fuzzy.FuzzyContour;
 
@@ -116,6 +117,25 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
                 this.escritorio.add(vi2);
                 vi2.setVisible(true);
                 
+                ContourIterator it = new ContourIterator(contour);
+                
+                for(int i = -5; i <= 5; i++){
+                    System.out.println(contour.get((i+contour.size())%contour.size()));
+                }
+                
+                System.out.println(contour.getSegment(contour.get(0), 3, true));
+                System.out.println(contour.getSegment(contour.get(0), 3,false));
+                
+                CurvatureFunction curvature = contour.getCurvature();
+                
+                try{
+                    PrintWriter out = new PrintWriter("C:\\tmp\\curvature.txt");
+                    for (int i = 0; i < contour.size(); i++){
+                        out.println(i+"\t"+ curvature.apply(i));
+                    }
+                    out.close();                
+                }
+                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
                 //Parametros del sistema
                 //int windowSize = contour.size()/15;
                 //double exponent = 3;
@@ -131,7 +151,17 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
 //                mask.add(0.05);
 //                
 //                Contour filteredContour = contour.filter(mask);
-                FuzzyContour c = FuzzyContourFactory.getInstance(contour, FuzzyContourFactory.TYPE_LINEARITY);
+                FuzzyContour c = FuzzyContourFactory.getInstance(contour, FuzzyContourFactory.TYPE_VERTICITY);
+                
+                try{
+                    PrintWriter out = new PrintWriter("C:\\tmp\\verticity.txt");
+                    for (int i = 0; i < contour.size(); i++){
+                        out.println(i+"\t"+ c.membershipDegree(contour.get(i)));
+                    }
+                    out.close();                
+                }
+                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
+                
                 img = c.toImage();
                 VentanaImagen vim = new VentanaImagen();
                 vim.lienzoImagen.setImage(img);
@@ -177,17 +207,8 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
 
 //                FuzzyContourOld linearity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_LINEARITY);
 //                FuzzyContourOld verticity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_VERTICITY);
-//                CurvatureFunction curvature = filteredContour.getCurvature();
-//                
-//                try{
-//                    PrintWriter out = new PrintWriter("C:\\tmp\\curvature.txt");
-//                    for (int i = 0; i < contour.size(); i++){
-//                        out.println(i+"\t"+ curvature.apply(i));
-//                    }
-//                    out.close();                
-//                }
-//                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
-//                
+
+                
 //                try{
 //                    PrintWriter out = new PrintWriter("C:\\tmp\\linearity.txt");
 //                    for (int i = 0; i < linearity.size(); i++){

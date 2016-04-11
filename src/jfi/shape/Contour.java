@@ -8,7 +8,6 @@
   Comentar con Luis:
     * getSegment (y el interface Segmentable")
     * Replanteamiento getCurvature
-    * En maskToContour: "iter=iter++", "format"
     * clockwise (¿desde máscara es true?)
 
 */
@@ -91,33 +90,28 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
                         pointFound = true;
                     }
                 }
-            }      
-            if (pointFound){           
+            }
+            if (pointFound) {
                 currentPoint = new Point(initialPoint);
-                while ( ( (currentPoint.x != initialPoint.x) || (currentPoint.y != initialPoint.y)) || (firstIteration)) {
+                while (((currentPoint.x != initialPoint.x) || (currentPoint.y != initialPoint.y)) || (firstIteration)) {
                     this.add(new Point(currentPoint));
                     pointFound = false;
                     iter = 0;
-                    while ( (!pointFound) && (iter < 3)) {
-                        if (pointFound = isBorderPoint((8 + (S - 1)) % 8, currentPoint,mask)) {
-                            currentPoint = freemanStep((8 + (S - 1)) % 8,currentPoint);
+                    while ((!pointFound) && (iter < 3)) {
+                        if (pointFound = isBorderPoint((8 + (S - 1)) % 8, currentPoint, mask)) {
+                            currentPoint = freemanStep((8 + (S - 1)) % 8, currentPoint);
                             S = (8 + (S - 2)) % 8;  //Change direction
-                        }
-                        else {
-                            if (pointFound = isBorderPoint(S, currentPoint, mask)){
-                                currentPoint = freemanStep(S,currentPoint);
-                            }
-                            else {
-                                if (pointFound = isBorderPoint((S + 1) % 8, currentPoint, mask)){
-                                    currentPoint = freemanStep((S + 1) % 8,currentPoint);
-                                }
-                                else S = (S + 2) % 8;  //Change direction
-                            }
+                        } else if (pointFound = isBorderPoint(S, currentPoint, mask)) {
+                            currentPoint = freemanStep(S, currentPoint);
+                        } else if (pointFound = isBorderPoint((S + 1) % 8, currentPoint, mask)) {
+                            currentPoint = freemanStep((S + 1) % 8, currentPoint);
+                        } else {
+                            S = (S + 2) % 8;  //Change direction
                         }
                         iter++;
                     }
                     firstIteration = false;
-                } 
+                }
             }
         }      
     }
@@ -194,7 +188,7 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
      * @return Curvature of the contour
      */
     public CurvatureFunction getCurvature(){
-        int windowSize = (int) DEFAULT_WINDOW_RATIO_SIZE * this.size();       
+        int windowSize = (int) (DEFAULT_WINDOW_RATIO_SIZE * this.size());       
         return getCurvature(windowSize, DEFAULT_OFFSET);
     }
     
@@ -213,28 +207,15 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
         double currentCurvature;
         double arc_cos, arc_cos2;
         Point2D.Double firstDirectionVector, secondDirectionVector;        
-        int numPoints = this.size();      
-        if (windowSize > numPoints)
-            windowSize = numPoints;
         
-        
-        //Usando foreach. Aunque es más "intuitivo", en la práctica es menos eficiente
-        //porque implica llamadas a indexOf (que contiene un bucle)
-//        for(Point2D p:this){
-//           ArrayList leftSegment = this.getSegment(getPointBeside(p,offset), windowSize, true);  
-//           ArrayList rightSegment =this.getSegment(getPointBeside(p,-offset), windowSize, false); 
-//           secondDirectionVector = JFIMath.getDirectionVector(leftSegment);
-//           firstDirectionVector = JFIMath.getDirectionVector(rightSegment); 
-//           
-//           //El resto sería como abajo
-//        }
+        if (windowSize > size())
+            windowSize = size();
              
-        for (int i = 0; i < numPoints; i++) {
-            //Sustituiría a las llamadas de abajo (testear con Luis)
-            //ArrayList leftSegment = this.getSegment(get((i+offset)%size()), windowSize, true);  
-            //ArrayList rightSegment =this.getSegment(get((i-offset+numPoints)%size()), windowSize, false); 
-            secondDirectionVector = JFIMath.getDirectionVector(this.getSegment(i+offset, windowSize));
-            firstDirectionVector = JFIMath.getDirectionVector(this.getSegment((i-offset+numPoints)%numPoints,-windowSize));            
+        for (int i = 0; i < size(); i++) {
+            ArrayList leftSegment = this.getSegment(get((i+offset)%size()), windowSize, true); 
+            ArrayList rightSegment =this.getSegment(get((i-offset+size())%size()), windowSize, false); 
+            secondDirectionVector = JFIMath.getDirectionVector(leftSegment);
+            firstDirectionVector = JFIMath.getDirectionVector(rightSegment); 
             arc_cos = ( (firstDirectionVector.y < 0) ? -Math.acos( (double) firstDirectionVector.x) :
                                Math.acos( (double) firstDirectionVector.x));
             arc_cos2 =( (secondDirectionVector.y < 0) ? -Math.acos( (double) secondDirectionVector.x) :
@@ -354,7 +335,7 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
         if(!contains(start) || !contains(end)){
             throw new InvalidParameterException("Points must be contained in the contour.");
         }
-        ArrayList<Point2D> segment = new ArrayList<>();            
+        ArrayList<Point2D> segment = new ArrayList<>();
         ContourIterator it = new ContourIterator(this,start,clockwise);
         while(!it.isPrevious(end)){
             segment.add(it.next());         
@@ -391,7 +372,7 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
         if(segment_size > this.size()){
             throw new InvalidParameterException("Segment size bigger than contour size.");
         }        
-        int index_end = clockwise ? (indexOf(start)+segment_size)%size() : (indexOf(start)-segment_size+size())%size(); 
+        int index_end = clockwise ? (indexOf(start)+segment_size-1)%size() : (indexOf(start)-segment_size+1+size())%size(); 
         return this.getSegment(start,get(index_end),clockwise);
     }
 

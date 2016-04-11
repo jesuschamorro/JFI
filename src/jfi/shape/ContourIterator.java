@@ -65,8 +65,8 @@ public class ContourIterator implements Iterator<Point2D> {
      * @param p
      */
     public final void setCurrent(Point2D p) {
-        int p_index = contour.indexOf(p);
-        index = (p != null && p_index >= 0) ? p_index : 0;
+        int p_index = (p != null) ? contour.indexOf(p) : 0;
+        index = (p_index >= 0) ? p_index : 0;
     }
 
     /**
