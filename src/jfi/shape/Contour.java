@@ -128,14 +128,17 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
      * @return an image with the contour drawn
      */
     public BufferedImage toImage() {
-        Rectangle bounds = this.getBounds();
-        BufferedImage img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_BYTE_GRAY);
-        int x, y;
-        WritableRaster imgRaster = img.getRaster();
-        for (Point2D point : this) {
-            x = (int) point.getX() - bounds.x;
-            y = (int) point.getY() - bounds.y;
-            imgRaster.setSample(x, y, 0, 255);
+        BufferedImage img = null;
+        if (!isEmpty()) {
+            Rectangle bounds = this.getBounds();
+            img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_BYTE_GRAY);
+            int x, y;
+            WritableRaster imgRaster = img.getRaster();
+            for (Point2D point : this) {
+                x = (int) point.getX() - bounds.x;
+                y = (int) point.getY() - bounds.y;
+                imgRaster.setSample(x, y, 0, 255);
+            }
         }
         return img;
     }

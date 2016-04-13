@@ -114,16 +114,19 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
      * @return an image with the contour drawn
      */
     public BufferedImage toImage() {
-        Rectangle bounds = this.getBounds();
-        BufferedImage img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_BYTE_GRAY);
-        int x,y,grey_level;
+        BufferedImage img = null;
+        if (this.size() > 0) {
+            Rectangle bounds = this.getBounds();
+            img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_BYTE_GRAY);
+            int x, y, grey_level;
 
-        WritableRaster imgRaster = img.getRaster();
-        for (Entry<Point2D,Double> e : this) {
-            x = (int) e.getKey().getX()-bounds.x;
-            y = (int) e.getKey().getY()-bounds.y;
-            grey_level = (int)(255.0 * e.getValue());
-            imgRaster.setSample(x,y,0, grey_level);
+            WritableRaster imgRaster = img.getRaster();
+            for (Entry<Point2D, Double> e : this) {
+                x = (int) e.getKey().getX() - bounds.x;
+                y = (int) e.getKey().getY() - bounds.y;
+                grey_level = (int) (255.0 * e.getValue());
+                imgRaster.setSample(x, y, 0, grey_level);
+            }
         }
         return img;
     }
