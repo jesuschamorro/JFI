@@ -3,13 +3,6 @@
 
   @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
   @author Luis Suárez Lloréns
-
-
-  Comentar con Luis:
-    * getSegment (y el interface Segmentable")
-    * Replanteamiento getCurvature
-    * clockwise (¿desde máscara es true?)
-
 */
 package jfi.shape;
 
@@ -127,8 +120,8 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
         int x, y;
         WritableRaster imgRaster = img.getRaster();
         for (Point2D point : this) {
-            x = (int) point.getX() - bounds.x;
-            y = (int) point.getY() - bounds.y;
+            x = (int) Math.round(point.getX()) - bounds.x;
+            y = (int) Math.round(point.getY()) - bounds.y;
             imgRaster.setSample(x, y, 0, 255);
         }
         return img;
@@ -144,17 +137,17 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         for (Point2D point : this) {
-            if (maxX < point.getX()) {
-                maxX = (int) point.getX();
+            if (maxX < Math.round(point.getX())) {
+                maxX = (int) Math.round(point.getX());
             }
-            if (minX > point.getX()) {
-                minX = (int) point.getX();
+            if (minX > Math.round(point.getX())) {
+                minX = (int) Math.round(point.getX());
             }
-            if (maxY < point.getY()) {
-                maxY = (int) point.getY();
+            if (maxY < Math.round(point.getY())) {
+                maxY = (int) Math.round(point.getY());
             }
-            if (minY > point.getY()) {
-                minY = (int) point.getY();
+            if (minY > Math.round(point.getY())) {
+                minY = (int) Math.round(point.getY());
             }
         }
         return new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
@@ -180,6 +173,42 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
             filteredContour.add(point);
         }
         return filteredContour;
+    }
+    
+    /**
+     * Applies a Gaussian filter to the contour
+     * 
+     * @param kernelSize
+     * @param sigma
+     * 
+     * @return filtered contour
+     */
+    private Contour gaussianFilter(int kernelSize, double sigma){
+        ArrayList<Double> kernel = new ArrayList(kernelSize);
+        
+        double sum = 0;
+        double gaussianValue;
+        for(int i = 0; i < kernelSize; i++){
+            gaussianValue = Math.exp(-(Math.pow(i-(kernelSize/2),2)/(2*Math.pow(sigma,2))));
+            sum += gaussianValue;
+            kernel.add(gaussianValue);
+        }
+
+        for(int i = 0; i < kernelSize; i++){
+            kernel.set(i,kernel.get(i)/sum);
+        }
+        return filter(kernel);
+    }
+    
+    /**
+     * Applies a Gaussian filter to the contour
+     * 
+     * @param sigma
+     * 
+     * @return filtered contour 
+     */
+    public Contour gaussianFilter(double sigma){
+        return gaussianFilter((int) Math.ceil(sigma*1.96)*2+1,sigma);
     }
     
     /**
