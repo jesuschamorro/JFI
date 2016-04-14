@@ -122,8 +122,8 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
 
             WritableRaster imgRaster = img.getRaster();
             for (Entry<Point2D, Double> e : this) {
-                x = (int) e.getKey().getX() - bounds.x;
-                y = (int) e.getKey().getY() - bounds.y;
+                x = (int) Math.round(e.getKey().getX()) - bounds.x;
+                y = (int) Math.round(e.getKey().getY()) - bounds.y;
                 grey_level = (int) (255.0 * e.getValue());
                 imgRaster.setSample(x, y, 0, grey_level);
             }
@@ -143,17 +143,17 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
 
         for (Entry<Point2D,Double> e : this) {
             Point2D point = e.getKey();
-            if (maxX < point.getX()) {
-                maxX = (int) point.getX();
+            if (maxX < Math.round(point.getX())) {
+                maxX = (int) Math.round(point.getX());
             }
-            if (minX > point.getX()) {
-                minX = (int) point.getX();
+            if (minX > Math.round(point.getX())) {
+                minX = (int) Math.round(point.getX());
             }
-            if (maxY < point.getY()) {
-                maxY = (int) point.getY();
+            if (maxY < Math.round(point.getY())) {
+                maxY = (int) Math.round(point.getY());
             }
-            if (minY > point.getY()) {
-                minY = (int) point.getY();
+            if (minY > Math.round(point.getY())) {
+                minY = (int) Math.round(point.getY());
             }
         }
         return new Rectangle(minX, minY, maxX-minX+1, maxY-minY+1);

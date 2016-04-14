@@ -17,10 +17,7 @@ public class FuzzyContourFactory {
     /**
      *  Exponent used to calculate linearity
      */
-    public static final int DEFAULT_K = 3;
-    
-    //************************************** K parámetro en método y lo anterior valor por defecto?
-    
+    public static final int DEFAULT_K = 3;    
     
     /**
      * Parameters used to check if the segment is curved enough
@@ -28,10 +25,6 @@ public class FuzzyContourFactory {
      */
     public static final double VERTICITY_MIN = 0.1;
     public static final double VERTICITY_MAX = 0.6;
-    
-    //************************************** parámetros en método y lo anterior valores por defecto?
-
-    
     
     /**
      * Type representing the linearity fuzzy property
@@ -63,31 +56,28 @@ public class FuzzyContourFactory {
     }
 
     /**
-     * Creates a new FuzzyContour using linearity as truth value
-     *
-     * @param contour Contour used to create the new FuzzyContourOld
-     * @return A new instance of FuzzyContourOld
-     */
-    private static FuzzyContour getLinearityInstance(Contour contour){
-        FuzzyContour fuzzyContour = new FuzzyContour("Contour.Linearity");
-        ArrayList<Float> linearity_degrees = getLinearityDegrees(contour);        
-        for(int i = 0; i < contour.size(); i++){
-            fuzzyContour.add(contour.get(i), linearity_degrees.get(i));
-        }  
-        return fuzzyContour;
-    }
-    
-    
-    /**
      * Creates a new <code>FuzzyContour</code> modeling the linearity property
      * for a given contour
      * 
      * @param contour contour used to create the linearity fuzzy set
      * @return 
      */
-    private static FuzzyContour getLinearityInstance_new(Contour contour){
+    public static FuzzyContour getLinearityInstance(Contour contour){
+        return getLinearityInstance(contour, DEFAULT_K, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size()));
+    }
+    
+    /**
+     * Creates a new <code>FuzzyContour</code> modeling the linearity property
+     * for a given contour
+     * 
+     * @param contour contour used to create the linearity fuzzy set
+     * @param exponent exponent in the linearity formula
+     * @param segment_size the segment size around each contour point for linearity 
+     * @return 
+     */
+    public static FuzzyContour getLinearityInstance(Contour contour, int exponent, int segment_size){
         FuzzyContour fuzzyContour = new FuzzyContour("Contour.Linearity", contour);
-        setLinearityDegrees(fuzzyContour);
+        setLinearityDegrees(fuzzyContour, exponent, segment_size);
         return fuzzyContour;
     }
     /**
@@ -100,31 +90,17 @@ public class FuzzyContourFactory {
      * @param segment_size the segment size around each contour point for linearity 
      * calculation 
      */
-    public static void setLinearityDegrees(FuzzyContour fcontour, int exponent, int segment_size) {  //¿tiene sentido el offset?
+    private static void setLinearityDegrees(FuzzyContour fcontour, int exponent, int segment_size) { 
         ArrayList segment;
         double degree;
         Contour ccontour = fcontour.getContourReferenceSet(); 
  
         for(Point2D point:ccontour){
-            segment = ccontour.getSegment(ccontour.getPointBeside(point,-segment_size+1), 2*segment_size);
+            segment = ccontour.getSegment(ccontour.getPointBeside(point,-(segment_size/2)+1), segment_size);
             degree = Math.pow(JFIMath.getRegressionError(segment),exponent);
             fcontour.setMembershipDegree(point,degree);
         }
     }
-    /**
-     * Calculates and set the membership degrees corresponding to the linearity
-     * property using the default parameters.
-     * 
-     * @param fcontour fuzzy contour on which to calculate and set the linearity 
-     */
-    public static void setLinearityDegrees(FuzzyContour fcontour) {
-        setLinearityDegrees(fcontour, DEFAULT_K, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * fcontour.size()) );
-    }
-    
-    
-    
-    
-    
     
     /**
      * Create a new FuzzyContour using verticity as truth value
@@ -133,73 +109,59 @@ public class FuzzyContourFactory {
      * 
      * @return A new instance of FuzzyContour
      */    
-    private static FuzzyContour getVerticityInstance(Contour contour){
-        FuzzyContour fuzzyContour = new FuzzyContour("Contour.Verticity");
-        ArrayList<Float> verticity_degrees = getVerticityDegrees(contour);
-        for(int i = 0; i < contour.size(); i++){
-            fuzzyContour.add(contour.get(i), verticity_degrees.get(i));
-        }
+    public static FuzzyContour getVerticityInstance(Contour contour){
+        return getVerticityInstance(contour, DEFAULT_K, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size()),
+                                    Contour.DEFAULT_OFFSET, VERTICITY_MIN, VERTICITY_MAX);
+    }
+    
+    /**
+     * Create a new FuzzyContour using verticity as truth value
+     * 
+     * @param contour Contour used to create the new FuzzyContourOld
+     * @param exponent exponent in the linearity formula
+     * @param segment_size the segment size for verticity calculation
+     * @param offset distance from the point to verticity calculation
+     * @param verticity_min parameter used to check if the segment is curved enough
+     * @param verticity_max parameter used to check if the segment is curved enough
+     * 
+     * @return A new instance of FuzzyContour
+     */ 
+    public static FuzzyContour getVerticityInstance(Contour contour, int exponent, int segment_size, int offset, double verticity_min, double verticity_max){
+        FuzzyContour fuzzyContour = new FuzzyContour("Contour.Verticity", contour);
+        setVerticityDegrees(fuzzyContour, exponent, segment_size, offset, verticity_min, verticity_max);
         return fuzzyContour;
     }
-    
+
     /**
-     * Compute the linearity of contour
+     * Calculates and set the membership degrees corresponding to the verticity
+     * property. This calculation is performed on the reference set (which is a
+     * contour)
      * 
-     * @param contour Contour used
+     * @param fcontour fuzzy contour on which to calculate and set the verticity
+     * @param exponent exponent in the linearity formula
+     * @param segment_size the segment size for verticity calculation
+     * @param offset distance from the point to verticity calculation
+     * @param verticity_min parameter used to check if the segment is curved enough
+     * @param verticity_max parameter used to check if the segment is curved enough
      * 
-     * @return Contour's linearity
      */
-    private static ArrayList<Float> getLinearityDegrees(Contour contour) {
-        ArrayList<Float> linearity =  new ArrayList<>();     
-        int numPoints = contour.size();
-        int windowSize = (int) (Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size());       
-        if (windowSize > numPoints)
-            windowSize = numPoints;       
-        for (int i = 0; i < numPoints; i++) {          
-            linearity.add((float) Math.pow(JFIMath.getRegressionError(contour.getSegment((i-windowSize+1 + numPoints) % numPoints,2*windowSize)),DEFAULT_K));
-        }       
-        return linearity;
+    private static void setVerticityDegrees(FuzzyContour fcontour, int exponent, int segment_size, int offset, double verticity_min, double verticity_max){
+        ArrayList left_segment, right_segment, centered_segment;
+        double degree;
+        Contour ccontour = fcontour.getContourReferenceSet();
+        TrapezoidalFunction trapezoidal_function = new TrapezoidalFunction(verticity_min,verticity_max,1,1.1);    
+ 
+        for(Point2D point:ccontour){
+            left_segment = ccontour.getSegment(ccontour.getPointBeside(point, -segment_size-offset+1), segment_size);
+            right_segment = ccontour.getSegment(ccontour.getPointBeside(point, offset), segment_size);
+            centered_segment = ccontour.getSegment(ccontour.getPointBeside(point, -segment_size+1), 2*segment_size);
+            
+            degree = Math.min(Math.pow(JFIMath.getRegressionError(left_segment),exponent),
+                              Math.pow(JFIMath.getRegressionError(right_segment),exponent));
+            degree = Math.min(degree,trapezoidal_function.apply(1-Math.pow(JFIMath.getRegressionError(centered_segment),exponent)));
+            fcontour.setMembershipDegree(point,degree);
+        }
     }
-    
-    /**
-     * Calculates the linearity of a contour
-     * 
-     * @param contour
-     * @param offset
-     * @param windowSize 
-     * @return Contour's linearity
-     */
-    private static ArrayList<Float> getLinearityDegrees(Contour contour, int offset, int windowSize) {
-        ArrayList<Float> linearity =  new ArrayList<>();       
-        int numPoints = contour.size();       
-        if (windowSize > numPoints)
-            windowSize = numPoints;
-        for (int i = 0; i < numPoints; i++) {
-            linearity.add((float) Math.pow(JFIMath.getRegressionError(contour.getSegment((i+offset+numPoints) % numPoints, windowSize)),DEFAULT_K));
-        }       
-        return linearity;
-    }
-    
-    /**
-     * Compute the verticity of contour
-     * 
-     * @param contour
-     * @return Contour's verticity
-     */
-    private static ArrayList<Float> getVerticityDegrees(Contour contour) {     
-        ArrayList<Float> verticity = new ArrayList<>();
-        int windowSize = (int) (Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size());      
-        TrapezoidalFunction trapezoidal_function = new TrapezoidalFunction(VERTICITY_MIN,VERTICITY_MAX,1,1.1);      
-        ArrayList<Float> left_linearity = getLinearityDegrees(contour,1-windowSize-Contour.DEFAULT_OFFSET,windowSize);
-        ArrayList<Float> right_linearity = getLinearityDegrees(contour,Contour.DEFAULT_OFFSET,windowSize);
-        ArrayList<Float> centered_linearity = getLinearityDegrees(contour);     
-        double actualVerticity;      
-        for (int i = 0; i < left_linearity.size(); i++){
-            actualVerticity = Math.min(left_linearity.get(i),right_linearity.get(i));
-            actualVerticity = Math.min(actualVerticity,trapezoidal_function.apply(1-centered_linearity.get(i)));
-            verticity.add((float) actualVerticity);
-        }    
-        return verticity;
-    }
+            
     
 }

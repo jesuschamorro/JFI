@@ -20,10 +20,13 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import jfi.shape.Contour;
+import jfi.shape.ContourIterator;
 import jfi.shape.CurvatureFunction;
+import jfi.shape.fuzzy.FuzzyContour;
 
 import jfi.shape.fuzzy.FuzzyContourFactory;
 
@@ -114,6 +117,25 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
                 this.escritorio.add(vi2);
                 vi2.setVisible(true);
                 
+                ContourIterator it = new ContourIterator(contour);
+                
+                for(int i = -5; i <= 5; i++){
+                    System.out.println(contour.get((i+contour.size())%contour.size()));
+                }
+                
+                System.out.println(contour.getSegment(contour.get(0), 3, true));
+                System.out.println(contour.getSegment(contour.get(0), 3,false));
+                
+                CurvatureFunction curvature = contour.getCurvature();
+                
+                try{
+                    PrintWriter out = new PrintWriter("C:\\tmp\\curvature.txt");
+                    for (int i = 0; i < contour.size(); i++){
+                        out.println(i+"\t"+ curvature.apply(i));
+                    }
+                    out.close();                
+                }
+                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
                 //Parametros del sistema
                 //int windowSize = contour.size()/15;
                 //double exponent = 3;
@@ -121,28 +143,72 @@ public class VentanaPrincipalLSL extends javax.swing.JFrame {
                 //double vv_max = 0.6;
                 //double tolerance = 0.95;
                 
-                ArrayList<Double> mask = new ArrayList<Double>();
-                mask.add(0.05);
-                mask.add(0.25);
-                mask.add(0.4);
-                mask.add(0.25);
-                mask.add(0.05);
+//                ArrayList<Double> mask = new ArrayList<Double>();
+//                mask.add(0.05);
+//                mask.add(0.25);
+//                mask.add(0.4);
+//                mask.add(0.25);
+//                mask.add(0.05);
+//                
+                Contour filteredContour = contour.gaussianFilter(1);
+                FuzzyContour c = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_VERTICITY);
                 
-                Contour filteredContour = contour.filter(mask);
+                try{
+                    PrintWriter out = new PrintWriter("C:\\tmp\\verticity.txt");
+                    for (int i = 0; i < contour.size(); i++){
+                        out.println(i+"\t"+ c.membershipDegree(filteredContour.get(i)));
+                    }
+                    out.close();                
+                }
+                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
+                
+                img = c.toImage();
+                VentanaImagen vim = new VentanaImagen();
+                vim.lienzoImagen.setImage(img);
+                vim.setTitle("Contorno");
+                this.escritorio.add(vim);
+                vim.setVisible(true);
+
+                Set alpha_cut = c.alphaCut(0.7);
+                Contour alpha_cut_contour = new Contour(alpha_cut);
+                img = alpha_cut_contour.toImage();
+                vim = new VentanaImagen();
+                vim.lienzoImagen.setImage(img);
+                vim.setTitle("Alfa-corte");
+                this.escritorio.add(vim);
+                vim.setVisible(true);
+
+                Contour soporte_contour = c.getContourReferenceSet();
+                img = soporte_contour.toImage();
+                vim = new VentanaImagen();
+                vim.lienzoImagen.setImage(img);
+                vim.setTitle("Soporte");
+                this.escritorio.add(vim);
+                vim.setVisible(true);
+
+                Set reference_set = c.getReferenceSet();
+                Contour reference_set_contour = new Contour(reference_set);
+                img = reference_set_contour.toImage();
+                vim = new VentanaImagen();
+                vim.lienzoImagen.setImage(img);
+                vim.setTitle("Conjutno referente");
+                this.escritorio.add(vim);
+                vim.setVisible(true);
+                
+                Set kernel = c.kernel();
+                Contour kernel_contour = new Contour(kernel);
+                img = kernel_contour.toImage();
+                vim = new VentanaImagen();
+                vim.lienzoImagen.setImage(img);
+                vim.setTitle("Kernel");
+                this.escritorio.add(vim);
+                vim.setVisible(true);
+
 
 //                FuzzyContourOld linearity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_LINEARITY);
 //                FuzzyContourOld verticity = FuzzyContourFactory.getInstance(filteredContour, FuzzyContourFactory.TYPE_VERTICITY);
-//                CurvatureFunction curvature = filteredContour.getCurvature();
-//                
-//                try{
-//                    PrintWriter out = new PrintWriter("C:\\tmp\\curvature.txt");
-//                    for (int i = 0; i < contour.size(); i++){
-//                        out.println(i+"\t"+ curvature.apply(i));
-//                    }
-//                    out.close();                
-//                }
-//                catch(Exception ex){System.err.println("Error al guardar los datos en un fichero");}
-//                
+
+                
 //                try{
 //                    PrintWriter out = new PrintWriter("C:\\tmp\\linearity.txt");
 //                    for (int i = 0; i < linearity.size(); i++){
