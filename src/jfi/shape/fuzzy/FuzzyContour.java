@@ -156,7 +156,7 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
      *
      * @return an integer Rectangle that completely encloses the contour.
      */
-    private Rectangle getBounds() {
+    public Rectangle getBounds() {
         int maxX = 0, maxY = 0;
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
