@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
 import jfi.shape.Contour;
+import jfi.utils.FuzzyHedges;
 import jfi.utils.JFIMath;
 
 /**
@@ -17,14 +18,14 @@ public class FuzzyContourFactory {
     /**
      *  Exponent used to calculate linearity
      */
-    public static final int DEFAULT_K = 3;    
+    private static final int DEFAULT_K = 3;    
     
     /**
      * Parameters used to check if the segment is curved enough
      * in verticity calculations
      */
-    public static final double VERTICITY_MIN = 0.1;
-    public static final double VERTICITY_MAX = 0.6;
+    private static final double VERTICITY_MIN = 0.1;
+    private static final double VERTICITY_MAX = 0.6;
     
     /**
      * Type representing the linearity fuzzy property
@@ -80,6 +81,7 @@ public class FuzzyContourFactory {
         setLinearityDegrees(fuzzyContour, exponent, segment_size);
         return fuzzyContour;
     }
+    
     /**
      * Calculates and set the membership degrees corresponding to the linearity
      * property. This calculation is performed on the reference set (which is a
@@ -97,9 +99,19 @@ public class FuzzyContourFactory {
  
         for(Point2D point:ccontour){
             segment = ccontour.getSegment(ccontour.getPointBeside(point,-(segment_size/2)+1), segment_size);
-            degree = Math.pow(JFIMath.getRegressionError(segment),exponent);
+            degree = linearityDegree(segment,exponent);
             fcontour.setMembershipDegree(point,degree);
         }
+    }
+    
+    /**
+     * Returns the linearity degree of a given segment
+     * @param segment the segment of points
+     * @param exponent the exponent formula parameter
+     * @return the linearity degree
+     */
+    public static double linearityDegree(ArrayList segment, int exponent){
+        return Math.pow(JFIMath.getCoefficientDetermination(segment),exponent);
     }
     
     /**
@@ -110,8 +122,7 @@ public class FuzzyContourFactory {
      * @return A new instance of FuzzyContour
      */    
     public static FuzzyContour getVerticityInstance(Contour contour){
-        return getVerticityInstance(contour, DEFAULT_K, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size()),
-                                    Contour.DEFAULT_OFFSET, VERTICITY_MIN, VERTICITY_MAX);
+        return getVerticityInstance(contour, DEFAULT_K, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size()),Contour.DEFAULT_OFFSET);
     }
     
     /**
@@ -121,14 +132,12 @@ public class FuzzyContourFactory {
      * @param exponent exponent in the linearity formula
      * @param segment_size the segment size for verticity calculation
      * @param offset distance from the point to verticity calculation
-     * @param verticity_min parameter used to check if the segment is curved enough
-     * @param verticity_max parameter used to check if the segment is curved enough
      * 
      * @return A new instance of FuzzyContour
      */ 
-    public static FuzzyContour getVerticityInstance(Contour contour, int exponent, int segment_size, int offset, double verticity_min, double verticity_max){
+    public static FuzzyContour getVerticityInstance(Contour contour, int exponent, int segment_size, int offset){
         FuzzyContour fuzzyContour = new FuzzyContour("Contour.Verticity", contour);
-        setVerticityDegrees(fuzzyContour, exponent, segment_size, offset, verticity_min, verticity_max);
+        setVerticityDegrees(fuzzyContour, exponent, segment_size, offset);
         return fuzzyContour;
     }
 
@@ -141,24 +150,33 @@ public class FuzzyContourFactory {
      * @param exponent exponent in the linearity formula
      * @param segment_size the segment size for verticity calculation
      * @param offset distance from the point to verticity calculation
-     * @param verticity_min parameter used to check if the segment is curved enough
-     * @param verticity_max parameter used to check if the segment is curved enough
      * 
      */
-    private static void setVerticityDegrees(FuzzyContour fcontour, int exponent, int segment_size, int offset, double verticity_min, double verticity_max){
+    private static void setVerticityDegrees(FuzzyContour fcontour, int exponent, int segment_size, int offset){
         ArrayList left_segment, right_segment, centered_segment;
-        double degree;
+        double degree, ldegree_left, ldegree_right, ldegree_center, very_ldegree_center;
         Contour ccontour = fcontour.getContourReferenceSet();
-        TrapezoidalFunction trapezoidal_function = new TrapezoidalFunction(verticity_min,verticity_max,1,1.1);    
- 
+        TrapezoidalFunction range_adjust = new TrapezoidalFunction(0.05,1.0,1.0,1.0);  
+        
         for(Point2D point:ccontour){
             left_segment = ccontour.getSegment(ccontour.getPointBeside(point, -segment_size-offset+1), segment_size);
             right_segment = ccontour.getSegment(ccontour.getPointBeside(point, offset), segment_size);
-            centered_segment = ccontour.getSegment(ccontour.getPointBeside(point, -segment_size+1), 2*segment_size);
+            centered_segment = ccontour.getSegment(ccontour.getPointBeside(point, -segment_size/2+1), segment_size);
+                     
+            ldegree_left = linearityDegree(left_segment,exponent);
+            ldegree_right = linearityDegree(right_segment,exponent);
+            ldegree_center = linearityDegree(centered_segment,exponent);
             
-            degree = Math.min(Math.pow(JFIMath.getRegressionError(left_segment),exponent),
-                              Math.pow(JFIMath.getRegressionError(right_segment),exponent));
-            degree = Math.min(degree,trapezoidal_function.apply(1-Math.pow(JFIMath.getRegressionError(centered_segment),exponent)));
+            //Segun articulo
+            very_ldegree_center =  FuzzyHedges.veryvery(ldegree_center); //Math.pow(ldegree_center,4.0);            
+            very_ldegree_center = range_adjust.apply(very_ldegree_center);  // Ajuste superior para alcanzar 1.0             
+            degree = JFIMath.min(ldegree_left,ldegree_right, 1.0-very_ldegree_center);
+            
+            //Implementación actual:
+            //TrapezoidalFunction trapezoidal_function = new TrapezoidalFunction(VERTICITY_MIN,VERTICITY_MAX,1,1.1);    
+            //double cosa_de_luis = trapezoidal_function.apply(1.0-ldegree_center);            
+            //degree = Math.min(Math.min(ldegree_left,ldegree_right),cosa_de_luis);
+                                    
             fcontour.setMembershipDegree(point,degree);
         }
     }

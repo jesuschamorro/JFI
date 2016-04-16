@@ -1,12 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package jfi.utils;
 
 /**
- *
+ * Class representing a line
+ * 
  * @author Luis Suárez Lloréns
  */
 public class JFILine {
@@ -15,13 +11,13 @@ public class JFILine {
     private double c;
 
     /**
-     * Construct an empty line
+     * Constructs an empty line
      */
     public JFILine(){    
     }
 
     /**
-     * Construct the line "a*x + b*y + c =0"
+     * Constructs the line "a*x + b*y + c =0"
      * 
      * @param a
      * @param b

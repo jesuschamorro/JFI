@@ -15,29 +15,31 @@ public class JFIMath {
     public static final double EPSILON = Double.MIN_VALUE; 
     
     /**
-     * Calculates the error of lineal regression of a segment
+     * Returns the coefficient of determination, or R-squared, in a ordinary 
+     * least squares (OLS) regression that is often used as a goodness-of-fit 
+     * measure
      * 
-     * @param segment
-     * @return error of the regression
+     * @param pointSet the collection of points 
+     * @return the coefficient of determination
      */
-    public static double getRegressionError(Collection<Point2D> segment){
+    public static double getCoefficientDetermination(Collection<Point2D> pointSet){
 
         JFILine line;
-        line = JFIMath.linearRegression(segment);
+        line = JFIMath.linearRegression(pointSet);
         Point2D.Double projectedPoint;
         
         Point2D.Float mean = new Point2D.Float(0.0f,0.0f);
 
-        for (Point2D point:segment) {
+        for (Point2D point:pointSet) {
             mean.x += point.getX(); 
             mean.y += point.getY();
         }
-        mean.x /= segment.size();
-        mean.y /= segment.size();
+        mean.x /= pointSet.size();
+        mean.y /= pointSet.size();
         
         double residuo = 0.0;
         double total = 0.0;
-        for (Point2D point: segment) {
+        for (Point2D point: pointSet) {
             projectedPoint = JFIMath.projection(point,line);
             residuo += JFIMath.distance(point,projectedPoint);
             total += JFIMath.distance(point,mean);
@@ -49,10 +51,10 @@ public class JFIMath {
     /**
      * Calculates the direction of a segment
      * 
-     * @param segment
-     * @return Direction vector of segment
+     * @param pointSet the set of points
+     * @return the direction vector of the segment
      */
-    public static Point2D.Double getDirectionVector(Collection<Point2D> segment){
+    public static Point2D.Double getDirectionVector(Collection<Point2D> pointSet){
 
         double mod;
         JFILine line;
@@ -61,18 +63,16 @@ public class JFIMath {
         Point2D.Double meanPoint;
         Point2D.Double directionVector;
         
-        line = JFIMath.linearRegression(segment);
-            
-        projectedInitialPoint = JFIMath.projection(segment.iterator().next(),line);
-
+        line = JFIMath.linearRegression(pointSet);            
+        projectedInitialPoint = JFIMath.projection(pointSet.iterator().next(),line);
         meanPoint = new Point2D.Double(0.0,0.0);
-        for (Point2D point: segment) {
+        for (Point2D point: pointSet) {
             projectedPoint = JFIMath.projection(point,line);
             meanPoint.x += projectedPoint.x;
             meanPoint.y += projectedPoint.y;
         }
-        meanPoint.x = meanPoint.x / segment.size();
-        meanPoint.y = meanPoint.y / segment.size();
+        meanPoint.x = meanPoint.x / pointSet.size();
+        meanPoint.y = meanPoint.y / pointSet.size();
 
         directionVector = new Point2D.Double(0.0,0.0);
         directionVector.x = meanPoint.x - projectedInitialPoint.x; 
@@ -86,12 +86,13 @@ public class JFIMath {
     }
     
     /**
-     * Calculates the linear Regression of a segment
+     * Returns the line obtained by means of a linear regression over a given
+     * set of points
      * 
-     * @param segment
-     * @return Refression line
+     * @param pointSet set of points
+     * @return the refression line
      */
-    public static JFILine linearRegression(Collection<Point2D> segment){
+    public static JFILine linearRegression(Collection<Point2D> pointSet){
         double meanX, meanY, Sxy, Sxx, Syy;
         double aux, aux1;
         int j;
@@ -100,17 +101,16 @@ public class JFIMath {
         double a,b,c;
 
         meanX = meanY = (float) 0.0;
-        for (Point2D point: segment) {
+        for (Point2D point: pointSet) {
             meanX += point.getX();
             meanY += point.getY();
         }
-        meanX /= segment.size();
-        meanY /= segment.size();
-
+        meanX /= pointSet.size();
+        meanY /= pointSet.size();
         Sxx = Syy = Sxy = (float) 0.0;
         
         //2nd central moments
-        for (Point2D point: segment) {
+        for (Point2D point: pointSet) {
           aux = point.getX() - meanX;
           aux1 = point.getY() - meanY;
           Sxy += aux * aux1;
@@ -137,27 +137,25 @@ public class JFIMath {
             else {           /*vertical line*/
               a = (float) 1.0;
               b = (float) 0.0;
-            }
-        
+            }       
         c = - ( (a) * meanX + (b) * meanY);
         if (c < 0) {
           a = -a;
           b = -b;
           c = -c;
-        }
+        }      
         
         JFILine regressionLine = new JFILine(a,b,c);
-
         return regressionLine;
     }
     
     /**
-     * Calculates the projection of a point on a line
+     * Returns the projection of a point on a line
      * 
-     * @param point A point
-     * @param line  A line
+     * @param point a point
+     * @param line  a line
      * 
-     * @return Projection of point on line
+     * @return the projection of point on the line
      */
     public static Point2D.Double projection(Point2D point, JFILine line){
         double x = ((line.getB() * line.getB() * point.getX() - line.getA() * line.getB() * point.getY() - line.getA() * line.getC()) / (line.getB() * line.getB() + line.getA() * line.getA()));
@@ -167,14 +165,36 @@ public class JFIMath {
     }
     
     /**
-     * Calculates euclidean distance between points a and b
+     * Returns the Euclidean distance between points a and b
      * 
-     * @param a A point
-     * @param b A point
+     * @param a a point
+     * @param b a point
      * 
-     * @return Distance between a and b 
+     * @return the distance between a and b 
      */
     public static double distance(Point2D a, Point2D b){
         return Math.sqrt((a.getX()-b.getX())*(a.getX()-b.getX())+(a.getY()-b.getY())*(a.getY()-b.getY()));
     }    
+    
+    /**
+     * Returns the minimun of the given values
+     * @param a value
+     * @param b vale
+     * @param c vale
+     * @return the minimum
+     */
+    public static double min(double a, double b, double c){
+        return Math.min(Math.min(a,b),c);
+    }
+    
+    /**
+     * Returns the maximum of the given values
+     * @param a value
+     * @param b vale
+     * @param c vale
+     * @return the maximum
+     */
+    public static double max(double a, double b, double c){
+        return Math.max(Math.min(a,b),c);
+    }
 }
