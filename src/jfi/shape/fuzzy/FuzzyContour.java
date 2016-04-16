@@ -1,5 +1,6 @@
 package jfi.shape.fuzzy;
 
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -111,19 +112,27 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
      * Draws the contour points into an image, using the membership degrees for
      * greylevel estimation.
      * 
+     * @param bounded if <tt>>true</tt>, the image size will be set to the 
+     * rectangle that bounds the contour (in that case, the countour point 
+     * locations in the image will not necessarily match with the actual 
+     * coordinates values); if <tt>>false</tt>, the actual coordinates 
+     * values will be used.
      * @return an image with the contour drawn
      */
-    public BufferedImage toImage() {
+    public BufferedImage toImage(boolean bounded) {
         BufferedImage img = null;
         if (this.size() > 0) {
             Rectangle bounds = this.getBounds();
-            img = new BufferedImage(bounds.width, bounds.height, BufferedImage.TYPE_BYTE_GRAY);
+            int width = bounded ? bounds.width : bounds.width + bounds.x;
+            int height = bounded ? bounds.height : bounds.height + bounds.y;
+            Point offset = bounded ? bounds.getLocation() : new Point(0,0);
+            img = new BufferedImage(width,height, BufferedImage.TYPE_BYTE_GRAY);
             int x, y, grey_level;
 
             WritableRaster imgRaster = img.getRaster();
             for (Entry<Point2D, Double> e : this) {
-                x = (int) Math.round(e.getKey().getX()) - bounds.x;
-                y = (int) Math.round(e.getKey().getY()) - bounds.y;
+                x = (int) Math.round(e.getKey().getX()) - offset.x;
+                y = (int) Math.round(e.getKey().getY()) - offset.y;
                 grey_level = (int) (255.0 * e.getValue());
                 imgRaster.setSample(x, y, 0, grey_level);
             }
@@ -131,6 +140,17 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
         return img;
     }
 
+    /**
+     * Draws the contour points into an image using the actual coordinates 
+     * values (without bounded fit). For greylevel estimation, the membership 
+     * degrees are used
+     *       
+     * @return an image with the contour drawn
+     */
+    public BufferedImage toImage() {
+        return toImage(false);
+    }
+    
     /**
      * Returns an integer Rectangle that completely encloses the contour
      *
