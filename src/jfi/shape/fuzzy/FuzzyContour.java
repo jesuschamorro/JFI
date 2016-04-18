@@ -5,6 +5,8 @@ import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 import jfi.fuzzy.DiscreteFuzzySet;
@@ -186,5 +188,34 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
     public Contour getContourReferenceSet(){
         Set reference_set = super.getReferenceSet();
         return new Contour(reference_set);
+    }
+    
+    /**
+     * Return the local maxima, in the sense of degrees, of this fuzzy contour
+     * 
+     * @return the local maxima
+     */
+    public FuzzyContour localMaxima(){
+        FuzzyContour maxima = new FuzzyContour();
+        ArrayList<Map.Entry> entry_list = new ArrayList(this.entrySet());
+        double i_degree, w_degree;
+        int wsize_half, w_index, w, i;
+        boolean is_maximum;
+        
+        wsize_half = (int) (Contour.DEFAULT_WINDOW_RATIO_SIZE * entry_list.size())/2;
+        for (i = 0; i < entry_list.size(); i++) {
+            i_degree = (Double) entry_list.get(i).getValue();
+            for (w = -wsize_half, is_maximum = true; w <= wsize_half && is_maximum; w++) {
+                w_index = (i + w + entry_list.size()) % entry_list.size();
+                w_degree = (Double) entry_list.get(w_index).getValue();
+                if (w != 0 && i_degree <= w_degree) {
+                    is_maximum = false;
+                }
+            }
+            if (is_maximum) {
+                maxima.add((Point2D) entry_list.get(i).getKey(), i_degree);
+            }
+        }
+        return maxima;
     }
 }
