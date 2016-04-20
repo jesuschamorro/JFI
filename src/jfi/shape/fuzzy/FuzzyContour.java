@@ -195,7 +195,7 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
      * 
      * @return the local maxima
      */
-    public FuzzyContour localMaxima(){
+    public DiscreteFuzzySet<Point2D> localMaxima(){
         FuzzyContour maxima = new FuzzyContour();
         ArrayList<Map.Entry> entry_list = new ArrayList(this.entrySet());
         double i_degree, w_degree;

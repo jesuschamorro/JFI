@@ -11,12 +11,6 @@ public class JFILine {
     private double c;
 
     /**
-     * Constructs an empty line
-     */
-    public JFILine(){    
-    }
-
-    /**
      * Constructs the line "a*x + b*y + c =0"
      * 
      * @param a

@@ -344,32 +344,7 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
         }      
         return nextStep;
     }
-    
-    /**
-     * Return a segment of the contour
-     * 
-     * If windowSize is negative, the segment will be the previous "-windowSize" points
-     * 
-     * @param start Starting point
-     * @param windowSize Size of the generated segment.   
-     * 
-     * @return ArrayList with the points of the segment
-     */
-    public ArrayList<Point2D> getSegment(int start, int windowSize){
-        ArrayList<Point2D> segment = new ArrayList<>();       
-        if (windowSize > 0){
-            for(int i = 0; i < windowSize; i++){
-                segment.add(this.get((start + i) % this.size()));
-            }
-        }
-        else{
-            for(int i = 0; i > windowSize; i--){
-                segment.add(this.get((start + i +this.size())%this.size()));
-            }
-        }       
-        return segment;
-    }
-    
+       
     /**
      * Return the contour segment connecting the points <code>start</code> and 
      * <code>end</code> (both included). If <code>start==end</code>, a segment 

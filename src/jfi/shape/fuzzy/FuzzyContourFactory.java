@@ -18,14 +18,12 @@ public class FuzzyContourFactory {
     /**
      *  Exponent used to calculate linearity
      */
-    private static final int DEFAULT_K = 3;    
+    public static final double DEFAULT_K = 3;    
     
     /**
-     * Parameters used to check if the segment is curved enough
-     * in verticity calculations
-     */
-    private static final double VERTICITY_MIN = 0.1;
-    private static final double VERTICITY_MAX = 0.6;
+     * Values used to adjust the range in the verticity
+     */    
+    private static final double VERTICITY_RANGE_ADJUST = 0.05;
     
     /**
      * Type representing the linearity fuzzy property
@@ -76,7 +74,7 @@ public class FuzzyContourFactory {
      * @param segment_size the segment size around each contour point for linearity 
      * @return 
      */
-    public static FuzzyContour getLinearityInstance(Contour contour, int exponent, int segment_size){
+    public static FuzzyContour getLinearityInstance(Contour contour, double exponent, int segment_size){
         FuzzyContour fuzzyContour = new FuzzyContour("Contour.Linearity", contour);
         setLinearityDegrees(fuzzyContour, exponent, segment_size);
         return fuzzyContour;
@@ -92,7 +90,7 @@ public class FuzzyContourFactory {
      * @param segment_size the segment size around each contour point for linearity 
      * calculation 
      */
-    private static void setLinearityDegrees(FuzzyContour fcontour, int exponent, int segment_size) { 
+    private static void setLinearityDegrees(FuzzyContour fcontour, double exponent, int segment_size) { 
         ArrayList segment;
         double degree;
         Contour ccontour = fcontour.getContourReferenceSet(); 
@@ -110,7 +108,7 @@ public class FuzzyContourFactory {
      * @param exponent the exponent formula parameter
      * @return the linearity degree
      */
-    public static double linearityDegree(ArrayList segment, int exponent){
+    public static double linearityDegree(ArrayList segment, double exponent){          
         return Math.pow(JFIMath.getCoefficientDetermination(segment),exponent);
     }
     
@@ -135,7 +133,7 @@ public class FuzzyContourFactory {
      * 
      * @return A new instance of FuzzyContour
      */ 
-    public static FuzzyContour getVerticityInstance(Contour contour, int exponent, int segment_size, int offset){
+    public static FuzzyContour getVerticityInstance(Contour contour, double exponent, int segment_size, int offset){
         FuzzyContour fuzzyContour = new FuzzyContour("Contour.Verticity", contour);
         setVerticityDegrees(fuzzyContour, exponent, segment_size, offset);
         return fuzzyContour;
@@ -152,11 +150,11 @@ public class FuzzyContourFactory {
      * @param offset distance from the point to verticity calculation
      * 
      */
-    private static void setVerticityDegrees(FuzzyContour fcontour, int exponent, int segment_size, int offset){
+    private static void setVerticityDegrees(FuzzyContour fcontour, double exponent, int segment_size, int offset){
         ArrayList left_segment, right_segment, centered_segment;
         double degree, ldegree_left, ldegree_right, ldegree_center, very_ldegree_center;
         Contour ccontour = fcontour.getContourReferenceSet();
-        TrapezoidalFunction range_adjust = new TrapezoidalFunction(0.05,1.0,1.0,1.0);  
+        TrapezoidalFunction range_adjust = new TrapezoidalFunction(VERTICITY_RANGE_ADJUST,1.0,1.0,1.0);  
         
         for(Point2D point:ccontour){
             left_segment = ccontour.getSegment(ccontour.getPointBeside(point, -segment_size-offset+1), segment_size);

@@ -200,4 +200,13 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entr
         return dataMap.entrySet();
     }
     
+    /**
+     * Returns a string representation of this fuzzy set.
+     *
+     * @return a string representation of this fuzzy set.
+     */
+    @Override
+    public String toString(){
+        return dataMap.toString();
+    }
 }
