@@ -117,23 +117,30 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
      * locations in the image will not necessarily match with the actual 
      * coordinates values); if <tt>>false</tt>, the actual coordinates 
      * values will be used.
+     * @param transparency if <tt>>true</tt>, alpha-component is used to set 
+     * transparent the background and opaque the contour points (both background 
+     * and foreground have rgb values [0,0,0]); if <tt>>false</tt>, a grey-level 
+     * image is returned with black background and white values for the contour 
+     * points 
      * 
      * @return an image with the contour drawn
      */
-    public BufferedImage toImage(boolean bounded) {
+    public BufferedImage toImage(boolean bounded, boolean transparency) {
         BufferedImage img = null;
         if (!isEmpty()) {
             Rectangle bounds = this.getBounds();
             int width = bounded ? bounds.width : bounds.width + bounds.x;
             int height = bounded ? bounds.height : bounds.height + bounds.y;
+            int type = transparency ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_BYTE_GRAY;
+            img = new BufferedImage(width, height, type);
+            
+            int x, y, band = transparency?3:0;
             Point offset = bounded ? bounds.getLocation() : new Point(0,0);
-            img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
-            int x, y;
             WritableRaster imgRaster = img.getRaster();
             for (Point2D point : this) {
                 x = (int) Math.round(point.getX()) - offset.x;
                 y = (int) Math.round(point.getY()) - offset.y;
-                imgRaster.setSample(x, y, 0, 255);
+                imgRaster.setSample(x, y, band, 255);
             }
         }
         return img;
@@ -143,10 +150,11 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
      * Draws the contour points into an image using the actual coordinates 
      * values (without bounded fit) 
      *       
-     * @return an image with the contour drawn
+     * @return a grey-level image with black background and the contour drawn 
+     * in white  
      */
     public BufferedImage toImage() {
-        return toImage(false);
+        return toImage(false,false);
     }
     
     /**

@@ -71,7 +71,7 @@ public class LevelSet {
         ArrayList output = new ArrayList();
         int index = 0;
         for (Object e : fuzzyset) {
-            if (levels[index] == level) {
+            if (levels[index] >= level) {
                 output.add(((Entry)e).getKey());
             }
             index++;
@@ -88,7 +88,7 @@ public class LevelSet {
         String output = "";
         for(int level=0;level<this.numLevels;level++){
             output+="\nLevel "+level;
-            output+=" (d="+degreeList.get(level)+") : ";
+            output+=" (d>="+degreeList.get(level)+") : ";
             output+=level(level);
         }
         return output;

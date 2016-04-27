@@ -112,32 +112,40 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
 
     /**
      * Draws the contour points into an image, using the membership degrees for
-     * greylevel estimation.
+     * pixel-value estimation.
      * 
      * @param bounded if <tt>>true</tt>, the image size will be set to the 
      * rectangle that bounds the contour (in that case, the countour point 
      * locations in the image will not necessarily match with the actual 
      * coordinates values); if <tt>>false</tt>, the actual coordinates 
      * values will be used.
+     * @param transparency if <tt>>true</tt>, alpha-component is used to set 
+     * full transparent the background and semi-transparent the contour points, 
+     * with alpha value estimated on the basis of the membership degree (both 
+     * background and foreground have rgb values [0,0,0]); if <tt>>false</tt>,
+     * a grey-level image is returned with black background and contour points 
+     * with grey-values estimated on the basis of the membership degree
+     * 
      * @return an image with the contour drawn
      */
-    public BufferedImage toImage(boolean bounded) {
+    public BufferedImage toImage(boolean bounded, boolean transparency) {
         BufferedImage img = null;
         if (this.size() > 0) {
             Rectangle bounds = this.getBounds();
             int width = bounded ? bounds.width : bounds.width + bounds.x;
             int height = bounded ? bounds.height : bounds.height + bounds.y;
+            int type = transparency ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_BYTE_GRAY;
+            img = new BufferedImage(width, height, type);
+                        
+            int x, y, band=transparency?3:0, grey_level;
             Point offset = bounded ? bounds.getLocation() : new Point(0,0);
-            img = new BufferedImage(width,height, BufferedImage.TYPE_BYTE_GRAY);
-            int x, y, grey_level;
-
             WritableRaster imgRaster = img.getRaster();
             for (Entry<Point2D, Double> e : this) {
                 x = (int) Math.round(e.getKey().getX()) - offset.x;
                 y = (int) Math.round(e.getKey().getY()) - offset.y;
                 grey_level = (int) (255.0 * e.getValue());
-                imgRaster.setSample(x, y, 0, grey_level);
-            }
+                imgRaster.setSample(x, y, band, grey_level);
+            }            
         }
         return img;
     }
@@ -150,7 +158,7 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
      * @return an image with the contour drawn
      */
     public BufferedImage toImage() {
-        return toImage(false);
+        return toImage(false, false);
     }
     
     /**
