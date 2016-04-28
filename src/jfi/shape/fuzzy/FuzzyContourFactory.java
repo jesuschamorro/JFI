@@ -109,7 +109,7 @@ public class FuzzyContourFactory {
      * @return the linearity degree
      */
     public static double linearityDegree(ArrayList segment, double exponent){          
-        return Math.pow(JFIMath.getCoefficientDetermination(segment),exponent);
+        return Math.pow(JFIMath.CoefficientDetermination(segment),exponent);
     }
     
     /**

@@ -1,6 +1,8 @@
 package jfi.utils;
 
 import java.awt.geom.Point2D;
+import java.security.InvalidParameterException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -15,6 +17,16 @@ public class JFIMath {
     public static final double EPSILON = Double.MIN_VALUE; 
     
     /**
+     * Different types of line estimation
+     */
+    public static final int START_TO_END_LINE = 0;
+    public static final int REGRESSION_LINE = 1;
+    
+    /**
+     * Default type of line estimation used in CoefficientDetermination
+     */
+    public static int DEFAULT_COEFFICIENT_DETERMINATION_MODE = REGRESSION_LINE;
+    /**
      * Returns the coefficient of determination, or R-squared, in a ordinary 
      * least squares (OLS) regression that is often used as a goodness-of-fit 
      * measure
@@ -22,10 +34,30 @@ public class JFIMath {
      * @param pointSet the collection of points 
      * @return the coefficient of determination
      */
-    public static double getCoefficientDetermination(Collection<Point2D> pointSet){
+    public static double CoefficientDetermination(ArrayList<Point2D> pointSet){
+        return CoefficientDetermination(pointSet,DEFAULT_COEFFICIENT_DETERMINATION_MODE);
+    }
+    
+    /**
+     * Returns the coefficient of determination, or R-squared, often used as 
+     * a goodness-of-fit measure
+     * 
+     * @param pointSet the collection of points 
+     * @param mode type of estimated line
+     * @return the coefficient of determination
+     */
+    public static double CoefficientDetermination(ArrayList<Point2D> pointSet, int mode){
 
         JFILine line;
-        line = JFIMath.linearRegression(pointSet);
+        if(mode == REGRESSION_LINE){
+            line = JFIMath.linearRegression(pointSet);
+        }
+        else if(mode == START_TO_END_LINE){
+            line = JFIMath.startToEndLine(pointSet);
+        }
+        else{
+            throw new InvalidParameterException("Invalid value of mode.");
+        }
         Point2D.Double projectedPoint;
         
         Point2D.Float mean = new Point2D.Float(0.0f,0.0f);
@@ -90,7 +122,7 @@ public class JFIMath {
      * set of points
      * 
      * @param pointSet set of points
-     * @return the refression line
+     * @return the regression line
      */
     public static JFILine linearRegression(Collection<Point2D> pointSet){
         double meanX, meanY, Sxy, Sxx, Syy;
@@ -145,6 +177,44 @@ public class JFIMath {
           c = -c;
         }      
         
+        JFILine regressionLine = new JFILine(a,b,c);
+        return regressionLine;
+    }
+    
+    /**
+     * Returns the line that passes through the start and the end points 
+     * of the pointSet
+     * 
+     * @param pointSet set of points
+     * @return the line
+     */
+    public static JFILine startToEndLine(ArrayList<Point2D> pointSet){
+        float a,b,c;
+        
+        Point2D firstPoint = pointSet.get(0);
+        Point2D lastPoint = pointSet.get(pointSet.size()-1);
+        
+        if (firstPoint.getX() == lastPoint.getX()){ //Vertical line
+            a = (float) 1.0;
+            b = (float) 0.0;
+            c = (float) -firstPoint.getX();
+        }
+        else if (firstPoint.getY() == lastPoint.getY()){//Horizontal line
+            
+            a = (float) 0.0;
+            b = (float) 1.0;
+            c = (float) -firstPoint.getY();
+        }
+        else{
+            a = (float) 1.0;
+            b = (float)((float) (lastPoint.getX()-firstPoint.getX())/(firstPoint.getY()-lastPoint.getY()));
+            c = (float)((float) -a*firstPoint.getX()-b*firstPoint.getY());
+        }
+        if (c < 0) {
+          a = -a;
+          b = -b;
+          c = -c;
+        }  
         JFILine regressionLine = new JFILine(a,b,c);
         return regressionLine;
     }
