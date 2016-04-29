@@ -166,15 +166,16 @@ public class FuzzyContourFactory {
             ldegree_center = linearityDegree(centered_segment,exponent);
             
             //Segun articulo
-            very_ldegree_center =  FuzzyHedges.veryvery(ldegree_center); //Math.pow(ldegree_center,4.0);            
-            very_ldegree_center = range_adjust.apply(very_ldegree_center);  // Ajuste superior para alcanzar 1.0             
-            degree = JFIMath.min(ldegree_left,ldegree_right, 1.0-very_ldegree_center);
-            
-            //Implementación actual:
-            //TrapezoidalFunction trapezoidal_function = new TrapezoidalFunction(VERTICITY_MIN,VERTICITY_MAX,1,1.1);    
-            //double cosa_de_luis = trapezoidal_function.apply(1.0-ldegree_center);            
-            //degree = Math.min(Math.min(ldegree_left,ldegree_right),cosa_de_luis);
-                                    
+            very_ldegree_center =  FuzzyHedges.veryvery(ldegree_center);
+            very_ldegree_center = range_adjust.apply(very_ldegree_center);  // Ajuste superior para alcanzar 1.0  
+          
+            //<Pruebas>
+            //very_ldegree_center =  FuzzyHedges.concentration(ldegree_center,2.0);
+            ldegree_left = FuzzyHedges.concentration(ldegree_left,6.0);
+            ldegree_right = FuzzyHedges.concentration(ldegree_right,6.0);
+            //</Pruebas>
+           
+            degree = JFIMath.min(ldegree_left,ldegree_right, 1.0-very_ldegree_center);                                    
             fcontour.setMembershipDegree(point,degree);
         }
     }

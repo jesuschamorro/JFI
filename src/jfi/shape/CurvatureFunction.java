@@ -91,8 +91,10 @@ public class CurvatureFunction implements Function<Integer,Double>{
      * @return an array containing all of the elements in this list in
      *         proper sequence
      */
-    public Double[] toArray(){
-        return (Double[])(curvature.toArray());
+    public Double[] toArray(){      
+        Double[] array = new Double[curvature.size()]; 
+        curvature.toArray(array);        
+        return array;
     }
     
     /**
