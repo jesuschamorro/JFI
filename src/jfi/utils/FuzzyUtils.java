@@ -52,4 +52,30 @@ public class FuzzyUtils {
         Double round = Math.round(number*DEFAULT_PRECISION)/DEFAULT_PRECISION;      
         return round;
     }
+    
+    /**
+     * Returns the negatiom of the given fuzzy set 
+     * 
+     * @param fuzzyset the fuzzy set 
+     * @return the negated fuzzy set 
+     */
+    public static DiscreteFuzzySet negation(DiscreteFuzzySet fuzzyset){
+        DiscreteFuzzySet negation_fset;        
+        Double degree;
+
+        try {
+            //We try to create an object of the same class of 'fuzzyset' using
+            //the empty constructor; if it is not available, a generic 
+            //'DiscreteFuzzySet' will be used
+            Constructor constructor = fuzzyset.getClass().getConstructor();
+            negation_fset = (DiscreteFuzzySet)constructor.newInstance();
+        } catch (Exception ex) {
+            negation_fset = new DiscreteFuzzySet();
+        }       
+        for (Object e : fuzzyset) {
+            degree = (Double) ((Map.Entry) e).getValue();
+            negation_fset.add(((Map.Entry) e).getKey(), 1.0-degree);
+        }
+        return negation_fset;
+    }
 }

@@ -69,6 +69,15 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entr
     }
     
     /**
+     * Returns <tt>true</tt> if this set is empty.
+     *
+     * @return <tt>true</tt> if this set is empty
+     */
+    public boolean isEmpty(){
+        return dataMap.isEmpty();
+    }
+    
+    /**
      * Returns an iterator over the elements in this fuzzy set.  The elements are
      * represented as a pair (element of the domain, membership degree) and they 
      * are returned in the order in which they were inserted into the set.
