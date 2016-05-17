@@ -77,7 +77,7 @@ public class JFIMath {
             total += JFIMath.distance(point,mean);
         }
         
-        return 1-(residuo/total);
+        return Math.max(1.0-(residuo/total),0.0);
     }
     
     /**
@@ -265,6 +265,6 @@ public class JFIMath {
      * @return the maximum
      */
     public static double max(double a, double b, double c){
-        return Math.max(Math.min(a,b),c);
+        return Math.max(Math.max(a,b),c);
     }
 }
