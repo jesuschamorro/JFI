@@ -16,14 +16,9 @@ import jfi.utils.JFIMath;
 public class FuzzyContourFactory {
     
     /**
-     *  Exponent used to calculate linearity
+     *  Alpha used to calculate linearity
      */
-    public static final double DEFAULT_K = 3;    
-    
-    /**
-     * Values used to adjust the range in the verticity
-     */    
-    private static final double VERTICITY_RANGE_ADJUST = 0.05;
+    public static final double DEFAULT_ALPHA = 0.63;
     
     /**
      * Type representing the linearity fuzzy property
@@ -62,7 +57,7 @@ public class FuzzyContourFactory {
      * @return 
      */
     public static FuzzyContour getLinearityInstance(Contour contour){
-        return getLinearityInstance(contour, DEFAULT_K, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size()));
+        return getLinearityInstance(contour, DEFAULT_ALPHA, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size()));
     }
     
     /**
@@ -70,13 +65,13 @@ public class FuzzyContourFactory {
      * for a given contour
      * 
      * @param contour contour used to create the linearity fuzzy set
-     * @param exponent exponent in the linearity formula
+     * @param alpha coefficient of determination of the curve considered 0 
      * @param segment_size the segment size around each contour point for linearity 
      * @return 
      */
-    public static FuzzyContour getLinearityInstance(Contour contour, double exponent, int segment_size){
+    public static FuzzyContour getLinearityInstance(Contour contour, double alpha, int segment_size){
         FuzzyContour fuzzyContour = new FuzzyContour("Contour.Linearity", contour);
-        setLinearityDegrees(fuzzyContour, exponent, segment_size);
+        setLinearityDegrees(fuzzyContour, alpha, segment_size);
         return fuzzyContour;
     }
     
@@ -86,32 +81,42 @@ public class FuzzyContourFactory {
      * contour)
      * 
      * @param fcontour fuzzy contour on which to calculate and set the linearity
-     * @param exponent exponent in the linearity formula
+     * @param alpha coefficient of determination of the curve considered 0 
      * @param segment_size the segment size around each contour point for linearity 
      * calculation 
      */
-    private static void setLinearityDegrees(FuzzyContour fcontour, double exponent, int segment_size) { 
+    private static void setLinearityDegrees(FuzzyContour fcontour, double alpha, int segment_size) { 
         ArrayList segment;
         double degree;
         Contour ccontour = fcontour.getContourReferenceSet(); 
  
         for(Point2D point:ccontour){
             segment = ccontour.getSegment(ccontour.getPointBeside(point,-(segment_size/2)+1), segment_size);
-            degree = linearityDegree(segment,exponent);
+            degree = linearityDegree(segment,alpha);
             fcontour.setMembershipDegree(point,degree);
         }
     }
     
+//    /**
+//     * Returns the linearity degree of a given segment using an exponentation as adjustment 
+//     * @param segment the segment of points
+//     * @param exponent the exponent formula parameter
+//     * @return the linearity degree
+//     */
+//    public static double linearityDegree(ArrayList segment, double exponent, int type){          
+//        return Math.pow(JFIMath.CoefficientDetermination(segment),exponent);
+//    }
+    
     /**
-     * Returns the linearity degree of a given segment
+     * Returns the linearity degree of a given segment using a trapezoidal function as adjustment
      * @param segment the segment of points
-     * @param exponent the exponent formula parameter
+     * @param alpha coefficient of determination of the curve considered 0 
      * @return the linearity degree
      */
-    public static double linearityDegree(ArrayList segment, double exponent){          
-        return Math.pow(JFIMath.CoefficientDetermination(segment),exponent);
+    public static double linearityDegree(ArrayList segment, double alpha){  
+        TrapezoidalFunction linearity_adjust = new TrapezoidalFunction(alpha,1.0,1.0,1.0); 
+        return linearity_adjust.apply(JFIMath.CoefficientDetermination(segment));
     }
-    
     /**
      * Create a new FuzzyContour using verticity as truth value
      * 
@@ -120,22 +125,22 @@ public class FuzzyContourFactory {
      * @return A new instance of FuzzyContour
      */    
     public static FuzzyContour getVerticityInstance(Contour contour){
-        return getVerticityInstance(contour, DEFAULT_K, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size()),Contour.DEFAULT_OFFSET);
+        return getVerticityInstance(contour, DEFAULT_ALPHA, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size()),Contour.DEFAULT_OFFSET);
     }
     
     /**
      * Create a new FuzzyContour using verticity as truth value
      * 
      * @param contour Contour used to create the new FuzzyContourOld
-     * @param exponent exponent in the linearity formula
+     * @param alpha coefficient of determination of the curve considered 0 
      * @param segment_size the segment size for verticity calculation
      * @param offset distance from the point to verticity calculation
      * 
      * @return A new instance of FuzzyContour
      */ 
-    public static FuzzyContour getVerticityInstance(Contour contour, double exponent, int segment_size, int offset){
+    public static FuzzyContour getVerticityInstance(Contour contour, double alpha, int segment_size, int offset){
         FuzzyContour fuzzyContour = new FuzzyContour("Contour.Verticity", contour);
-        setVerticityDegrees(fuzzyContour, exponent, segment_size, offset);
+        setVerticityDegrees(fuzzyContour, alpha, segment_size, offset);
         return fuzzyContour;
     }
 
@@ -145,29 +150,27 @@ public class FuzzyContourFactory {
      * contour)
      * 
      * @param fcontour fuzzy contour on which to calculate and set the verticity
-     * @param exponent exponent in the linearity formula
+     * @param alpha coefficient of determination of the curve considered 0 
      * @param segment_size the segment size for verticity calculation
      * @param offset distance from the point to verticity calculation
      * 
      */
-    private static void setVerticityDegrees(FuzzyContour fcontour, double exponent, int segment_size, int offset){
+    private static void setVerticityDegrees(FuzzyContour fcontour, double alpha, int segment_size, int offset){
         ArrayList left_segment, right_segment, centered_segment;
         double degree, ldegree_left, ldegree_right, ldegree_center, very_ldegree_center;
         Contour ccontour = fcontour.getContourReferenceSet();
-        TrapezoidalFunction range_adjust = new TrapezoidalFunction(VERTICITY_RANGE_ADJUST,1.0,1.0,1.0);  
         
         for(Point2D point:ccontour){
             left_segment = ccontour.getSegment(ccontour.getPointBeside(point, -segment_size-offset+1), segment_size);
             right_segment = ccontour.getSegment(ccontour.getPointBeside(point, offset), segment_size);
             centered_segment = ccontour.getSegment(ccontour.getPointBeside(point, -segment_size/2+1), segment_size);
                      
-            ldegree_left = linearityDegree(left_segment,exponent);
-            ldegree_right = linearityDegree(right_segment,exponent);
-            ldegree_center = linearityDegree(centered_segment,exponent);
+            ldegree_left = linearityDegree(left_segment,alpha);
+            ldegree_right = linearityDegree(right_segment,alpha);
+            ldegree_center = linearityDegree(centered_segment,alpha);
             
             //Segun articulo
             very_ldegree_center =  FuzzyHedges.veryvery(ldegree_center);
-            very_ldegree_center = range_adjust.apply(very_ldegree_center);  // Ajuste superior para alcanzar 1.0  
           
             //<Pruebas>
             //very_ldegree_center =  FuzzyHedges.concentration(ldegree_center,2.0);
