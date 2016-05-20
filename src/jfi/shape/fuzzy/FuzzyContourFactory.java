@@ -20,6 +20,15 @@ public class FuzzyContourFactory {
      */
     public static final double DEFAULT_ALPHA = 0.63;
     
+    public static final double DEFAULT_ALPHA_VERTICITY_LEFT = DEFAULT_ALPHA;
+    public static final double DEFAULT_ALPHA_VERTICITY_RIGHT = DEFAULT_ALPHA;
+    public static final double DEFAULT_ALPHA_VERTICITY_CENTER = 0.85;
+    
+    public static final double DEFAULT_BETA = 1.0;
+    
+    public static final double DEFAULT_BETA_VERTICITY_LEFT = DEFAULT_BETA;
+    public static final double DEFAULT_BETA_VERTICITY_RIGHT = DEFAULT_BETA;
+    public static final double DEFAULT_BETA_VERTICITY_CENTER = 0.97;
     /**
      * Type representing the linearity fuzzy property
      */
@@ -114,7 +123,18 @@ public class FuzzyContourFactory {
      * @return the linearity degree
      */
     public static double linearityDegree(ArrayList segment, double alpha){  
-        TrapezoidalFunction linearity_adjust = new TrapezoidalFunction(alpha,1.0,1.0,1.0); 
+        return linearityDegree(segment, alpha, DEFAULT_BETA);
+    }
+    
+    /**
+     * Returns the linearity degree of a given segment using a trapezoidal function as adjustment
+     * @param segment the segment of points
+     * @param alpha coefficient of determination of the curve considered 0 
+     * @param beta coefficient of determination of curve considered 1
+     * @return the linearity degree
+     */
+    public static double linearityDegree(ArrayList segment, double alpha, double beta){  
+        TrapezoidalFunction linearity_adjust = new TrapezoidalFunction(alpha,beta,1.0,1.0); 
         return linearity_adjust.apply(JFIMath.CoefficientDetermination(segment));
     }
     /**
@@ -157,9 +177,9 @@ public class FuzzyContourFactory {
      */
     private static void setVerticityDegrees(FuzzyContour fcontour, double alpha, int segment_size, int offset){
         ArrayList left_segment, right_segment, centered_segment;
-        double degree, ldegree_left, ldegree_right, ldegree_center, very_ldegree_center;
+        double degree, ldegree_left, ldegree_right, ldegree_center, noldegree_center;
         Contour ccontour = fcontour.getContourReferenceSet();
-        
+
         for(Point2D point:ccontour){
             left_segment = ccontour.getSegment(ccontour.getPointBeside(point, -segment_size-offset+1), segment_size);
             right_segment = ccontour.getSegment(ccontour.getPointBeside(point, offset), segment_size);
@@ -167,18 +187,13 @@ public class FuzzyContourFactory {
                      
             ldegree_left = linearityDegree(left_segment,alpha);
             ldegree_right = linearityDegree(right_segment,alpha);
-            ldegree_center = linearityDegree(centered_segment,alpha);
-            
-            //Segun articulo
-            very_ldegree_center =  FuzzyHedges.veryvery(ldegree_center);
-          
-            //<Pruebas>
-            //very_ldegree_center =  FuzzyHedges.concentration(ldegree_center,2.0);
+            ldegree_center = linearityDegree(centered_segment,DEFAULT_ALPHA_VERTICITY_CENTER,DEFAULT_BETA_VERTICITY_CENTER);
+
             ldegree_left = FuzzyHedges.concentration(ldegree_left,6.0);
             ldegree_right = FuzzyHedges.concentration(ldegree_right,6.0);
-            //</Pruebas>
-           
-            degree = JFIMath.min(ldegree_left,ldegree_right, 1.0-very_ldegree_center);                                    
+            noldegree_center = FuzzyHedges.concentration(1.0-ldegree_center,6.0);
+
+            degree = JFIMath.min(ldegree_left,ldegree_right, noldegree_center);                                    
             fcontour.setMembershipDegree(point,degree);
         }
     }
