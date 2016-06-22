@@ -18,17 +18,24 @@ public class FuzzyContourFactory {
     /**
      *  Alpha used to calculate linearity
      */
-    public static final double DEFAULT_ALPHA = 0.63;
-    
+    private static final double ALPHA_45 = 0.91;
+    private static final double ALPHA_90 = 0.814;
+    private static final double ALPHA_180 = 0.63;
+    private static final double ALPHA_360 = 0.26;
+    public static final double DEFAULT_ALPHA = ALPHA_90;  
     public static final double DEFAULT_ALPHA_VERTICITY_LEFT = DEFAULT_ALPHA;
     public static final double DEFAULT_ALPHA_VERTICITY_RIGHT = DEFAULT_ALPHA;
-    public static final double DEFAULT_ALPHA_VERTICITY_CENTER = 0.85;
+    public static final double DEFAULT_ALPHA_VERTICITY_CENTER = ALPHA_90;
     
-    public static final double DEFAULT_BETA = 1.0;
-    
+    public static final double DEFAULT_BETA = 1.0;   
     public static final double DEFAULT_BETA_VERTICITY_LEFT = DEFAULT_BETA;
     public static final double DEFAULT_BETA_VERTICITY_RIGHT = DEFAULT_BETA;
     public static final double DEFAULT_BETA_VERTICITY_CENTER = 0.97;
+    
+    public static final double DEFAULT_CONCENTRATION_VERTICITY_LEFT = 1.0;  //1.0 -> No change
+    public static final double DEFAULT_CONCENTRATION_VERTICITY_RIGHT = 1.0; //1.0 -> No change
+    public static final double DEFAULT_CONCENTRATION_VERTICITY_CENTER = 2.0;
+    
     /**
      * Type representing the linearity fuzzy property
      */
@@ -188,10 +195,10 @@ public class FuzzyContourFactory {
             ldegree_left = linearityDegree(left_segment,alpha);
             ldegree_right = linearityDegree(right_segment,alpha);
             ldegree_center = linearityDegree(centered_segment,DEFAULT_ALPHA_VERTICITY_CENTER,DEFAULT_BETA_VERTICITY_CENTER);
-
-            ldegree_left = FuzzyHedges.concentration(ldegree_left,6.0);
-            ldegree_right = FuzzyHedges.concentration(ldegree_right,6.0);
-            noldegree_center = FuzzyHedges.concentration(1.0-ldegree_center,6.0);
+            
+            ldegree_left = FuzzyHedges.concentration(ldegree_left,DEFAULT_CONCENTRATION_VERTICITY_LEFT);
+            ldegree_right = FuzzyHedges.concentration(ldegree_right,DEFAULT_CONCENTRATION_VERTICITY_RIGHT);
+            noldegree_center = FuzzyHedges.concentration(1.0-ldegree_center,DEFAULT_CONCENTRATION_VERTICITY_CENTER);
 
             degree = JFIMath.min(ldegree_left,ldegree_right, noldegree_center);                                    
             fcontour.setMembershipDegree(point,degree);
