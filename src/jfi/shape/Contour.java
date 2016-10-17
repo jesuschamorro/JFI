@@ -27,7 +27,9 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
      *  Default offset.
      */
     public final static int DEFAULT_OFFSET = 0;
-    
+    /**
+     * Flag to know if the clockwise direcction is used in the contour round
+     */
     private final boolean clockwise = true;
     
     /**
@@ -59,6 +61,16 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
     public Contour(ImageMask mask) {
         super();
         maskToContour(mask);
+    }
+    
+    /**
+     * Returns <tt>true</tt> if the clockwise direcction is used in the
+     * contour iteration.
+     * 
+     * @return the clockwise direcction state
+     */
+    public boolean isClockwise(){
+        return clockwise;
     }
     
     /**
@@ -112,14 +124,14 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
     /**
      * Draws the contour points into an image
      * 
-     * @param bounded if <tt>>true</tt>, the image size will be set to the 
+     * @param bounded if <tt>true</tt>, the image size will be set to the 
      * rectangle that bounds the contour (in that case, the countour point 
      * locations in the image will not necessarily match with the actual 
-     * coordinates values); if <tt>>false</tt>, the actual coordinates 
+     * coordinates values); if <tt>false</tt>, the actual coordinates 
      * values will be used.
-     * @param transparency if <tt>>true</tt>, alpha-component is used to set 
+     * @param transparency if <tt>true</tt>, alpha-component is used to set 
      * transparent the background and opaque the contour points (both background 
-     * and foreground have rgb values [0,0,0]); if <tt>>false</tt>, a grey-level 
+     * and foreground have rgb values [0,0,0]); if <tt>false</tt>, a grey-level 
      * image is returned with black background and white values for the contour 
      * points 
      * 
