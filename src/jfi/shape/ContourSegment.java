@@ -30,16 +30,33 @@ public class ContourSegment {
      * @param start the starting point of the segment
      * @param end the ending point of the segment
      * @param contour source contour containing the segment
+     * @param clockwise if <tt>true</tt>, <code>end</code> is reached from 
+     * <code>start</code> in the clockwise direcction
      */
-    public ContourSegment(Point2D start, Point2D end, Contour contour){
+    public ContourSegment(Point2D start, Point2D end, Contour contour, boolean clockwise){
         if(contour==null){
             throw new InvalidParameterException("Countour cannot be null.");
         }
         this.contour = contour;
-        this.clockwise = contour.isClockwise();
+        this.clockwise = clockwise;
         this.setStartPoint(start); // It checks if start is a valid point
         this.setEndPoint(end);     // It checks if end is a valid point
     }   
+    
+    /**
+     * Constructs a contour segment connecting the points <code>start</code> and 
+     * <code>end</code> (both included). If <code>start==end</code>, a segment 
+     * with a single point is created. 
+     * 
+     * By default, the <code>contour</code> clockwise flag is used 
+     * 
+     * @param start the starting point of the segment
+     * @param end the ending point of the segment
+     * @param contour source contour containing the segment
+     */
+    public ContourSegment(Point2D start, Point2D end, Contour contour){
+        this(start, end, contour, contour!=null?contour.isClockwise():null);
+    }
     
     /**
      * Constructs a contour segment of size <code>segment_size</code> starting 
@@ -48,13 +65,15 @@ public class ContourSegment {
      * @param start the starting point of the segment
      * @param segment_size the segment size
      * @param contour source contour containing the segment
+     * @param clockwise if <tt>true</tt>, <code>end</code> is reached from 
+     * <code>start</code> in the clockwise direcction
      */
-    public ContourSegment(Point2D start, int segment_size, Contour contour){
+    public ContourSegment(Point2D start, int segment_size, Contour contour, boolean clockwise){
         if(contour==null){
             throw new InvalidParameterException("Countour cannot be null.");
         }
         this.contour = contour;
-        this.clockwise = contour.isClockwise();
+        this.clockwise = clockwise;
         this.setStartPoint(start); // It checks if start is a valid point
         if(segment_size > contour.size()){
             throw new InvalidParameterException("Segment size bigger than contour size.");
@@ -64,16 +83,30 @@ public class ContourSegment {
     }
     
     /**
-     * Returns the endpoint 'A' of this segment
-     * @return the endpoint 'A' of this segment
+     * Constructs a contour segment of size <code>segment_size</code> starting 
+     * from the point <code>start</code> in <code>contour</code>. 
+     * 
+     * By default, the <code>contour</code> clockwise flag is used.
+     * 
+     * @param start the starting point of the segment
+     * @param segment_size the segment size
+     * @param contour source contour containing the segment
+     */
+    public ContourSegment(Point2D start, int segment_size, Contour contour){
+        this(start,segment_size,contour,contour!=null?contour.isClockwise():null);
+    }
+      
+    /**
+     * Returns the starting point of this segment
+     * @return the starting point of this segment
      */
     public Point2D getStartPoint(){
         return start;
     }
     
     /**
-     * Returns the endpoint 'B' of this segment
-     * @return the endpoint 'B' of this segment
+     * Returns the ending point of this segment
+     * @return the ending point of this segment
      */
     public Point2D getEndPoint(){
         return end;
@@ -82,15 +115,25 @@ public class ContourSegment {
     /**
      * Returns the contour containing this segment
      * 
-     * @return the contour source
+     * @return the source contour
      */
     public Contour getSourceContour(){
         return contour;
     }
     
     /**
-     * Set the start point of this segment
-     * @param start the start point of the segment 
+     * Returns <tt>true</tt> if the clockwise direcction is used in the
+     * contour round.
+     * 
+     * @return the clockwise direcction state
+     */
+    public boolean isClockwise(){
+        return clockwise;
+    }
+    
+    /**
+     * Set the starting point of this segment
+     * @param start the starting point of the segment 
      */
     public final void setStartPoint(Point2D start){
         if(!contour.contains(start)){
@@ -100,8 +143,8 @@ public class ContourSegment {
     }
     
     /**
-     * Set the end point of this segment
-     * @param end the end point of the segment 
+     * Set the ending point of this segment
+     * @param end the ending point of the segment 
      */
     public final void setEndPoint(Point2D end){
         if(!contour.contains(end)){
@@ -110,6 +153,21 @@ public class ContourSegment {
         this.end = end;
     }
        
+    /**
+     * Returns <tt>true</tt> if this segment contains the specified point.
+     * 
+     * @param point point to be tested
+     * @return <tt>true</tt> if this segment contains the specified point
+     */
+    public boolean contains(Point2D point) {
+        boolean found = false;
+        ContourIterator it = new ContourIterator(contour,start,clockwise);  
+        while(!it.isPrevious(end) && !found){
+            found = point.equals(it.next());         
+        }
+        return found;
+    }
+    
     /**
      * Return the segment as a collection of points (endpoits included). 
      *  

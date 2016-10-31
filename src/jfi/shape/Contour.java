@@ -211,7 +211,6 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
                 point.x += this.get((i+j-mask.size()/2+this.size())%this.size()).getX()* mask.get(j);
                 point.y += this.get((i+j-mask.size()/2+this.size())%this.size()).getY()* mask.get(j);
             }
-            
             filteredContour.add(point);
         }
         return filteredContour;
@@ -259,47 +258,10 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
      * @return Curvature of the contour
      */
     public CurvatureFunction getCurvature(){
-        int windowSize = (int) (DEFAULT_WINDOW_RATIO_SIZE * this.size());       
-        return getCurvature(windowSize, DEFAULT_OFFSET);
+        CurvatureOp curvatureOp = new CurvatureOp(DEFAULT_WINDOW_RATIO_SIZE);
+        return curvatureOp.apply(this);
     }
     
-    /**
-     * Calculates the curvature of the contour
-     * 
-     * @param windowSize size of the segments used to calculate the curvature
-     * @param offset distance between the point where curvature is calculated and the start of the segment
-     * 
-     * @return Curvature of the contour
-     */
-    public CurvatureFunction getCurvature(int windowSize, int offset){
-        if(isEmpty())
-            return null;
-        CurvatureFunction curvature = new CurvatureFunction();       
-        double currentCurvature;
-        double arc_cos, arc_cos2;
-        Point2D.Double firstDirectionVector, secondDirectionVector;        
-        
-        if (windowSize > size())
-            windowSize = size();
-             
-        for (int i = 0; i < size(); i++) {
-            ArrayList leftSegment = this.getSegment(get((i+offset)%size()), windowSize, true); 
-            ArrayList rightSegment =this.getSegment(get((i-offset+size())%size()), windowSize, false); 
-            secondDirectionVector = JFIMath.getDirectionVector(leftSegment);
-            firstDirectionVector = JFIMath.getDirectionVector(rightSegment); 
-            arc_cos = ( (firstDirectionVector.y < 0) ? -Math.acos( (double) firstDirectionVector.x) :
-                               Math.acos( (double) firstDirectionVector.x));
-            arc_cos2 =( (secondDirectionVector.y < 0) ? -Math.acos( (double) secondDirectionVector.x) :
-                                Math.acos( (double) secondDirectionVector.x));
-            currentCurvature = arc_cos - arc_cos2;
-            if (arc_cos2 > arc_cos)
-                currentCurvature += (float) (Math.PI);
-            else
-                currentCurvature -= (float) Math.PI;          
-            curvature.add(currentCurvature);
-        }     
-        return curvature;
-    }
     
     /**
      * Checks if the point at a given direction from a point is part of the figure
@@ -462,5 +424,5 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
     public Point2D getPointBeside(Point2D point, int offset){
         return getPointBeside(indexOf(point),offset);
     }
-    
+     
 }

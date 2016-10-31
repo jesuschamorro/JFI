@@ -4,6 +4,8 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
 import jfi.shape.Contour;
+import jfi.shape.ContourIterator;
+import jfi.shape.ContourSegment;
 import jfi.utils.FuzzyHedges;
 import jfi.utils.JFIMath;
 
@@ -113,16 +115,63 @@ public class FuzzyContourFactory {
         }
     }
     
-//    /**
-//     * Returns the linearity degree of a given segment using an exponentation as adjustment 
-//     * @param segment the segment of points
-//     * @param exponent the exponent formula parameter
-//     * @return the linearity degree
-//     */
-//    public static double linearityDegree(ArrayList segment, double exponent, int type){          
-//        return Math.pow(JFIMath.CoefficientDetermination(segment),exponent);
-//    }
+    /**
+     * Creates a new <code>FuzzyContour</code> modeling the linearity property
+     * for a given contour segmentation
+     * 
+     * @param contour contour used to create the linearity fuzzy set 
+     * @param segmentation contour segments 
+     * @return a fuzzy contour 
+     */
+    public static FuzzyContour getLinearityInstance(Contour contour, ArrayList<ContourSegment> segmentation){
+        return getLinearityInstance(contour, DEFAULT_ALPHA, segmentation);
+    }
     
+    /**
+     * Creates a new <code>FuzzyContour</code> modeling the linearity property
+     * for a given contour segmentation
+     * 
+     * @param contour contour used to create the linearity fuzzy set
+     * @param alpha coefficient of determination of the curve considered 0 
+     * @param segmentation contour segments 
+     * @return a fuzzy contour 
+     */
+    public static FuzzyContour getLinearityInstance(Contour contour, double alpha, ArrayList<ContourSegment> segmentation){
+        FuzzyContour fuzzyContour = new FuzzyContour("Contour.Linearity", contour);
+        setLinearityDegrees(fuzzyContour, alpha, segmentation);
+        return fuzzyContour;
+    }
+    
+    /**
+     * Calculates and set the membership degrees corresponding to the linearity
+     * property for a given segmentation. It gives de same degree to all the 
+     * points in the same segment (endpoints includeded).
+     * 
+     * @param fcontour fuzzy contour on which to calculate and set the linearity
+     * @param alpha coefficient of determination of the curve considered
+     * @param segmentation contour segments
+     */
+    private static void setLinearityDegrees(FuzzyContour fcontour, double alpha, ArrayList<ContourSegment> segmentation) { 
+        ArrayList segment;
+        double degree;
+        Point2D point;
+        
+        Contour ccontour = fcontour.getContourReferenceSet();         
+        for (ContourSegment s : segmentation) {            
+            segment = s.toArray();
+            degree = linearityDegree(segment,alpha);
+            
+            System.out.println("\nSegmento "+s.getStartPoint()+"->"+s.getEndPoint()+" : "+degree);
+            
+            // We set the same degree to all the points in the segment (endpoints included)
+            ContourIterator it = new ContourIterator(ccontour,s.getStartPoint(),s.isClockwise());
+            while(!it.isPrevious(s.getEndPoint())){
+                point = it.next();
+                fcontour.setMembershipDegree(point,degree);
+            }          
+        }       
+    }
+        
     /**
      * Returns the linearity degree of a given segment using a trapezoidal function as adjustment
      * @param segment the segment of points
