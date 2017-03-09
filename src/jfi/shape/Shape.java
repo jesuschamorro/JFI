@@ -13,20 +13,12 @@ public class Shape {
     private ImageMask mask = null; 
     Properties properties;
     
-    /**
-     * 
-     * @param img
-     * @param mask 
-     */
     public Shape(BufferedImage img, ImageMask mask){
         this.sourceImage = img;
         this.mask = mask;  
         this.properties = null;
     }
-    /**
-     * 
-     * @return 
-     */
+    
     public Contour getContour(){
         return null;
     }

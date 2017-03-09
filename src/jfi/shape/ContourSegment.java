@@ -5,8 +5,13 @@ import java.security.InvalidParameterException;
 import java.util.ArrayList;
 
 /**
- *
+ * Segment of a shape contour represented by its endpoints.
+ * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
+ * 
+ * @see Contour
+ * @see ContourSegmentation
+ * @see ContourSegmentationOp
  */
 public class ContourSegment {
     /**

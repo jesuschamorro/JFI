@@ -13,18 +13,19 @@ package jfi.utils;
 public class Interval<N extends Number> {
 
     /**
-     *
+     * Left endpoint
      */
     private N a;
     /**
-     *
+     * Right endpoint
      */
     private N b;
 
     /**
-     *
-     * @param a
-     * @param b
+     * Constructs a new interval.
+     * 
+     * @param a left endpoint
+     * @param b right endpoint
      */
     public Interval(N a, N b) {
         this.a = a;
@@ -32,48 +33,55 @@ public class Interval<N extends Number> {
     }
 
     /**
-     *
-     * @return
+     * Returns the left endpoint of this interval.
+     * 
+     * @return the left endpoint of this interval
      */
     public N getA() {
         return a;
     }
 
     /**
-     *
-     * @return
+     * Returns the right endpoint of this interval.
+     * 
+     * @return the right endpoint of this interval
      */
     public N getB() {
         return b;
     }
 
     /**
-     *
-     * @param a
+     * Set the left endpoint of this interval.
+     * 
+     * @param a the left endpoint
      */
     public void setA(N a) {
         this.a = a;
     }
 
     /**
-     *
-     * @param b
+     * Set the right endpoint of this interval.
+     * 
+     * @param b the right endpoint
      */
     public void setB(N b) {
         this.b = b;
     }
 
     /**
-     *
-     * @param number
-     * @return
+     * Checks if this intervals contains the given number.
+     * 
+     * @param number the number to be analyzed.
+     * @return <tt>true</tt> if this intervals contains the given number, 
+     * <tt>false</tt> if not
      */
     public boolean contains(N number) {
         return (number.doubleValue() >= a.doubleValue() && number.doubleValue() <= b.doubleValue());
     }
     
     /**
-     * Return the centre (midpoint) of interval
+     * Return the centre (midpoint) of interval.
+     * 
      * @return the centre of interval
      */
     public N center(){
@@ -82,7 +90,8 @@ public class Interval<N extends Number> {
     }
     
     /**
-     * Return the length of the interval
+     * Return the length of the interval.
+     * 
      * @return the length of the interval 
      */
     public double length() {
@@ -90,7 +99,8 @@ public class Interval<N extends Number> {
     }
 
     /**
-     * Check if the interval is empty
+     * Check if the interval is empty.
+     * 
      * @return <tt>true</tt> if the interval is empty
      */
     public boolean isEmpty() {

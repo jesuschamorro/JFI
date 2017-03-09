@@ -62,7 +62,7 @@ public class ContourIterator implements Iterator<Point2D> {
     /**
      * Set <code>point</code> as the current point in the iteration
      *
-     * @param p
+     * @param p point value
      */
     public final void setCurrent(Point2D p) {
         int p_index = (p != null) ? contour.indexOf(p) : 0;
@@ -152,7 +152,7 @@ public class ContourIterator implements Iterator<Point2D> {
      * If <code>offset</code> is positive (resp. negative), the new point will 
      * be reached following the forward (resp. backward) way.
      *
-     * @param offset
+     * @param offset offset value
      * @return the current point before go forward
      */
     public Point2D advance(int offset) {

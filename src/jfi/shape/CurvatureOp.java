@@ -20,12 +20,13 @@ public class CurvatureOp {
      */
     public enum Approach{LINE_BASED_APPROACH, 
                          LINE_BASED_APPROACH_IMPROVED, 
-                         LINE_BASED_APPROACH_SOTO};
+                         LINE_BASED_APPROACH_SOTO,
+                         STANDAR_APPROACH};
     
     /**
      *  Default ratio for segment size estimation.
      */
-    public static final double DEFAULT_SEGMENT_RATIO_SIZE = Contour.DEFAULT_WINDOW_RATIO_SIZE;
+    public static final double DEFAULT_SEGMENT_SIZE_RATIO = Contour.DEFAULT_WINDOW_RATIO_SIZE;
     
     /**
      *  Default offset.
@@ -35,7 +36,7 @@ public class CurvatureOp {
     /**
      * Default approach used for curvature estimation
      */
-    public final static Approach DEFAULT_ESTIMATION =Approach.LINE_BASED_APPROACH; 
+    public final static Approach DEFAULT_ESTIMATION = Approach.STANDAR_APPROACH; 
     
     /**
      * Segment size for curvarure estimation.
@@ -62,7 +63,7 @@ public class CurvatureOp {
      * Constructs a new curvature operator using the default parameters.
      */
     public CurvatureOp(){        
-        this(DEFAULT_SEGMENT_RATIO_SIZE,DEFAULT_OFFSET);
+        this(DEFAULT_SEGMENT_SIZE_RATIO,DEFAULT_OFFSET);
     }
     
     /**
@@ -222,6 +223,9 @@ public class CurvatureOp {
                 break;
             case LINE_BASED_APPROACH_SOTO:
                 output = curvatureLineBasedSoto(contour);
+                break;
+            case STANDAR_APPROACH:
+                output = curvatureStandarApproach(contour);
                 break;    
         }        
         return output;
@@ -360,6 +364,177 @@ public class CurvatureOp {
         return curvature;
     }
     
+    
+    /**
+     * En pruebas con Antonio (método clásico de curvatura).
+     * 
+     * @param contour
+     * @return 
+     */
+    private CurvatureFunction curvatureStandarApproach(Contour contour) {
+        if (contour.isEmpty()) {
+            return null;
+        }               
+        int windowSize = segmentSize != null ? segmentSize : (int) (segmentSizeRatio * contour.size());
+        if (windowSize > contour.size()) {
+            windowSize = contour.size();
+        }
+        
+        CurvatureFunction curvature = new CurvatureFunction();
+        
+        
+        ArrayList<Double> filter1deriv = generateGaussianFilter(windowSize / 7.0, 1);
+        ArrayList<Double> filter2deriv = generateGaussianFilter(windowSize / 7.0, 2);
+
+        
+        ContourFilteringOp filteringOp = new ContourFilteringOp(filter1deriv);
+        Contour df = filteringOp.apply(contour);       
+        filteringOp.setKernel(filter2deriv);
+        Contour d2f = filteringOp.apply(contour);  
+        
+        //Contour df = contour.filter(filter1deriv);       
+        //Contour d2f = contour.filter(filter2deriv);
+
+        for (int i = 0; i < contour.size(); i++) {
+            double currentCurvature
+                    = (df.get(i).getX() * d2f.get(i).getY() - d2f.get(i).getX() * df.get(i).getY())
+                    / Math.pow(df.get(i).getX() * df.get(i).getX() + df.get(i).getY() * df.get(i).getY(), 1.5);
+
+            curvature.add(-currentCurvature);  //Positive means convex curve
+        }
+        
+        
+        
+        return curvature;
+    }
+
+    
+    /**
+     * 
+     * @param sigma
+     * @param diff
+     * @return 
+     */
+    private ArrayList<Double> generateGaussianFilter(double sigma, int diff) {
+        int kernelSize = (int) (7 * sigma);
+        if (kernelSize % 2 == 0) {
+            kernelSize++;
+        }
+
+        ArrayList<Double> kernel = new ArrayList(kernelSize);
+        double dos_sig2 = 2.0 * sigma * sigma;
+
+        if (diff == 0) {
+            double sum = 0;
+            double gaussianValue;
+
+            for (int i = 0; i < kernelSize; i++) {
+                double left = i - kernelSize / 2 - 0.45;
+                gaussianValue = 0;
+                for (int nsam = 0; nsam < 10; nsam++) {
+                    double x = left + nsam * 0.1;
+                    gaussianValue += Math.exp(-x * x / dos_sig2);
+                    sum += gaussianValue;
+
+                }
+                kernel.add(gaussianValue);
+            }
+            for (int i = 0; i < kernelSize; i++) {
+                kernel.set(i, kernel.get(i) / sum);
+            }
+        } else if (diff == 1) {
+            double sum_p = 0.0; // area under sampled curve for positive values
+            double sum_n = 0.0; // area under sampled curve for negative values
+            // La integral es la gausiana
+            double gaussianValue;
+
+            for (int i = 0; i < kernelSize; i++) {
+                double left = i - kernelSize / 2 - 0.5;
+                double right = i - kernelSize / 2 + 0.5;
+                gaussianValue = Math.exp(-right * right / dos_sig2) - Math.exp(-left * left / dos_sig2);
+                if (gaussianValue > 0.0) {
+                    sum_p += gaussianValue;
+                } else {
+                    sum_n += gaussianValue;
+                }
+                kernel.add(gaussianValue);
+            }
+
+            double norm_p = 0.5 / sum_p;
+            double norm_n = -0.5 / sum_n;
+            for (int i = 0; i < kernelSize; i++) {
+                if (kernel.get(i) > 0.0) {
+                    kernel.set(i, kernel.get(i) * norm_p);
+                } else {
+                    kernel.set(i, kernel.get(i) * norm_n);
+                }
+            }
+
+        } else if (diff == 2) {
+            double sum_p = 0.0; // area under sampled curve for positive values
+            double sum_n = 0.0; // area under sampled curve for negative values
+            // La integral es la primera derivada de gausiana
+            double gaussianValue;
+
+            for (int i = 0; i < kernelSize; i++) {
+                double left = i - kernelSize / 2 - 0.5;
+                double right = i - kernelSize / 2 + 0.5;
+                gaussianValue = (-right) * Math.exp(-right * right / dos_sig2)
+                        - (-left) * Math.exp(-left * left / dos_sig2);
+                if (gaussianValue > 0.0) {
+                    sum_p += gaussianValue;
+                } else {
+                    sum_n += gaussianValue;
+                }
+                kernel.add(gaussianValue);
+            }
+
+            double norm_p = 0.5 / sum_p;
+            double norm_n = -0.5 / sum_n;
+            for (int i = 0; i < kernelSize; i++) {
+                if (kernel.get(i) > 0.0) {
+                    kernel.set(i, kernel.get(i) * norm_p);
+                } else {
+                    kernel.set(i, kernel.get(i) * norm_n);
+                }
+            }
+        } else if (diff == 3) {
+            double sum_p = 0.0; // area under sampled curve for positive values
+            double sum_n = 0.0; // area under sampled curve for negative values
+            // La integral es la primera derivada de gausiana
+            double gaussianValue;
+
+            for (int i = 0; i < kernelSize; i++) {
+                double left = i - kernelSize / 2 - 0.5;
+                double right = i - kernelSize / 2 + 0.5;
+                gaussianValue = (right * right - sigma * sigma) * Math.exp(-right * right / dos_sig2)
+                        - (left * left - sigma * sigma) * Math.exp(-left * left / dos_sig2);
+                if (gaussianValue > 0.0) {
+                    sum_p += gaussianValue;
+                } else {
+                    sum_n += gaussianValue;
+                }
+                kernel.add(gaussianValue);
+            }
+
+            double norm_p = 0.5 / sum_p;
+            double norm_n = -0.5 / sum_n;
+            for (int i = 0; i < kernelSize; i++) {
+                if (kernel.get(i) > 0.0) {
+                    kernel.set(i, kernel.get(i) * norm_p);
+                } else {
+                    kernel.set(i, kernel.get(i) * norm_n);
+                }
+            }
+        } else {
+            throw new InvalidParameterException("Max diff for gaussian kernel generation is 3.");
+        }
+        
+        return kernel;
+    }
+
+
+
     
     
 }

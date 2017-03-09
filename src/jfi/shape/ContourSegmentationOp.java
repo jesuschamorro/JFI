@@ -2,61 +2,106 @@ package jfi.shape;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import jfi.utils.JFIMath;
 
 /**
- *
+ * Class implementing the segmentation of a contour.
+ * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class ContourSegmentationOp {
-    private Double sigma = null;
-    private Double windowSizeRatio = Contour.DEFAULT_WINDOW_RATIO_SIZE;
-    private int offset = 5;
+public class ContourSegmentationOp {   
+    /**
+     * Minimun segment size.
+     */
+    int MINIMUN_SIZE = 10;
+    /**
+     * Sigma parameter used in the gaussian filtering.
+     */
+    private Double sigma;    
+    /**
+     * The curvature operator used for curvature estimation.
+     */
+    CurvatureOp curvatureOp;
     
     /**
-     * 
+     *  Constructs a new segmentation operator using the default parameters.
      */
     public ContourSegmentationOp(){
-        this(null);
+        this(null, CurvatureOp.DEFAULT_SEGMENT_SIZE_RATIO, CurvatureOp.DEFAULT_OFFSET);
     }
     
     /**
+     * Constructs a new segmentation operator where a gaussian filtering is 
+     * applied using the given sigma. For curvature estimation, the default 
+     * parameters are used.
      * 
-     * @param sigma 
+     * @param sigma the sigma parameter in the gaussian filtering.
      */
     public ContourSegmentationOp(Double sigma){
+        this(sigma,CurvatureOp.DEFAULT_SEGMENT_SIZE_RATIO, CurvatureOp.DEFAULT_OFFSET);      
+    }
+    
+    /**
+     * Constructs a new segmentation operator where a gaussian filtering is 
+     * applied using the given sigma. For curvature estimation, the given 
+     * parameters are used.
+     * 
+     * @param sigma the sigma parameter in the gaussian filtering.
+     * @param segmentSizeRatio the segment size ratio for curvature estimation. 
+     * It must be a value between 0 an 1.
+     * @param offset the offset for curvature estimation.
+     */
+    public ContourSegmentationOp(Double sigma, double segmentSizeRatio, int offset){
+        this.setSigma(sigma);
+        curvatureOp = new CurvatureOp(segmentSizeRatio,offset);
+        //curvatureOp.setEstimationMethod(CurvatureOp.Approach.LINE_BASED_APPROACH);
+        //curvatureOp.setEstimationMethod(CurvatureOp.Approach.LINE_BASED_APPROACH_IMPROVED);
+        curvatureOp.setEstimationMethod(CurvatureOp.Approach.LINE_BASED_APPROACH_SOTO);
+        //curvatureOp.setEstimationMethod(CurvatureOp.Approach.STANDAR_APPROACH);
+    }
+    
+    /**
+     * Set the sigma parameter for the gaussian filtering. If it is <tt>null</tt>,
+     * no filtering is applied.
+     * 
+     * @param sigma the sigma parameter for the gaussian filtering
+     */
+    public final void setSigma(Double sigma){
         this.sigma = sigma;
     }
     
+    /**
+     * Returns the sigma parameter used for the gaussian filtering.
+     * 
+     * @return the sigma parameter
+     */
+    public double getSigma(){
+        return sigma;
+    }
+    
+    /**
+     * Set the parameters used for curvature estimation.
+     * 
+     * @param segmentSizeRatio the segment size ratio for curvature estimation. 
+     * It must be a value between 0 an 1.
+     * @param offset the offset for curvature estimation.
+     */
+    public final void setCurvatureParameters(double segmentSizeRatio, int offset){
+        curvatureOp = new CurvatureOp(segmentSizeRatio,offset);
+    }
+    
+    /**
+     * Apply this operator to the given contour.
+     * 
+     * @param contour the contour to be analyzed
+     * @return the contour segmentation
+     */
     public ContourSegmentation apply(Contour contour){
         ContourSegmentation segmentation = new ContourSegmentation(contour);
-        
-        if(contour!=null){
-            Contour filtered_contour = contour;
-            if(sigma!=null){
-                filtered_contour = contour.gaussianFilter(sigma);
-            }
-            
-            CurvatureOp curvatureOp = new CurvatureOp(windowSizeRatio,offset);
-            //curvatureOp.setEstimationMethod(CurvatureOp.Approach.LINE_BASED_APPROACH);
-            //curvatureOp.setEstimationMethod(CurvatureOp.Approach.LINE_BASED_APPROACH_IMPROVED);
-            curvatureOp.setEstimationMethod(CurvatureOp.Approach.LINE_BASED_APPROACH_SOTO);
-            CurvatureFunction curvature = curvatureOp.apply(contour);
-            
-            //Firstly, we caculate the segment endpoits as the zero cross of the curvature
-            ArrayList<Point2D> endpoints = new ArrayList<>();
-            Double left_value,right_value,central_value;            
-            for(int i=0; i<filtered_contour.size(); i++){
-                left_value = curvature.apply(prevIndex(i,filtered_contour));
-                right_value = curvature.apply(nextIndex(i,filtered_contour));
-                central_value = curvature.apply(i);
-                if(left_value*right_value<0 && Math.abs(central_value)>0.001 ) { // Different sign: zero cross
-                    endpoints.add(contour.get(i));
-                    //endpoints.add(filtered_contour.get(i));
-                    //System.out.print(i+"("+filtered_contour.get(i).getX()+","+filtered_contour.get(i).getY()+") ");
-                }
-            }    
-            // Secondly, we create the contour segments. Note that the endpoints are poits of the original
-            // contour (no the filtered one)
+        if(contour!=null && curvatureOp!=null){
+            //Firstly, we caculate the segment endpoits            
+            ArrayList<Point2D> endpoints = this.endPoints(contour);
+            //Secondly, we create the contour segments. 
             if (!endpoints.isEmpty()) {
                 ContourSegment segment;
                 for (int p = 0; p < endpoints.size() - 1; p++) {
@@ -68,6 +113,43 @@ public class ContourSegmentationOp {
             }
         }
         return segmentation;
+    }
+    
+    /**
+     * Calculates the segment endpoints as the zero cross of the curvature.
+     * 
+     * @param contour the contour to be analyzed
+     * @return the segment endpoints
+     */
+    private ArrayList<Point2D> endPoints(Contour contour) {
+        ArrayList<Point2D> endpoints = new ArrayList<>();
+        Contour filtered_contour = contour;
+        if (sigma != null) {
+            filtered_contour = contour.gaussianFiltering(sigma);
+        }
+        CurvatureFunction curvature = curvatureOp.apply(filtered_contour);
+        Double left_value, right_value, central_value;
+        boolean isPseudoInflection;
+        int length = 0;
+        for (int i = 0; i < filtered_contour.size(); i++) {
+            left_value = curvature.apply(prevIndex(i, filtered_contour));
+            right_value = curvature.apply(nextIndex(i, filtered_contour));
+            central_value = curvature.apply(i);
+            length++;            
+            //Quantization
+            //left_value = JFIMath.round(left_value);
+            //right_value = JFIMath.round(right_value);
+            //central_value = JFIMath.round(central_value);
+            // We have a pseudo-inflection point if there is a zero cross 
+            // (different sign), or the point is zero and the previous (or next)
+            // one is not zero
+            isPseudoInflection = left_value*right_value < 0 || (central_value==0 && left_value!=0) || (central_value==0 && right_value!=0);
+            if (isPseudoInflection && length>MINIMUN_SIZE){ 
+                endpoints.add(contour.get(i)); // Note that endpoints are points of the original contour
+                length = 0;
+            }
+        }
+        return endpoints;
     }
     
     /**

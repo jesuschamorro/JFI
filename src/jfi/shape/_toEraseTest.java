@@ -157,6 +157,7 @@ public class _toEraseTest {
      if (j == n - 1){
        X = new Point[tamElp];
        inicializaX(X, elp, tamElp, 0); //X = elp;
+       ptrX = 0;
      }
    }
    trS2 = (Sxx + Syy) / 2;

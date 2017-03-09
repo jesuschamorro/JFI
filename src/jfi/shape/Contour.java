@@ -14,7 +14,6 @@ import java.awt.image.WritableRaster;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Collection;
-import jfi.utils.JFIMath;
 
 public class Contour extends ArrayList<Point2D> implements Segmentable{ 
     
@@ -195,61 +194,18 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
         return new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
     }
     
-    /**
-     * Applies a mask to the contour
-     * 
-     * @param mask
-     * 
-     * @return filtered contour.
-     */
-    public Contour filter(ArrayList<Double> mask){
-        Point2D.Double point;
-        Contour filteredContour = new Contour();       
-        for(int i = 0; i < this.size(); i++){
-            point = new Point2D.Double(0.0,0.0);
-            for(int j = 0; j < mask.size(); j++){
-                point.x += this.get((i+j-mask.size()/2+this.size())%this.size()).getX()* mask.get(j);
-                point.y += this.get((i+j-mask.size()/2+this.size())%this.size()).getY()* mask.get(j);
-            }
-            filteredContour.add(point);
-        }
-        return filteredContour;
-    }
     
     /**
      * Applies a Gaussian filter to the contour
      * 
-     * @param kernelSize
-     * @param sigma
+     * @param sigma standard deviation of the gaussian function
      * 
-     * @return filtered contour
+     * @return the filtered contour 
      */
-    private Contour gaussianFilter(int kernelSize, double sigma){
-        ArrayList<Double> kernel = new ArrayList(kernelSize);
-        
-        double sum = 0;
-        double gaussianValue;
-        for(int i = 0; i < kernelSize; i++){
-            gaussianValue = Math.exp(-(Math.pow(i-(kernelSize/2),2)/(2*Math.pow(sigma,2))));
-            sum += gaussianValue;
-            kernel.add(gaussianValue);
-        }
-
-        for(int i = 0; i < kernelSize; i++){
-            kernel.set(i,kernel.get(i)/sum);
-        }
-        return filter(kernel);
-    }
-    
-    /**
-     * Applies a Gaussian filter to the contour
-     * 
-     * @param sigma
-     * 
-     * @return filtered contour 
-     */
-    public Contour gaussianFilter(double sigma){
-        return gaussianFilter((int) Math.ceil(sigma*1.96)*2+1,sigma);
+    public Contour gaussianFiltering(double sigma){
+        ArrayList<Double> kernel = ContourFilteringOp.gaussianKernel(sigma);
+        ContourFilteringOp filteringOp = new ContourFilteringOp(kernel);
+        return filteringOp.apply(this);     
     }
     
     /**
@@ -257,7 +213,7 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
      * 
      * @return Curvature of the contour
      */
-    public CurvatureFunction getCurvature(){
+    public CurvatureFunction curvature(){
         CurvatureOp curvatureOp = new CurvatureOp(DEFAULT_WINDOW_RATIO_SIZE);
         return curvatureOp.apply(this);
     }

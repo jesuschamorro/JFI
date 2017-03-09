@@ -6,26 +6,40 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- *
+ * Some additional math utilities.
+ * 
  * @author Luis Suárez Lloréns
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
 public class JFIMath {
-    
     /**
      * Epsilon constant
      */
     public static final double EPSILON = Double.MIN_VALUE; 
-    
     /**
-     * Different types of line estimation
+     * Default precision (number of decimals) in rounding operations
+     */
+    public final static int DEFAULT_ROUNDING_DECIMALS = 2;
+    /**
+     * Default 10 power value associated to the default precision in rounding 
+     * operations {@see #DEFAULT_ROUNDED_DECIMALS}
+     */
+    private final static double DEFAULT_ROUNDING_10POWER = Math.pow(10,DEFAULT_ROUNDING_DECIMALS);
+    /**
+     * Type of line estimation. The line is estimated as the line that links the
+     * first and last point of the given set.
      */
     public static final int START_TO_END_LINE = 0;
-    public static final int REGRESSION_LINE = 1;
-    
     /**
-     * Default type of line estimation used in CoefficientDetermination
+     * Type of line estimation. The line is estimated bay means a regression
+     * procedure over the given set of points.
+     */
+    public static final int REGRESSION_LINE = 1;
+    /**
+     * Default type of line estimation. 
      */
     public static int DEFAULT_COEFFICIENT_DETERMINATION_MODE = REGRESSION_LINE;
+    
     /**
      * Returns the coefficient of determination, or R-squared, in a ordinary 
      * least squares (OLS) regression that is often used as a goodness-of-fit 
@@ -47,21 +61,20 @@ public class JFIMath {
      * @return the coefficient of determination
      */
     public static double CoefficientDetermination(ArrayList<Point2D> pointSet, int mode){
-
         JFILine line;
-        if(mode == REGRESSION_LINE){
-            line = JFIMath.linearRegression(pointSet);
+        switch (mode) {
+            case REGRESSION_LINE:
+                line = JFIMath.linearRegression(pointSet);
+                break;
+            case START_TO_END_LINE:
+                line = JFIMath.startToEndLine(pointSet);
+                break;
+            default:
+                throw new InvalidParameterException("Invalid value of mode.");
         }
-        else if(mode == START_TO_END_LINE){
-            line = JFIMath.startToEndLine(pointSet);
-        }
-        else{
-            throw new InvalidParameterException("Invalid value of mode.");
-        }
-        Point2D.Double projectedPoint;
         
+        Point2D.Double projectedPoint;       
         Point2D.Float mean = new Point2D.Float(0.0f,0.0f);
-
         for (Point2D point:pointSet) {
             mean.x += point.getX(); 
             mean.y += point.getY();
@@ -266,5 +279,29 @@ public class JFIMath {
      */
     public static double max(double a, double b, double c){
         return Math.max(Math.max(a,b),c);
+    }
+    
+    /**
+     * Returns a rounded version of a given number (using the default precision)
+     * 
+     * @param number the number to be rounded
+     * @return the rounded number
+     */
+    public static Double round(Double number){
+        Double round = Math.round(number*DEFAULT_ROUNDING_10POWER)/DEFAULT_ROUNDING_10POWER;      
+        return round;
+    }
+    
+    /**
+     * Returns a rounded version of a given number.
+     * 
+     * @param number the number to be rounded
+     * @param number_decimals the number of decimals in the rounded number
+     * @return the rounded number
+     */
+    public static Double round(Double number, int number_decimals){
+        Double power = Math.pow(10,number_decimals);
+        Double round = Math.round(number*power)/power;      
+        return round;
     }
 }

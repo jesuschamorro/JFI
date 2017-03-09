@@ -72,7 +72,8 @@ public class FuzzyContourFactory {
      * for a given contour
      * 
      * @param contour contour used to create the linearity fuzzy set
-     * @return 
+     * 
+     * @return a fuzzy contour modeling the linearity property
      */
     public static FuzzyContour getLinearityInstance(Contour contour){
         return getLinearityInstance(contour, DEFAULT_ALPHA, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size()));
@@ -85,7 +86,8 @@ public class FuzzyContourFactory {
      * @param contour contour used to create the linearity fuzzy set
      * @param alpha coefficient of determination of the curve considered 0 
      * @param segment_size the segment size around each contour point for linearity 
-     * @return 
+     * 
+     * @return a fuzzy contour modeling the linearity property
      */
     public static FuzzyContour getLinearityInstance(Contour contour, double alpha, int segment_size){
         FuzzyContour fuzzyContour = new FuzzyContour("Contour.Linearity", contour);

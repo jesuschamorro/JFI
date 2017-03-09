@@ -127,8 +127,9 @@ public class CurvatureFunction implements Function<Integer,Double>{
     }
     
     /**
-     * Normalize the curvature function dividing by cte_normalization
-     * @param cte_normalization 
+     * Normalize the curvature function dividing by cte_normalization.
+     * 
+     * @param cte_normalization normalization constant
      */
     public void normalize(double cte_normalization){    
         for(int i = 0; i < this.size(); i++){
