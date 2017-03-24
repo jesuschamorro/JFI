@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import jfi.fuzzy.DiscreteFuzzySet;
+import jfi.fuzzy.LevelSet;
 import jfi.fuzzy.cardinal.EDCardinal;
 import jfi.fuzzy.cardinal.SigmaCount;
 import jfi.shape.Contour;
@@ -375,6 +376,35 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         vim.setVisible(true);
     }
 
+    public static void pruebaLevelSet(){
+        DiscreteFuzzySet fset = new DiscreteFuzzySet();   
+        
+        fset.add(1,0.0);
+        fset.add(2,0.3);
+        fset.add(3,0.5);
+        fset.add(4,0.9);
+        fset.add(5,0.9);        
+        fset.add(6,0.9);
+        fset.add(7,0.9);
+        fset.add(8,1.0);
+        fset.add(9,1.0);
+        fset.add(10,1.0);
+        
+        fset.add(11,0.0);
+        fset.add(12,0.3);
+        fset.add(13,0.5);
+        fset.add(14,0.9);
+        fset.add(15,0.9);        
+        fset.add(16,0.9);
+        fset.add(17,0.9);
+        fset.add(18,1.0);
+        fset.add(19,1.0);
+        fset.add(20,1.0);
+        
+        LevelSet l = new LevelSet(fset);
+        
+        System.out.println("LevelSet: " + l.toString());
+    }
 
     /**
      * @param args the command line arguments
@@ -412,8 +442,9 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
 
+        pruebaLevelSet();
         
-        new VentanaPrincipalJCM().setVisible(true);
+        //new VentanaPrincipalJCM().setVisible(true);
     }
     
     

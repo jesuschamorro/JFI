@@ -8,20 +8,28 @@ import java.util.Set;
 import jfi.utils.JFIMath;
 
 /**
- *
- *
+ * Class representing a fuzzy set on a discrete domain. The reference set is a
+ * finite set made up only of isolated points; it is represented as a collection
+ * of elements, where each of these elements have a degree of membership.
+ * 
+ * @param <D> the domain of the fuzzy set.
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
- * @param <Domain>
  */
-public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entry<Domain,Double>> {
-
+public class DiscreteFuzzySet<D> implements FuzzySet<D>, Iterable<Entry<D,Double>> {
+    /**
+     * The label associated to the fuzzy set.
+     */
     protected String label;
-    protected final LinkedHashMap<Domain, Double> dataMap; //Ordered map
+    /**
+     * Mapping from domain elements (keys) to membership degrees (values). It
+     * cannot contain duplicate keys and each key maps to one value.
+     */
+    protected final LinkedHashMap<D, Double> dataMap; //Ordered map
 
     /**
      * Constructs an empty fuzzy set.
      *
-     * @param label label of the fuzzy set
+     * @param label label of the fuzzy set.
      */
     public DiscreteFuzzySet(String label) {
         this.label = label;
@@ -29,7 +37,7 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entr
     }
 
     /**
-     * Constructs an empty fuzzy set with an empty label .
+     * Constructs an empty fuzzy set with an empty label.
      *
      */
     public DiscreteFuzzySet() {
@@ -39,30 +47,31 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entr
     /**
      * Adds the specified element to this fuzzy set if it is not already
      * present. If the element <tt>e</tt> is previously contained, the
-     * memmership degree is updated to <tt>degree</tt>
+     * memmership degree is updated to <tt>degree</tt>.
      *
-     * @param e the new element to be added
-     * @param degree the memebership degree of the new element
+     * @param e the new element to be added.
+     * @param degree the memebership degree of the new element.
      * @return <tt>true</tt> if this set did not already contain the specified
-     * element
+     * element.
      */
-    public boolean add(Domain e, double degree) {
+    public boolean add(D e, double degree) {
         return dataMap.put(e, degree) == null;
     }
 
     /**
      * Removes the specified element from this fuzzy set, if it is present.
      *
-     * @param o object to be removed from this set, if present
-     * @return <tt>true</tt> if the set contained the specified element
+     * @param o object to be removed from this set, if present.
+     * @return <tt>true</tt> if the set contained the specified element.
      */
-    public boolean remove(Domain o) {
+    public boolean remove(D o) {
         return dataMap.remove(o) != null;
     }
 
     /**
-     * Return the number of elements in this fuzzy set
-     * @return the set size
+     * Return the number of elements in this fuzzy set.
+     * 
+     * @return the set size.
      */
     public int size(){
         return dataMap.size();
@@ -71,21 +80,21 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entr
     /**
      * Returns <tt>true</tt> if this set is empty.
      *
-     * @return <tt>true</tt> if this set is empty
+     * @return <tt>true</tt> if this set is empty.
      */
     public boolean isEmpty(){
         return dataMap.isEmpty();
     }
     
     /**
-     * Returns an iterator over the elements in this fuzzy set.  The elements are
-     * represented as a pair (element of the domain, membership degree) and they 
+     * Returns an iterator over the elements in this fuzzy set. The elements are
+     * represented as a pair (element of the domain, membership degree) and they
      * are returned in the order in which they were inserted into the set.
      *
      * @return an iterator over the elements in this fuzzy set
      */
     @Override
-    public Iterator<Entry<Domain,Double>> iterator(){
+    public Iterator<Entry<D,Double>> iterator(){
         return dataMap.entrySet().iterator();
     }
     
@@ -102,7 +111,7 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entr
      *
      * @return a set view the reference set associated to this fuzzy set
      */
-    public Set<Domain> getReferenceSet() {
+    public Set<D> getReferenceSet() {
         return dataMap.keySet();
     }
 
@@ -133,7 +142,7 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entr
      * @return the membership degree
      */
     @Override
-    public double membershipDegree(Domain e) {
+    public double membershipDegree(D e) {
         return dataMap.get(e);
     }
     
@@ -144,25 +153,25 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entr
      * @param degree the new memebership degree
      * @return <tt>true</tt> if this set contains the specified element
      */
-    public boolean setMembershipDegree(Domain e, double degree){
+    public boolean setMembershipDegree(D e, double degree){
         return dataMap.replace(e, degree) != null;
     } 
 
     /**
      * Return the alpha-cut of the fuzzy set for a given alpha.
      * 
-     * Thee iteration ordering of the ouput crisp set is the order in which 
-     * elements were inserted into the fuzzy set (insertion-order)
+     * The iteration ordering of the ouput crisp set is the order in which 
+     * elements were inserted into the fuzzy set (insertion-order).
      *
-     * @param alpha the alpha
-     * @return the alpha-cut
+     * @param alpha the alpha.
+     * @return the alpha-cut.
      */
     @Override
-    public Set<Domain> alphaCut(double alpha) {
-        Domain element;
-        LinkedHashSet<Domain> alpha_cut = new LinkedHashSet<>();
+    public Set<D> alphaCut(double alpha) {
+        D element;
+        LinkedHashSet<D> alpha_cut = new LinkedHashSet<>();
 
-        Iterator<Domain> set = dataMap.keySet().iterator();
+        Iterator<D> set = dataMap.keySet().iterator();
         while (set.hasNext()) {
             element = set.next();
             if (dataMap.get(element) >= alpha) {
@@ -173,22 +182,22 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entr
     }
 
     /**
-     * Return the kernel of the fuzzy set
+     * Return the kernel of the fuzzy set.
      *
-     * @return the kernel of the fuzzy set
+     * @return the kernel of the fuzzy set.
      */
     @Override
-    public Set<Domain> kernel() {
+    public Set<D> kernel() {
         return alphaCut(1.0);
     }
 
     /**
-     * Return the support of the fuzzy set
+     * Return the support of the fuzzy set.
      *
-     * @return the support of the fuzzy set
+     * @return the support of the fuzzy set.
      */
     @Override
-    public Set<Domain> support() {
+    public Set<D> support() {
         return alphaCut(0.0+JFIMath.EPSILON);
     }
 
@@ -203,9 +212,9 @@ public class DiscreteFuzzySet<Domain> implements FuzzySet<Domain>, Iterable<Entr
      * element removal, which removes the corresponding mapping from the fuzzy
      * set; It does not support the add operation.
      * 
-     * @return a set view of the mappings contained in this map
+     * @return a set view of the mappings contained in this map.
      */
-    public Set<Entry<Domain,Double>> entrySet() {
+    public Set<Entry<D,Double>> entrySet() {
         return dataMap.entrySet();
     }
     
