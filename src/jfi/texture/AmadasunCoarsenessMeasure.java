@@ -8,7 +8,7 @@ import java.awt.image.WritableRaster;
  * @author Pedro M. Martínez Jiménez
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.)
  */
-public class AmadasunCoarsenessMeasure implements TextureMeasure {
+public class AmadasunCoarsenessMeasure implements TextureMeasure<Double> {
 
     private float distance;
     private float greyLevels;

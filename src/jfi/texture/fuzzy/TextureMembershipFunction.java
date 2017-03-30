@@ -14,7 +14,7 @@ import jfi.utils.Interval;
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
 public class TextureMembershipFunction implements MembershipFunction<BufferedImage>{
-    TextureMeasure measure1=null, measure2=null, measures[];
+    TextureMeasure<Double> measure1=null, measure2=null, measures[];
     PolynomialFunction mfunction;
     
     

@@ -6,8 +6,9 @@ import java.util.function.Function;
 /**
  *
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
+ * @param <T> the domain of the measure 
  */
-public interface TextureMeasure extends Function<BufferedImage, Double>{
+public interface TextureMeasure<T> extends Function<BufferedImage, T>{
     /**
      * Applies the texture measure to the given image.
 
@@ -15,5 +16,5 @@ public interface TextureMeasure extends Function<BufferedImage, Double>{
      * @return the texture measure
      */
     @Override
-    public Double apply(BufferedImage image);
+    public T apply(BufferedImage image);
 }
