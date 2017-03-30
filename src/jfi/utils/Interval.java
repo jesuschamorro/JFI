@@ -1,44 +1,94 @@
-/*
-  Closed interval of numbers
-
-  @author Jesús Chamorro Martínez - UGR
- */
-
-/*
-La implementación actual es para el caso 1D. Pendiente la generalización a ND
-*/
-
 package jfi.utils;
 
+import java.security.InvalidParameterException;
+
+/**
+ * Interval of numbers (open or closed).
+ * 
+ * @param <N> the interval domain.
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
+ */
 public class Interval<N extends Number> {
+    /**
+     * Left endpoint.
+     */
+    private N left;
+    /**
+     * Right endpoint.
+     */
+    private N right;
+    /**
+     * Flag for open-left interval.
+     */
+    private boolean left_open;
+    /**
+     * Flag for open-right interval.
+     */
+    private boolean right_open;
 
     /**
-     * Left endpoint
+     * Constructs a new closed interval.
+     * 
+     * @param left left endpoint.
+     * @param right right endpoint.
      */
-    private N a;
-    /**
-     * Right endpoint
-     */
-    private N b;
-
+    public Interval(N left, N right) {
+        this(left,right,false,false);
+    }
+    
     /**
      * Constructs a new interval.
      * 
-     * @param a left endpoint
-     * @param b right endpoint
+     * @param left left endpoint.
+     * @param right right endpoint.
+     * @param left_open <tt>true</tt> for an open-left interval.
+     * @param right_open <tt>true</tt> for an open-right interval.
      */
-    public Interval(N a, N b) {
-        this.a = a;
-        this.b = b;
+    public Interval(N left, N right, boolean left_open, boolean right_open) {
+        this.setEndPoints(left, right);
+        this.setLeftOpen(left_open);
+        this.setRightOpen(right_open);
+    }    
+
+    /**
+     * Set the endpoints of this interval.
+     * 
+     * @param left left endpoint.
+     * @param right right endpoint.
+     */
+    public void setEndPoints(N left, N right){
+        if (left.doubleValue()>right.doubleValue()) {
+            throw new InvalidParameterException("The left endpoint must be less or equal than the right one");
+        }
+        this.left = left;
+        this.right = right;
+    }
+    
+    /**
+     * Set the left endpoint of this interval.
+     * 
+     * @param left the left endpoint
+     */
+    public void setLeftEndpoint(N left) {
+        this.setEndPoints(left,this.right);
     }
 
+    /**
+     * Set the right endpoint of this interval.
+     * 
+     * @param right the right endpoint
+     */
+    public void setRightEndpoint(N right) {
+        this.setEndPoints(this.left, right);
+    }
+    
     /**
      * Returns the left endpoint of this interval.
      * 
      * @return the left endpoint of this interval
      */
-    public N getA() {
-        return a;
+    public N getLeftEndpoint() {
+        return left;
     }
 
     /**
@@ -46,37 +96,57 @@ public class Interval<N extends Number> {
      * 
      * @return the right endpoint of this interval
      */
-    public N getB() {
-        return b;
+    public N getRightEndpoint() {
+        return right;
     }
 
     /**
-     * Set the left endpoint of this interval.
+     * Check if the interval is left-open.
      * 
-     * @param a the left endpoint
+     * @return <tt>true</tt> if the interval is left-open.
      */
-    public void setA(N a) {
-        this.a = a;
+    public boolean isLeftOpen(){
+        return this.left_open;
     }
-
+    
     /**
-     * Set the right endpoint of this interval.
+     * Check if the interval is right-open.
      * 
-     * @param b the right endpoint
+     * @return <tt>true</tt> if the interval is right-open.
      */
-    public void setB(N b) {
-        this.b = b;
+    public boolean isRightOpen(){
+        return this.right_open;
     }
-
+    
+    /**
+     * Set the left-open status (open or closed).
+     * 
+     * @param status the new left-open status.
+     */
+    public void setLeftOpen(boolean status){
+        this.left_open = status;
+    }
+    
+    /**
+     * Set the right-open status (open or closed).
+     * 
+     * @param status the new right-open status.
+     */
+    public void setRightOpen(boolean status){
+        this.right_open = status;
+    }
+    
     /**
      * Checks if this intervals contains the given number.
      * 
-     * @param number the number to be analyzed.
+     * @param n the number to be analyzed.
      * @return <tt>true</tt> if this intervals contains the given number, 
      * <tt>false</tt> if not
      */
-    public boolean contains(N number) {
-        return (number.doubleValue() >= a.doubleValue() && number.doubleValue() <= b.doubleValue());
+    public boolean contains(N n) {
+        boolean inside_left = left_open ? (n.doubleValue() > left.doubleValue()) : (n.doubleValue() >= left.doubleValue());
+        boolean inside_right = right_open ? (n.doubleValue() < right.doubleValue()) : (n.doubleValue() <= right.doubleValue());
+        return inside_left && inside_right;
     }
     
     /**
@@ -85,7 +155,7 @@ public class Interval<N extends Number> {
      * @return the centre of interval
      */
     public N center(){
-        Double center = (a.doubleValue()+b.doubleValue())/2;
+        Double center = (left.doubleValue()+right.doubleValue())/2;
         return (N)center;
     }
     
@@ -95,15 +165,15 @@ public class Interval<N extends Number> {
      * @return the length of the interval 
      */
     public double length() {
-        return Math.abs(b.doubleValue() - a.doubleValue());
+        return Math.abs(right.doubleValue() - left.doubleValue());
     }
 
     /**
-     * Check if the interval is empty.
+     * Check if the interval is empty (i.e, if the endpoints are equal).
      * 
      * @return <tt>true</tt> if the interval is empty
      */
     public boolean isEmpty() {
-        return a.doubleValue() > b.doubleValue();
+        return left.doubleValue() > right.doubleValue();
     }
 }

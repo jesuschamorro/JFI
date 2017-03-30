@@ -1,30 +1,31 @@
 package jfi.fuzzy.membershipfunction;
 
 /**
- *
+ * Interface for a polynomial-based membership function. 
+ * 
+ * @param <D> the domain of the function.
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
- * @param <Domain>
  */
-public interface PolynomialFunction<Domain> extends MembershipFunction<Domain> {
+public interface PolynomialFunction<D> extends MembershipFunction<D> {
 
     /**
-     * Return the degree of the polynomial
+     * Returns the degree of the polynomial.
      *
-     * @return the degree of the polynomial
+     * @return the degree of the polynomial.
      */
     public int getPolynomialDegree();
 
     /**
-     * Set new coeficients for this polynominal function
+     * Set new coeficients for this polynominal-based function.
      *
-     * @param coeficients the new coeficients
+     * @param coeficients the new coeficients.
      */
     public void setCoeficients(double coeficients[]);
 
     /**
-     * Return the coeficients of the polynomial
+     * Returns the coeficients of the polynomial-based function.
      *
-     * @return the coeficients of the polynomial
+     * @return the coeficients of the polynomial-based function.
      */
     public double[] getCoeficients();
 }

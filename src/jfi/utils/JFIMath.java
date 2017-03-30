@@ -304,4 +304,15 @@ public class JFIMath {
         Double round = Math.round(number*power)/power;      
         return round;
     }
+    
+    /**
+     * Calculates the factorial of a given number.
+     * 
+     * @param n the number
+     * @return the factorial
+     * @throws ArithmeticException if the result overflows a long
+     */
+    public static long factorial(long n) {		
+      return n == 0 ? 1 : Math.multiplyExact(n, factorial(n - 1));
+   }
 }

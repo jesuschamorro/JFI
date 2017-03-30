@@ -2,6 +2,7 @@ package jfi.texture.fuzzy;
 
 import java.security.InvalidParameterException;
 import jfi.fuzzy.membershipfunction.PolynomialFunction1D;
+import jfi.fuzzy.membershipfunction.PolynomialFunction1DAlphaBeta;
 import jfi.fuzzy.membershipfunction.PolynomialFunction2D;
 import jfi.texture.AmadasunCoarsenessMeasure;
 import jfi.texture.CorrelationCoarsenessMeasure;
@@ -71,7 +72,7 @@ public class FuzzyTextureFactory {
             double alpha = 0.1727;
             double beta = 0.5858;
             double coeficients[] = {1.8707, -6.4835, 9.4901, -6.6128};
-            PolynomialFunction1D mfunction = new PolynomialFunction1D(coeficients, alpha, beta);
+            PolynomialFunction1D mfunction = new PolynomialFunction1DAlphaBeta(coeficients, alpha, beta);
             TextureMeasure measure = new AmadasunCoarsenessMeasure();
             return new TextureMembershipFunction(mfunction, measure);
         }
@@ -88,7 +89,7 @@ public class FuzzyTextureFactory {
             double alpha = 0.0301;
             double beta = 0.7711;
             double coeficients[] = {1.0486, -1.7013, 2.9961, -3.3110};
-            PolynomialFunction1D mfunction = new PolynomialFunction1D(coeficients, alpha, beta);
+            PolynomialFunction1D mfunction = new PolynomialFunction1DAlphaBeta(coeficients, alpha, beta);
             TextureMeasure measure = new CorrelationCoarsenessMeasure();
             return new TextureMembershipFunction(mfunction, measure);
         }

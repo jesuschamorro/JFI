@@ -1,8 +1,6 @@
 package jfi.fuzzy;
 
 import jfi.fuzzy.membershipfunction.MembershipFunction;
-import jfi.utils.Interval;
-import jfi.utils.JFIMath;
 
 /**
  * Class representing a fuzzy set defined on the basis of given membership
@@ -119,28 +117,8 @@ public class FunctionBasedFuzzySet<D> implements FuzzySet<D> {
      * @return the alpha-cut.
      */
     @Override
-    public Interval<Number> alphaCut(double alpha) {
+    public <R> R alphaCut(double alpha) {
         return mfunction.getAlphaCut(alpha);
-    }
-
-    /**
-     * Returns the kernel of the fuzzy set.
-     *
-     * @return the kernel of the fuzzy set.
-     */
-    @Override
-    public Interval<Number> kernel() {
-        return alphaCut(1.0f);
-    }
-
-    /**
-     * Returns the support of the fuzzy set.
-     *
-     * @return the support of the fuzzy set.
-     */
-    @Override
-    public Interval<Number> support() {
-        return alphaCut(0.0 + JFIMath.EPSILON);
     }
 
 }

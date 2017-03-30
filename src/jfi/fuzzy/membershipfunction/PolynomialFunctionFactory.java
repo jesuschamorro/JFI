@@ -42,7 +42,7 @@ public class PolynomialFunctionFactory {
         double alpha = 0.1727;
         double beta = 0.5858;
         double coeficients[] = {1.8707, -6.4835, 9.4901, -6.6128};
-        return new PolynomialFunction1D(coeficients,alpha,beta);
+        return new PolynomialFunction1DAlphaBeta(coeficients,alpha,beta);
     }
     
     /**
@@ -56,7 +56,7 @@ public class PolynomialFunctionFactory {
         double alpha = 0.0301;
         double beta = 0.7711;
         double coeficients[] = {1.0486, -1.7013, 2.9961, -3.3110};
-        return new PolynomialFunction1D(coeficients,alpha,beta);
+        return new PolynomialFunction1DAlphaBeta(coeficients,alpha,beta);
     }
      
     /**

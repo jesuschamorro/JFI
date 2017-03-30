@@ -31,6 +31,8 @@ import jfi.fuzzy.DiscreteFuzzySet;
 import jfi.fuzzy.LevelSet;
 import jfi.fuzzy.cardinal.EDCardinal;
 import jfi.fuzzy.cardinal.SigmaCount;
+import jfi.fuzzy.membershipfunction.PiecewiseFunction;
+import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
 import jfi.shape.Contour;
 import jfi.shape.fuzzy.FuzzyContour;
 import jfi.shape.fuzzy.FuzzyContourFactory;
@@ -404,6 +406,30 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         LevelSet l = new LevelSet(fset);
         
         System.out.println("LevelSet: " + l.toString());
+        
+        
+    }
+    
+    public static void pruebaMembershipFuctions(){
+        TrapezoidalFunction f1 = new TrapezoidalFunction(340,350,360,360);
+        double x[] = {339,340,345,350,352,355,357,360,361,359,0,5,10,15,20,21};
+        System.out.println(f1.toString());
+        for(int i=0;i<x.length;i++){
+            System.out.println(x[i]+": "+f1.apply(x[i]));
+        }
+        TrapezoidalFunction f2 = new TrapezoidalFunction(0,0,10,20);
+        System.out.println(f2.toString());
+        for(int i=0;i<x.length;i++){
+            System.out.println(x[i]+": "+f2.apply(x[i]));
+        }
+        PiecewiseFunction f3 = new PiecewiseFunction();
+        f3.add(f1);
+        f3.add(f2);
+        System.out.println(f3.toString());
+        for(int i=0;i<x.length;i++){
+            System.out.println(x[i]+": "+f3.apply(x[i]));
+        }
+        
     }
 
     /**
@@ -442,7 +468,9 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
 
-        pruebaLevelSet();
+        //pruebaMembershipFuctions();
+        
+       
         
         //new VentanaPrincipalJCM().setVisible(true);
     }
