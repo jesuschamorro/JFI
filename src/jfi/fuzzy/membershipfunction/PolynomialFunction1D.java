@@ -1,6 +1,7 @@
 package jfi.fuzzy.membershipfunction;
 
 import java.security.InvalidParameterException;
+import jfi.fuzzy.AlphaCuttable;
 import jfi.utils.Interval;
 
 /**
@@ -105,17 +106,18 @@ public class PolynomialFunction1D implements PolynomialFunction<Double>{
     }
     
     /**
-     * Returns an alpha-cut associated to the membership function. It is only 
-     * supported if the degree of the polynomial is one (in other case, an 
-     * exception is thrown).
+     * Returns an alpha-cut associated to the membership function. It is only
+     * supported if the degree of the polynomial is one (in other case, returns
+     * <tt>null</tt>).
      *
      * @param alpha the alpha value.
-     * @return the alpha-cut.
+     * @return the alpha-cut if the degree of the polynomial is one
+     * (<tt>null</tt> in other case).
      */
     @Override
-    public Interval<Double> getAlphaCut(double alpha) {
+    public Interval<Double> alphaCut(double alpha) {
         if(this.polynomial_degree>1){
-            throw new UnsupportedOperationException("Alpha-cut is not supported in "+this.getClass().getSimpleName()+"."); 
+            return null; // Not supported
         }
         return alphaCutN1(alpha);
     }

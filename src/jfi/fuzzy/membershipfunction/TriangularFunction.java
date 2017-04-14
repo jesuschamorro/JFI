@@ -61,7 +61,7 @@ public class TriangularFunction<D extends Number> implements MembershipFunction<
     @Override
     public Double apply(D x) {
         double xd = x.doubleValue();
-        //Si a==b recta con pendiente; si no, función escalón
+        //If a!=b straight line with its slope; else, step function
         double f1 = a != b ? (xd - a) / (b - a) : (xd >= a ? 1.0 : 0.0);
         double f2 = b != c ? (c - xd) / (c - b) : (xd <= c ? 1.0 : 0.0);
         return Math.max(Math.min(f1, f2), 0.0);
@@ -100,7 +100,7 @@ public class TriangularFunction<D extends Number> implements MembershipFunction<
      * @return the alpha-cut.
      */
     @Override
-    public Interval<Double> getAlphaCut(double alpha) {
+    public Interval<Double> alphaCut(double alpha) {
         Double interval_a = (b - a)*alpha + a;
         Double interval_b = c - (c - b)*alpha;
         return new Interval<>(interval_a, interval_b);

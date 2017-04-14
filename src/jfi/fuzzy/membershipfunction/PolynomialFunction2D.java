@@ -2,7 +2,6 @@ package jfi.fuzzy.membershipfunction;
 
 import java.awt.geom.Point2D;
 import java.security.InvalidParameterException;
-import jfi.utils.Interval;
 import jfi.utils.JFIMath;
 
 /**
@@ -54,7 +53,7 @@ public class PolynomialFunction2D implements PolynomialFunction<Point2D.Double>{
         if(coeficients==null || coeficients.length==0){
             throw new InvalidParameterException("Empty coeficient set.");
         }
-        if(!setPolynomialDegree()){
+        if(!setPolynomialDegree(coeficients)){
             throw new InvalidParameterException("Invalid number of coeficients. The number of coeficients should be (n!+n), with 'n' being the polynomial degree.");
         }
         this.coeficients = coeficients;
@@ -75,9 +74,10 @@ public class PolynomialFunction2D implements PolynomialFunction<Point2D.Double>{
      * The number of coeficients should be (n!+n), with 'n' being the polynomial degree 
      * (if not, the setting is not done)
      * 
+     * @param coeficients the set of coeficients
      * @return <tt>true<tt> the number of coeficients is correct and the setting is done
      */
-    private boolean setPolynomialDegree(){
+    private boolean setPolynomialDegree(double coeficients[]){
         int n = 1;
         long factorial = 1;    
         //Pendiente: chequear desbordamiento
@@ -133,17 +133,6 @@ public class PolynomialFunction2D implements PolynomialFunction<Point2D.Double>{
             }
         }
         return result;
-    }
-    
-    /**
-     * The alpha-cut is not supported for this type of membership function.
-     *
-     * @param alpha the alpha value.
-     * @return the alpha-cut.
-     */
-    @Override
-    public Interval<Number> getAlphaCut(double alpha) {
-        throw new UnsupportedOperationException("Alpha-cut is not supported in "+this.getClass().getSimpleName()+"."); 
     }
     
 }

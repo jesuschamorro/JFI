@@ -1,7 +1,5 @@
 package jfi.fuzzy;
 
-import jfi.utils.JFIMath;
-
 /**
  * An interface representing a fuzzy set on a given domain.
  *
@@ -44,33 +42,4 @@ public interface FuzzySet<D> {
      * @return the membership degree.
      */
     public double membershipDegree(D e);
-
-    /**
-     * Returns the alpha-cut of the fuzzy set for a given alpha.
-     *
-     * @param <R> the type of the alpha-cut.
-     * @param alpha the alpha.
-     * @return the alpha-cut.
-     */
-    public <R> R alphaCut(double alpha);
-
-    /**
-     * Returns the kernel of the fuzzy set.
-     *
-     * @param <R> the type of the kernel.
-     * @return the kernel of the fuzzy set.
-     */
-    default public <R> R kernel(){
-        return alphaCut(1.0f);
-    }
-
-    /**
-     * Returns the support of the fuzzy set.
-     *
-     * @param <R> the type of the support.
-     * @return the support of the fuzzy set.
-     */
-    default public <R> R support(){
-        return alphaCut(0.0 + JFIMath.EPSILON);
-    }
 }

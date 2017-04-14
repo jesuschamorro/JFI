@@ -26,7 +26,7 @@ import java.awt.image.WritableRaster;
  * is more common to know the equations for converting from/to RGB. To face the 
  * above, the new filter method allows to decide if to use the CIEXYZ, as usual,
  * or to use the RGB one (in that case, if the source image is an RGB image, 
- * only one corvesion is needed).
+ * only one conversion is needed).
  * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
@@ -193,30 +193,63 @@ public class ColorConvertOp extends java.awt.image.ColorConvertOp{
      * images do not match. 
      */
     private BufferedImage _filter(BufferedImage src, BufferedImage dst) {
+        // We check the parameters. In particular, the source/destination images 
+        // must be compatibles with the source and destination color spaces of 
+        // this operator (if they were set when it was constructed).
         IllegalArgumentException check = checkFilterParameters(src, dst);
-        if( check != null ) throw check;
+        if (check != null) {
+            throw check;
+        }
         
-        // We set the source and destination color spaces. If they (one or both)
-        // were set when this operator was constructed, at this point we know 
-        // that they are compatibles with the source/destination images. If they
-        // were not set, the image ones will be used. 
-        ColorSpace srcColorSpace, dstColorSpace;
+        // The source/destination images are prepared for conversion
         if (src.getColorModel() instanceof IndexColorModel) {
             IndexColorModel icm = (IndexColorModel) src.getColorModel();
             src = icm.convertToIntDiscrete(src.getRaster(), true);
         }
-        srcColorSpace = src.getColorModel().getColorSpace();
+        BufferedImage savdest = null;
+        if(dst!=null && dst.getColorModel() instanceof IndexColorModel) {
+            savdest = dst;
+            dst = null;
+        }
         if(dst==null){
             dst = createCompatibleDestImage(src, null); // Use superclss CSList
-        } 
-        dstColorSpace = dst.getColorModel().getColorSpace();
+        }
         
-        // We start the conversion of color spaces using the toRGB and fromRGB
-        // methods. The use of alpha component will be taken into account.        
+        // At this point, both source and destination images are available in
+        // the the suitable color space (according to this operator). Now the 
+        // conversion is performed considering two cases: the particular one
+        // of a RGB source image without alpha component, and the general one 
+        // (based in the use of the toRGB/fromRGB methods and taking into 
+        // account the alpha component)
+        BufferedImage output;
+        if(src.getColorModel().getColorSpace().isCS_sRGB() && !src.getColorModel().hasAlpha()){
+            output = _filterRGB_NoAlpha(src,dst); // RGB & no-alpha
+        } else {
+            output = _filterGeneralCase(src,dst); // Any color space
+        }
+        if(savdest!=null){ // IndexColorModel case
+            output = this.copyImage(output,savdest);
+        }
+        return output;
+    }
+    
+    /**
+     * Inner method called from _filter for a general conversion, regardless of
+     * the source color space or the alpha component. 
+     *
+     * @param src the source <code>BufferedImage</code> to be converted (in RGB
+     * and without alpha).
+     * @param dest the destination <code>BufferedImage</code> (not null).
+     *
+     * @return <code>dst</code> color converted from <code>src</code>
+     */
+    private BufferedImage _filterGeneralCase(BufferedImage src, BufferedImage dst){
         Raster srcRas = src.getRaster();
         WritableRaster dstRas = dst.getRaster();
         ColorModel srcCM = src.getColorModel();
         ColorModel dstCM = dst.getColorModel();
+        ColorSpace srcColorSpace = src.getColorModel().getColorSpace();
+        ColorSpace dstColorSpace = dst.getColorModel().getColorSpace();
         int w = src.getWidth();
         int h = src.getHeight();
         int srcNumComp = srcCM.getNumColorComponents();
@@ -252,6 +285,42 @@ public class ColorConvertOp extends java.awt.image.ColorConvertOp{
     }
     
     /**
+     * Inner method called from _filter for the particular case of RGB source
+     * image without alpha component. The RGB as source is the most usual one,
+     * so, in that case, is not necessary to call the "toRGB" method (as in the
+     * general case). 
+     * 
+     * @param src the source <code>BufferedImage</code> to be converted (in RGB
+     * and without alpha).
+     * @param dest the destination <code>BufferedImage</code> (not null).
+     *
+     * @return <code>dst</code> color converted from <code>src</code> 
+     */
+    private BufferedImage _filterRGB_NoAlpha(BufferedImage src, BufferedImage dst){
+        Raster srcRas = src.getRaster();
+        WritableRaster dstRas = dst.getRaster();
+        ColorModel srcCM = src.getColorModel();
+        ColorModel dstCM = dst.getColorModel();
+        ColorSpace dstColorSpace = dst.getColorModel().getColorSpace();
+        int w = src.getWidth();
+        int h = src.getHeight();
+        Object pixel = null;
+        float[] srcColor = null;
+        float[] dstColor;
+        
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                pixel = srcRas.getDataElements(x, y, pixel); // RGB
+                srcColor = srcCM.getNormalizedComponents(pixel, srcColor, 0);
+                dstColor = dstColorSpace.fromRGB(srcColor);
+                pixel = dstCM.getDataElements(dstColor, 0, pixel);
+                dstRas.setDataElements(x, y, pixel);
+            }
+        }
+        return dst;
+    }
+    
+    /**
      * Check if the filtering parameters are correct.
      * 
      * @param src the source <code>BufferedImage</code> to be converted
@@ -276,4 +345,20 @@ public class ColorConvertOp extends java.awt.image.ColorConvertOp{
         return null;
     }
     
+    /**
+     * Copy the source image to the destination one.
+     * 
+     * @param srcImage source image (not null)
+     * @param dstImage destination image (not null)
+     * @return 
+     */
+    private BufferedImage copyImage(BufferedImage srcImage, BufferedImage dstImage) {
+        java.awt.Graphics2D big = dstImage.createGraphics();
+        try {
+            big.drawImage(srcImage, 0, 0, null);
+        } finally {
+            big.dispose();
+        }
+        return dstImage;
+    }
 }

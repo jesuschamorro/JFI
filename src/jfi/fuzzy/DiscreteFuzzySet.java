@@ -1,11 +1,11 @@
 package jfi.fuzzy;
 
+import java.security.InvalidParameterException;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
-import jfi.utils.JFIMath;
 
 /**
  * Class representing a fuzzy set on a discrete domain. The reference set is a
@@ -15,7 +15,7 @@ import jfi.utils.JFIMath;
  * @param <D> the domain of the fuzzy set.
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class DiscreteFuzzySet<D> implements FuzzySet<D>, Iterable<Entry<D,Double>> {
+public class DiscreteFuzzySet<D> implements FuzzySet<D>, AlphaCuttable, Iterable<Entry<D,Double>> {
     /**
      * The label associated to the fuzzy set.
      */
@@ -154,6 +154,9 @@ public class DiscreteFuzzySet<D> implements FuzzySet<D>, Iterable<Entry<D,Double
      * @return <tt>true</tt> if this set contains the specified element
      */
     public boolean setMembershipDegree(D e, double degree){
+        if(degree<0.0 || degree>1.0){
+            throw new InvalidParameterException("The degree must be between 0 and 1");
+        }
         return dataMap.replace(e, degree) != null;
     } 
 
@@ -179,26 +182,6 @@ public class DiscreteFuzzySet<D> implements FuzzySet<D>, Iterable<Entry<D,Double
             }
         }
         return alpha_cut;
-    }
-
-    /**
-     * Return the kernel of the fuzzy set.
-     *
-     * @return the kernel of the fuzzy set.
-     */
-    @Override
-    public Set<D> kernel() {
-        return alphaCut(1.0);
-    }
-
-    /**
-     * Return the support of the fuzzy set.
-     *
-     * @return the support of the fuzzy set.
-     */
-    @Override
-    public Set<D> support() {
-        return alphaCut(0.0+JFIMath.EPSILON);
     }
 
     /**

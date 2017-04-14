@@ -7,7 +7,6 @@ import jfi.fuzzy.membershipfunction.PolynomialFunction;
 import jfi.fuzzy.membershipfunction.PolynomialFunction1D;
 import jfi.fuzzy.membershipfunction.PolynomialFunction2D;
 import jfi.texture.TextureMeasure;
-import jfi.utils.Interval;
 
 /**
  *
@@ -55,8 +54,4 @@ public class TextureMembershipFunction implements MembershipFunction<BufferedIma
         return output;
     }
 
-    @Override
-    public Interval<Number> getAlphaCut(double alpha) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }

@@ -57,13 +57,18 @@ public class PiecewiseFunction<D> extends ArrayList<MembershipFunction> implemen
      * piecewise.
      *
      * @param alpha the alpha value
-     * @return the alpha-cut represented as a list of sub-function alpha-cuts.
+     * @return the alpha-cut represented as a list of sub-function alpha-cuts, 
+     * null if alpha-cut is not available for some of the functions.
      */     
     @Override
-    public ArrayList getAlphaCut(double alpha) {
+    public ArrayList alphaCut(double alpha) {
         ArrayList output = new ArrayList();
-        for(MembershipFunction f: this){
-            output.add(f.getAlphaCut(alpha));
+        Object alphacut;
+        for (MembershipFunction f : this) {
+            alphacut = f.alphaCut(alpha);
+            if(alphacut!=null) 
+                output.add(alphacut);
+            else return null;
         }
         return output;
     }

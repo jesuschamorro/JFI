@@ -1,6 +1,7 @@
 package jfi.fuzzy.membershipfunction;
 
 import java.security.InvalidParameterException;
+import jfi.fuzzy.AlphaCuttable;
 import jfi.utils.Interval;
 
 /**
@@ -68,7 +69,7 @@ public class TrapezoidalFunction<D extends Number> implements MembershipFunction
     @Override
     public Double apply(D x) {
         double xd = x.doubleValue();
-        //If a==b straight line with its slope; else, step function
+        //If a!=b straight line with its slope; else, step function
         double f1 = b != a ? (xd - a) / (b - a) : (xd >= a ? 1.0 : 0.0);
         double f2 = d != c ? (d - xd) / (d - c) : (xd <= c ? 1.0 : 0.0);
         return (Math.max(Math.min(Math.min(f1, 1), f2), 0));
@@ -110,7 +111,7 @@ public class TrapezoidalFunction<D extends Number> implements MembershipFunction
      * @return the alpha-cut.
      */
     @Override
-    public Interval<Double> getAlphaCut(double alpha) {
+    public Interval<Double> alphaCut(double alpha) {
         Double interval_a = (b - a)*alpha + a;
         Double interval_b = d - (d - c)*alpha;
         return new Interval<>(interval_a, interval_b);

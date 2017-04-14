@@ -1,5 +1,6 @@
 package jfi.fuzzy.membershipfunction;
 
+import jfi.fuzzy.AlphaCuttable;
 import java.util.function.Function;
 /**
  * 
@@ -14,13 +15,29 @@ import java.util.function.Function;
  * @param <D> domain of the membership function
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public interface MembershipFunction<D> extends Function<D, Double> {
+@FunctionalInterface 
+public interface MembershipFunction<D> extends Function<D, Double>, AlphaCuttable {
     /**
-     * Returns an alpha-cut associated to the membership function
+     * By default, the alpha-cut associated to a membership function is null
+     * (which implies that any alpha-cut of the fuzzy set associated to this
+     * membeship function is also null).
      *
-     * @param <R> the result type.
-     * @param alpha the alpha value
-     * @return the alpha-cut
+     * The way of calculating the alpha-cut will depend on the function, so its
+     * implementation is left to the subclases. Depending on the complexity of
+     * the function, it will not always be available; nevertheless, an answer is
+     * needeed if an alpha-cut is required to a function-based fuzzy set: for 
+     * this reason, it is assumed the <tt>null</tt> return understood as 
+     * "no alpha-cut".
+     * 
+     * In addition, in order to keep the behavior of a functional interface, 
+     * only one abstract method is allowed, so default implementation is needed
+     * for the other ones.
+     *
+     * @param alpha the alpha value.
+     * @return the alpha-cut.
      */
-    public <R> R getAlphaCut(double alpha);
+    @Override
+    default public <R> R alphaCut(double alpha){
+        return null;
+    }  
 }

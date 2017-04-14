@@ -28,7 +28,7 @@ import jfi.fuzzy.membershipfunction.MembershipFunction;
  * @param <D> the domain of the fuzzy set.
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class FunctionBasedFuzzySet<D> implements FuzzySet<D> {
+public class FunctionBasedFuzzySet<D> implements FuzzySet<D>, AlphaCuttable {
     /**
      * The label associated to the fuzzy set.
      */
@@ -111,14 +111,15 @@ public class FunctionBasedFuzzySet<D> implements FuzzySet<D> {
     }
 
     /**
-     * Returns the alpha-cut of the fuzzy set for a given alpha.
+     * Returns the alpha-cut of the fuzzy set for a given alpha if available for
+     * the membeship function (null if not).
      *
      * @param alpha the alpha.
      * @return the alpha-cut.
      */
     @Override
     public <R> R alphaCut(double alpha) {
-        return mfunction.getAlphaCut(alpha);
+        return mfunction.alphaCut(alpha);
     }
 
 }

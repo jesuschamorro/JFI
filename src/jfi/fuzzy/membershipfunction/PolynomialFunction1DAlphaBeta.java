@@ -33,7 +33,7 @@ public class PolynomialFunction1DAlphaBeta extends PolynomialFunction1D{
      * @param coeficients the coeficients of the polynominal.
      * @param alpha the lower boundary (alpha parameter).
      * @param beta the upper boundary (beta parameter).
-     * @throws InvalidParameterException if alpha>=beta.
+     * @throws InvalidParameterException if alpha greater than or equal to beta.
      */
     public PolynomialFunction1DAlphaBeta(double coeficients[], double alpha, double beta){
         super(coeficients);
