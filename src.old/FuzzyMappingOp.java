@@ -6,30 +6,18 @@ import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.WritableRaster;
+import java.util.Iterator;
 import jfi.fuzzy.FuzzySet;
 
 /**
  * Class representing a fuzzy filtering on an image. Associated to this operator
  * there are a fuzzy set which domain is a <tt>T</tt>; on the basis of this
  * fuzzy set, for each pixel of the source image, a membership is calculated and
- * stored as result.
- *
- * In the mapping process, it is necessary to iterate over the image pixels and,
- * in each iteration, an object of type <tt>T</tt> (the domain of the fuzzy set)
- * must be provided in order to calculate the membership degree associated to
- * the pixel. Depending on the filter, this object could be a three-dimesional
- * point representing a color (RGB, for example), a subimage centered in the
- * pixel (for example, for texture analysis), a region, etc. Therefore, when a
- * {@link jfi.image.FuzzyMappingOp} filter is constructed, it is needed to
- * provide a {@link jfi.image.BufferedImageIterator}, which implements both (1)
- * the iteration rules and (2) the way a <tt>T</tt> object is calculated at a
- * given location.
- *
- * The output is a grey level image where a white value means membership degree
- * of 1.0, while a black value means membership degree of 0.0
+ * stored as result. The output is a grey level image where a white value means
+ * membership degree of 1.0, while a black value means membership degree of 0.0.
  *
  * @param <T> the domain of the fuzzy set associated to this operator.
- *
+ * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
 public class FuzzyMappingOp<T> extends BufferedImageOpAdapter{
@@ -38,12 +26,14 @@ public class FuzzyMappingOp<T> extends BufferedImageOpAdapter{
      */
     protected FuzzySet<T> fuzzyset;
     /**
-     * Iterator over the image. In each iteration, it produces an object of 
-     * type <tt>T</tt> (needed in the mapping process).
+     * A producer of <tt>T</tt> objects from an image (needed in the mapping
+     * process)
      * 
-     * See {@link jfi.image.BufferedImageIterator} 
+     * See {@link jfi.image.FuzzyMappingOp.ItemMappingProducer} 
      */   
+    protected PixelDataProducer<T> producer;   
     protected BufferedImageIterator<T> iterator;
+    
     /**
      * The maximum grey level value.
      */
@@ -52,13 +42,16 @@ public class FuzzyMappingOp<T> extends BufferedImageOpAdapter{
     /**
      * Constructs a new fuzzy mapping operator.
      * 
-     * @param fuzzyset the fuzzy set of this fuzzy mapping operator.
-     * @param iterator the iterator over the image. In each iteration, it must 
-     * produce an object of type <tt>T</tt>.
+     * @param fuzzyset the fuzzy set of this fuzzy operator.
+     * @param producer the <tt>T</tt> object producer.
      */
+    public FuzzyMappingOp(FuzzySet<T> fuzzyset, PixelDataProducer<T> producer){
+        this.setFuzzySet(fuzzyset);
+        this.setPixelDataProducer(producer);
+    }
     public FuzzyMappingOp(FuzzySet<T> fuzzyset, BufferedImageIterator<T> iterator){
         this.setFuzzySet(fuzzyset);
-        this.setIterator(iterator);
+        this.iterator = iterator;
     }
     
     /**
@@ -84,25 +77,25 @@ public class FuzzyMappingOp<T> extends BufferedImageOpAdapter{
     }
     
     /**
-     * Set the image iterator of this mapping operator.
-     *
-     * @param iterator iterator over the image.
-     * @throws NullPointerException if the iterator is null.
+     * Set the pixel data producer of this mapping operator.
+     * 
+     * @param producer the new pixel data producer set of this mapping operator.
+     * @throws NullPointerException if the producer is null.
      */
-    public final void setIterator(BufferedImageIterator<T> iterator){
-        if (iterator == null) {
-            throw new NullPointerException("Iterator is null");
+    public final void setPixelDataProducer(PixelDataProducer<T> producer){
+        if (producer == null) {
+            throw new NullPointerException("Producer is null");
         }
-        this.iterator = iterator;
+        this.producer = producer;
     }
     
     /**
-     * Returns the image iterator of this mapping operator.
+     * Returns the pixel data producer of this mapping operator.
      * 
-     * @return the image  of this mapping operator.
+     * @return the pixel data producer of this mapping operator.
      */
-    public BufferedImageIterator<T> getIterator(){
-        return this.iterator;
+    public PixelDataProducer<T> getPixelDataProducer(){
+        return this.producer;
     }
     
     /**
@@ -131,21 +124,43 @@ public class FuzzyMappingOp<T> extends BufferedImageOpAdapter{
             dest = createCompatibleDestImage(src, null);
         }
         WritableRaster destRaster = dest.getRaster();
-        // The fuzzy filtering is applied pixel by pixel using the iterator
+        
+        int width = src.getWidth();
+        int height = src.getHeight();             
+        double degree;
+        T item;
+        // The fuzzy filtering is applied pixel by pixel
+//        for (int x = 0; x < width; x++) {
+//            for (int y = 0; y < height; y++) {
+//                item = producer.get(src, x, y);
+//                degree = item!=null ? fuzzyset.membershipDegree(item) : 0.0;
+//                destRaster.setSample(x, y, 0, (byte)(degree*MAX_LEVEL));                
+//            }
+//        }
+        
+////        try {
+////            producer.setImage(src);
+////            while (producer.hasNext()) {
+////                item = (T) producer.next();
+////                degree = item != null ? fuzzyset.membershipDegree(item) : 0.5;
+////                destRaster.setSample(producer.getX(), producer.getY(), 0, (byte) (degree * MAX_LEVEL));
+////            }
+////        } catch (Exception ex) {
+////            System.out.println("Error: "+ex);
+////        }
+         
         try {
-            double degree;
-            T item;
             iterator.setImage(src);
             while (iterator.hasNext()) {
                 item = (T) iterator.next();
-                degree = fuzzyset.membershipDegree(item);
-                destRaster.setSample(iterator.getX(), iterator.getY(), 0, 
-                                    (byte)(degree * MAX_LEVEL));
+                degree = item != null ? fuzzyset.membershipDegree(item) : 0.5;
+                destRaster.setSample(iterator.getX(), iterator.getY(), 0, (byte) (degree * MAX_LEVEL));
             }
         } catch (Exception ex) {
             System.out.println("Error: "+ex);
         }
         
+
         if(savdest!=null){ 
             dest = this.copyImage(dest,savdest);
         }
@@ -190,5 +205,40 @@ public class FuzzyMappingOp<T> extends BufferedImageOpAdapter{
             big.dispose();
         }
         return dstImage;
-    }    
+    }
+    
+    /**
+     * Inner interface representing a producer of <tt>T</tt> objects from an
+     * image pixel. In the mapping process, an object of type <tt>T</tt> (the
+     * domain of the fuzzy set) must be provided for each pixel in order to
+     * calculate the membership degree associated to that pixel. Depending on
+     * the filter, this object could be a three-dimesional point representing a
+     * color (RGB, for example), a subimage centered in the pixel (for example,
+     * for texture analysis), a region, etc. Therefore, when a
+     * {@link jfi.image.FuzzyMappingOp} filter is constructed, it is needed to
+     * provide a {@link jfi.image.FuzzyMappingOp.ItemMappingProducer}, which
+     * implements the way a <tt>T</tt> object is calculated from a given image
+     * at a given location.
+     *
+     * @param <T> the domain of the fuzzy set associated to the operator.
+     */
+    public interface PixelDataProducer<T> extends Iterator<T> {  //MappingIterator
+        /**
+         * Returns and object of type <tt>T</tt> (the domain of the fuzzy set
+         * associated to the fuzzy mapping) from the given image at the location
+         * (x,y).
+         *
+         * @param source the source image.
+         * @param x the x-coordinate of the pixel.
+         * @param y the x-coordinate of the pixel.
+         * @return an object of the type of the domain of the fuzzy set 
+         * associated to the fuzzy mapping, <code>null</code> if not available.
+         */
+        public T get(BufferedImage source, int x, int y);
+        
+        public void setImage(BufferedImage image);
+        public int getX();
+        public int getY();
+    }
+    
 }

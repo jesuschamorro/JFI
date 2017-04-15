@@ -18,15 +18,6 @@ import jfi.fuzzy.FuzzySet;
  */
 public class TiledFuzzyMappingOp extends FuzzyMappingOp<BufferedImage>{    
     /**
-     * The width of the tile in pixels.
-     */
-    private int tileWidth;
-    /**
-     * The height of the tile in pixels.
-     */
-    private int tileHeight;
-    
-    /**
      * Constructs a new fuzzy mapping operator with a tile size of 1x1.
      * 
      * @param fuzzyset the fuzzy set of this fuzzy operator.
@@ -44,8 +35,7 @@ public class TiledFuzzyMappingOp extends FuzzyMappingOp<BufferedImage>{
      * @param tileHeight the height of the tile in pixels.
      */
     public TiledFuzzyMappingOp(FuzzySet<BufferedImage> fuzzyset, int tileWidth, int tileHeight){
-        super(fuzzyset, new TileProducer(tileWidth, tileHeight));
-        this.setTileSize(tileWidth, tileHeight);       
+        super(fuzzyset, new BufferedImageIterator.Tile(null,tileWidth, tileHeight));
     }
     
     /**
@@ -57,9 +47,8 @@ public class TiledFuzzyMappingOp extends FuzzyMappingOp<BufferedImage>{
      * greater than 1 (if not, it is set automatically to 1).
      */
     public final void setTileSize(int tileWidth, int tileHeight){
-        this.tileWidth = Math.max(1,tileWidth);
-        this.tileHeight = Math.max(1,tileWidth);
-        ((TileProducer)producer).setTileSize(this.tileWidth, this.tileHeight);
+        ((BufferedImageIterator.Tile)iterator).
+                setTileSize(Math.max(1,tileWidth),Math.max(1,tileHeight));
     } 
     
     /**
@@ -68,7 +57,7 @@ public class TiledFuzzyMappingOp extends FuzzyMappingOp<BufferedImage>{
      * @return the width of the tile.
      */
     public int getTileWidth(){
-        return tileWidth;
+        return ((BufferedImageIterator.Tile)iterator).getTileWidth();
     }
     
     /**
@@ -77,70 +66,6 @@ public class TiledFuzzyMappingOp extends FuzzyMappingOp<BufferedImage>{
      * @return the height of the tile.
      */
     public int getTileHeight(){
-        return tileHeight;
-        
-    }
-
-    /**
-     * Inner class representing a producer of subimages from an image. 
-     */
-    static private class TileProducer implements PixelDataProducer<BufferedImage>  {
-        /**
-         * The width of the tile in pixels.
-         */
-        private int tileWidth;
-        /**
-         * The height of the tile in pixels.
-         */
-        private int tileHeight;
-        /**
-         * Displacement between the center of the tile and its top-left corner.
-         */
-        private int dx, dy;
-        
-        /**
-         * Constructs a new tile producer.
-         * 
-         * @param tileWidth
-         * @param tileHeight 
-         */
-        public TileProducer(int tileWidth, int tileHeight) {
-            this.setTileSize(tileWidth, tileHeight);
-        }
-
-        /**
-         * Set the size of the tile.
-         *
-         * @param tileWidth the width of the tile in pixels. It must be a value
-         * greater than 1 (if not, it is set automatically to 1).
-         * @param tileHeight the height of the tile in pixels. It must be a
-         * value greater than 1 (if not, it is set automatically to 1).
-         */
-        public final void setTileSize(int tileWidth, int tileHeight) {
-            this.tileWidth = Math.max(1, tileWidth);
-            this.tileHeight = Math.max(1, tileWidth);
-            dx = (int)tileWidth/2;
-            dy = (int)tileHeight/2;
-        }
-        
-        /**
-         * Returns a subimage (the domain of the fuzzy set associated to the
-         * fuzzy mapping) from the given image at the location (x,y).
-         *
-         * @param source the source image.
-         * @param x the x-coordinate of the pixel.
-         * @param y the x-coordinate of the pixel.
-         * @return a subimage at the given location, <code>null</code> if the
-         * location is out of bounds.
-         */
-        @Override
-        public BufferedImage get(BufferedImage source, int x, int y) { 
-            try{
-                return source.getSubimage(x-dx, y-dy, tileWidth, tileHeight);
-            } catch(Exception ex){
-                return null;
-            }
-            
-        }        
+        return ((BufferedImageIterator.Tile)iterator).getTileHeight();        
     }
 }

@@ -111,7 +111,7 @@ public class Point3D {
      */
     @Override
     public String toString() {
-        return "Point3D[" + x + ", " + y + "]";
+        return "Point3D[" + x + ", " + y + ", " + z +"]";
     }
 
 }
