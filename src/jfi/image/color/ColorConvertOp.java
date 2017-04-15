@@ -1,4 +1,4 @@
-package jfi.image;
+package jfi.image.color;
 
 import java.awt.RenderingHints;
 import java.awt.color.ColorSpace;

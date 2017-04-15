@@ -2,6 +2,8 @@ package jfi.image;
 
 import jfi.fuzzy.FuzzySet;
 import jfi.geometry.Point3D;
+import jfi.image.BufferedImageIterator;
+import jfi.image.FuzzyMappingOp;
 
 /**
  * Class representing a fuzzy filtering on an image where the domain of the 
