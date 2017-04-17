@@ -1,4 +1,4 @@
-package jfi.image.color;
+package jfi.color;
 
 import java.awt.RenderingHints;
 import java.awt.color.ColorSpace;
@@ -13,6 +13,7 @@ import java.awt.image.WritableRaster;
  * This class performs a pixel-by-pixel color conversion of the data in the
  * source image. 
  * 
+ * <p>
  * It is an extension of the {@link java.awt.image.ColorConvertOp} class that
  * may be used instead of its superclass with the same behavior. The novelty is
  * a new

@@ -1,15 +1,14 @@
-package jfi.image;
+package jfi.image.fuzzy;
 
 import jfi.fuzzy.FuzzySet;
 import jfi.geometry.Point3D;
 import jfi.image.BufferedImageIterator;
-import jfi.image.FuzzyMappingOp;
 
 /**
  * Class representing a fuzzy filtering on an image where the domain of the 
  * fuzzy set is a three-dimensional point. 
  * 
- * @see jfi.image.FuzzyMappingOp
+ * @see jfi.image.fuzzy.FuzzyMappingOp
  *
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */

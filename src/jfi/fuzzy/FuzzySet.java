@@ -3,6 +3,7 @@ package jfi.fuzzy;
 /**
  * An interface representing a fuzzy set on a given domain.
  *
+ * <p>
  * Fuzzy sets are sets whose elements have degrees of membership. They were
  * introduced by Lotfi A. Zadeh in 1965 as an extension of the classical notion
  * of set. In classical set theory, the membership of elements in a set is

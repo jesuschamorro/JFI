@@ -1,7 +1,6 @@
 package jfi.fuzzy.membershipfunction;
 
 import java.security.InvalidParameterException;
-import jfi.fuzzy.AlphaCuttable;
 import jfi.utils.Interval;
 
 /**

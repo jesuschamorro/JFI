@@ -8,6 +8,7 @@ import java.util.Collection;
  * by multiple sub-functions, each of them applying to a certain interval of the
  * main function's domain.
  * 
+ * <p>
  * It may be usefull, for example, with circular domains (as angular ones) where
  * some membership function need to be circular (for example, the fuzzy set 
  * "around zero degrees").

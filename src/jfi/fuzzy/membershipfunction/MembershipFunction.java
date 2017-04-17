@@ -6,6 +6,7 @@ import java.util.function.Function;
  * 
  * Class representing a membership function of a fuzzy set. 
  * 
+ * <p>
  * For any set X, a membership function on X is any function from X to the real
  * unit interval [0,1]. The value 0 means that x is not a member of the fuzzy
  * set; the value 1 means that x is fully a member of the fuzzy set. The values

@@ -1,18 +1,20 @@
-package jfi.image;
+package jfi.image.fuzzy;
 
 import java.awt.image.BufferedImage;
 import jfi.fuzzy.FuzzySet;
+import jfi.image.BufferedImageIterator;
 
 /**
  * Class representing a fuzzy filtering on an image where the domain of the
  * fuzzy set is a subimage.
  *
+ * <p>
  * Associated to this operator there are a fuzzy set which domain is a
  * {@link java.awt.image.BufferedImage}; on the basis of this fuzzy set, for
  * each pixel of the source image, the membership of the subimage (window)
  * centered on that pixel is calculated and stored as result. 
  * 
- * @see jfi.image.FuzzyMappingOp
+ * @see jfi.image.fuzzy.FuzzyMappingOp
  *
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */

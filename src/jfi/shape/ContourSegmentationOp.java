@@ -2,7 +2,6 @@ package jfi.shape;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import jfi.utils.JFIMath;
 
 /**
  * Class implementing the segmentation of a contour.

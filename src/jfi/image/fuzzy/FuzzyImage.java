@@ -1,6 +1,6 @@
-package jfi.image;
+package jfi.image.fuzzy;
 
-import jfi.image.color.GreyColorSpace;
+import jfi.color.GreyColorSpace;
 import java.awt.Point;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -18,6 +18,7 @@ import jfi.fuzzy.FuzzySet;
  * (inheriting its properties and behavior) and, in addition, implements the
  * {@link jfi.fuzzy.FuzzySet} interface (i.e, it is a fuzzy set o pixels).
  *
+ * <p>
  * A fuzzy image can be used as an standard one (for displaying, filtering,
  * write on a file, etc.) and, in addition, it stores information about the
  * membership degree of each pixel. If alpha component is used, it will be
@@ -25,6 +26,7 @@ import jfi.fuzzy.FuzzySet;
  * to the degree of that pixel, being opaque if the membership degree is 1.0,
  * and full transparent if it is 0.0.
  * 
+ * <p>
  * As a fuzzy set, we can get and set the membership degree of a given pixel,
  * calculate its alpha-cut, etc.
  *
@@ -58,7 +60,7 @@ public class FuzzyImage extends BufferedImage implements FuzzySet<Point>, AlphaC
      * degree is 1.0, and full transparent if it is 0.0.
      *
      * This image has a {@link java.awt.image.ComponentColorModel} with a
-     * {@link jfi.image.GreyColorSpace} color space. It uses two bands: one for
+     * {@link jfi.color.GreyColorSpace} color space. It uses two bands: one for
      * the grey level and another for the alpha value. Note that it does not use
      * the default {@link java.awt.color.ColorSpace#CS_GRAY} color space to
      * avoid the internal transformation to/from the CIEXYZ of the later (and
@@ -72,7 +74,7 @@ public class FuzzyImage extends BufferedImage implements FuzzySet<Point>, AlphaC
      * white (grey level 255) if it is 0.0.
      *
      * This image has a {@link java.awt.image.ComponentColorModel} with a
-     * {@link jfi.image.GreyColorSpace} color space and only one band. Note that
+     * {@link jfi.color.GreyColorSpace} color space and only one band. Note that
      * it does not use the default {@link java.awt.color.ColorSpace#CS_GRAY}  
      * color space to avoid the internal transformation to/from the CIEXYZ of 
      * the later (and its darkering of the image).

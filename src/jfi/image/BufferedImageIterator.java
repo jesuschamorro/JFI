@@ -117,6 +117,13 @@ public abstract class BufferedImageIterator<T> implements Iterator<T> {
                 pos = length = 0;
             }
         }
+        
+        /**
+         * Sets iterator position to the initial one.
+         */
+        public void init(){
+            pos = 0;
+        }
 
         /**
          * Returns <code>true</code> if the iteration has more elements (in
@@ -283,6 +290,13 @@ public abstract class BufferedImageIterator<T> implements Iterator<T> {
             } else{
                 pos = length = 0;
             }
+        }
+        
+        /**
+         * Sets iterator position to the initial one.
+         */
+        public void init(){
+            pos = 0;
         }
         
         /**

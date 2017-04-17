@@ -14,6 +14,7 @@ import java.util.Collection;
  * Class representing a shape contour segmentation in the sense of a crisp set 
  * of segments from a given contour. 
  * 
+ * <p>
  * There is not restrictions about the type of segmentation (covered or not, 
  * overlapped or not, etc.), except that all the segmments have to share the 
  * same source contour. Thus, the segmentation  not necessarily have to cover 

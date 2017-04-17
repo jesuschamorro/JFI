@@ -1,4 +1,4 @@
-package jfi.image.color;
+package jfi.color;
 
 import java.awt.color.ColorSpace;
 import static java.awt.color.ColorSpace.CS_CIEXYZ;
