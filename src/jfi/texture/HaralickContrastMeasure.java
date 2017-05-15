@@ -11,7 +11,7 @@ import java.security.InvalidParameterException;
  * @author Pedro M. Martínez Jiménez
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class CorrelationCoarsenessMeasure implements TextureMeasure<Double> {
+public class HaralickContrastMeasure implements TextureMeasure<Double> {
 
     private int distance;
     private int greyLevels;
@@ -22,26 +22,26 @@ public class CorrelationCoarsenessMeasure implements TextureMeasure<Double> {
     /**
      * Constructs the measure object using the default parameters.
      */
-    public CorrelationCoarsenessMeasure() {
+    public HaralickContrastMeasure() {
         this(DEFAULT_DISTANCE, DEFAULT_GREY_LEVELS);
     }
     
     /**
      * Constructs the measure object using the parameter "distance".
      *
-     * @param distance distance parameter of the Haralick Correlation measure.
+     * @param distance distance parameter of the Haralick Contrast measure.
      */
-    public CorrelationCoarsenessMeasure(int distance) {
+    public HaralickContrastMeasure(int distance) {
         this(distance, DEFAULT_GREY_LEVELS);
     }
 
     /**
      * Constructs the measure object using the parameters "distance" and "greyLevels".
      *
-     * @param distance distance parameter of the Haralick Correlation measure.
+     * @param distance distance parameter of the Haralick Contrast measure.
      * @param greyLevels number of grey levels of the image (Only 256 grey levels supported).
      */
-    public CorrelationCoarsenessMeasure(int distance, int greyLevels) {
+    public HaralickContrastMeasure(int distance, int greyLevels) {
         if (greyLevels != DEFAULT_GREY_LEVELS)
             throw new InvalidParameterException("Only 256 grey levels supported");
         else{
@@ -60,27 +60,28 @@ public class CorrelationCoarsenessMeasure implements TextureMeasure<Double> {
         }
         else
             grayscaleImage = image;
-        return correlationMeasure(grayscaleImage);
+        return haralickMeasure(grayscaleImage);
     }
     
     
-    private double correlationMeasure(BufferedImage I){
+    private double haralickMeasure(BufferedImage I){
         final Point[] angulos = new Point[4];
         angulos[0] = new Point(0,1);   // Angle 0
         angulos[1] = new Point(-1, 1);  // Angle 45
         angulos[2] = new Point(-1, 0);  // Angle 90
         angulos[3] = new Point(-1, -1); // Angle 135
 	ResultGLCM result_glcm;
-        double corr;
-        double max_corr = java.lang.Double.MAX_VALUE;
+        double contrast;
+        double max_contrast = -java.lang.Double.MAX_VALUE;
 
         for (Point angulo : angulos) {
             result_glcm = calculateGLCM(I, angulo);
-            corr = calculateCorr(result_glcm);
-            if (Math.abs(corr) < Math.abs(max_corr))
-                max_corr = corr;
+            contrast = calculateContrast(result_glcm);
+            if (contrast > max_contrast)
+                max_contrast = contrast;
         }
-        return max_corr;
+        System.out.println(max_contrast/1000);
+        return max_contrast/1000;
     }
     
     
@@ -131,39 +132,17 @@ public class CorrelationCoarsenessMeasure implements TextureMeasure<Double> {
     }
 
         
-    private double calculateCorr(ResultGLCM result_glcm) {
+    private double calculateContrast(ResultGLCM result_glcm) {
         double[] glcm = result_glcm.getGLCM();
         int[] indices = result_glcm.getIndices();
         int numind = result_glcm.getNumInd();
         int i, j;
         double suma = 0.0;
-        double mu_i = 0.0;
-        double mu_j = 0.0;
-        double sigma_i = 0.0;
-        double sigma_j = 0.0;
 
         for (int conta = 0; conta < numind; conta++) {
             i = (int) (indices[conta] / greyLevels);
             j = indices[conta] % greyLevels;
-            mu_i += i * glcm[indices[conta]];
-            mu_j += j * glcm[indices[conta]];
-        }
-        for (int conta = 0; conta < numind; conta++) {
-            i = (int) (indices[conta] / greyLevels);
-            j = indices[conta] % greyLevels;
-            sigma_i += (i - mu_i) * (i - mu_i) * glcm[indices[conta]];
-            sigma_j += (j - mu_j) * (j - mu_j) * glcm[indices[conta]];
-            suma += (i - mu_i) * (j - mu_j) * glcm[indices[conta]];
-        }
-
-        sigma_i = Math.sqrt(sigma_i);
-        sigma_j = Math.sqrt(sigma_j);
-
-        double div = sigma_i * sigma_j;
-        if (div == 0) {
-            suma = 0;
-        } else {
-            suma /= div;
+            suma += (i-j)*(i-j) * glcm[indices[conta]];
         }
         return suma;
     }

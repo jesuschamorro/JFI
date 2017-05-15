@@ -1,7 +1,11 @@
 package jfi.texture;
 
+import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.WritableRaster;
+//import java.awt.image.ColorConvertOp;
+import java.security.InvalidParameterException;
+import jfi.color.ColorConvertOp;
+import jfi.color.GreyColorSpace;
 
 /**
  *
@@ -10,13 +14,11 @@ import java.awt.image.WritableRaster;
  */
 public class AmadasunCoarsenessMeasure implements TextureMeasure<Double> {
 
-    private float distance;
-    private float greyLevels;
-    public double value;
+    private int distance;
+    private int greyLevels;
 
-    public static final float DEFAULT_DISTANCE = 1;
-    public static final float DEFAULT_GREY_LEVELS = 256;
-    public static final int WINDOW_SIZE = 32;
+    public static final int DEFAULT_DISTANCE = 1;
+    public static final int DEFAULT_GREY_LEVELS = 256;
 
     /**
      * Constructs the measure object using the default parameters.
@@ -24,90 +26,104 @@ public class AmadasunCoarsenessMeasure implements TextureMeasure<Double> {
     public AmadasunCoarsenessMeasure() {
         this(DEFAULT_DISTANCE, DEFAULT_GREY_LEVELS);
     }
-
+    
     /**
-     * Constructs a measure object based on the Amadasun coarseness measure.
+     * Constructs the measure object using the parameter "distance".
      *
      * @param distance distance parameter of the Amadasun measure.
-     * @param greyLevels number of grey levels of the image.
      */
-    public AmadasunCoarsenessMeasure(float distance, float greyLevels) {
-        this.distance = distance;
-        this.greyLevels = greyLevels;
+    public AmadasunCoarsenessMeasure(int distance) {
+        this(distance, DEFAULT_GREY_LEVELS);
+    }
+
+    /**
+     * Constructs the measure object using the parameters "distance" and "greyLevels".
+     *
+     * @param distance distance parameter of the Amadasun measure.
+     * @param greyLevels number of grey levels of the image (Only 256 grey levels supported).
+     */
+    public AmadasunCoarsenessMeasure(int distance, int greyLevels) {
+        if (greyLevels != DEFAULT_GREY_LEVELS)
+            throw new InvalidParameterException("Only 256 grey levels supported");
+        else{
+            this.distance = distance;
+            this.greyLevels = greyLevels;
+        }
     }
 
     @Override
     public Double apply(BufferedImage image) {
-        float[] param = {distance, greyLevels};
-        return amadasunMeasure(image, param);
+        BufferedImage grayscaleImage;
+        if (image.getColorModel().getColorSpace().getType() != ColorSpace.TYPE_GRAY){
+            ColorSpace cs = new GreyColorSpace(); //ColorSpace.getInstance(ColorSpace.CS_GRAY);  
+            ColorConvertOp op = new ColorConvertOp(cs, null);  
+            grayscaleImage = op.filter(image, null, false);
+        }
+        else
+            grayscaleImage = image;
+        //return 1.0;
+        return amadasunMeasure(grayscaleImage);
     }
 
-    /// ¿Los niveles de gris debe ser parámetro en el constructor?
-    ///------------------- Código de Pedro:
-    private double amadasunMeasure(BufferedImage I, float[] param) {
-        int[] imagGris = transformaNivelesGris(I);
-        int d = (int) param[0];
-        int nivelesGris = (int) param[1];
+    
+    private double amadasunMeasure(BufferedImage I) {
+        int d = distance;
         int rows = I.getHeight();
         int cols = I.getWidth();
-        double cte = java.lang.Double.MIN_VALUE;
-        double W = Math.pow(2.0 * d + 1, 2);
-        int tope_max_k = rows - d;
-        int tope_max_l = cols - d;
-
-        ////// Para hacer la medida independiente del tamaño de la ventana
-        int reduccion = 32;
-        int tam_p = nivelesGris / reduccion;
-        int i, k, l, m, j, suma, indice;
+        int[] img = null;
+        img = I.getRaster().getSamples(0, 0, cols, rows, 0, img);
+        final double cte = java.lang.Double.MIN_VALUE;
+        int suma, indice, pixel, n_2;
         double A_i, grosor;
+        double W = Math.pow(2.0 * d + 1, 2);
 
-        if ((tope_max_k < 0) || (tope_max_l < 0)) {
-            System.err.println("La imagen es demasiado pequeña para aplicar el tamaño de ventana\n");
-            return -1;
-        }
+        // This reduction is needed to make the measure independent to the image size.
+        int reduccion = 32;
+        int tam_p = greyLevels / reduccion;
+        
+        // These two vectors are initialized to 0.
         double[] s = new double[tam_p];
         double[] p = new double[tam_p];
-        int n_2 = (rows - 2 * d) * (cols - 2 * d);
-        for (i = 0; i < tam_p; i++) {
-            s[i] = 0;
-            p[i] = 0;
-        }
-        for (k = d; k < tope_max_k; k++) {
-            for (l = d; l < tope_max_l; l++) {
-                i = imagGris[k * cols + l];
+
+        if ((rows - d < 0) || (cols - d < 0))
+            throw new IllegalArgumentException("The image size is too small to apply the measure.");
+
+        for (int k = d; k < rows - d; k++) {
+            for (int l = d; l < cols - d; l++) {
+                pixel = img[k * cols + l];
                 suma = 0;
-                for (m = k - d; m <= k + d; m++) {
-                    for (j = l - d; j <= l + d; j++) {
-                        suma += imagGris[m * cols + j];
+                for (int m = k - d; m <= k + d; m++) {
+                    for (int j = l - d; j <= l + d; j++) {
+                        suma += img[m * cols + j];
                     }
                 }
-                A_i = ((double) (suma - i)) / (W - 1);
-                indice = (int) Math.floor((double) i / (double) reduccion);
+                A_i = ((double) (suma - pixel)) / (W - 1);
+                indice = (int) Math.floor((double) pixel / (double) reduccion);
                 p[indice] += 1;
-                s[indice] += Math.abs(i - A_i);
+                s[indice] += Math.abs(pixel - A_i);
             }
         }
-        grosor = 0;
-        for (i = 0; i < tam_p; i++) {
+        grosor = 0.0;
+        n_2 = (rows - 2 * d) * (cols - 2 * d);
+        for (int i = 0; i < tam_p; i++) {
             grosor += (p[i] / n_2) * s[i];
         }
         grosor /= n_2;
         grosor = 1.0 / (grosor + cte);
         return grosor;
     }
+    
 
-    public int[] transformaNivelesGris(BufferedImage bi) {
-        // Copiamos los datos de la imagen en el objeto 'wr' y lo comprobamos
+    /*public int[] transformaNivelesGris(BufferedImage bi) {
         WritableRaster wr = bi.getRaster();
         int[] imagGris = null;
+        int ancho = bi.getWidth(), alto = bi.getHeight(), tam = ancho * alto;
 
         if (wr.getNumBands() == 3) {
-            int ancho = bi.getWidth(), alto = bi.getHeight(), tam = ancho * alto;
             int[] x = new int[tam];
             int[] y = new int[tam];
             int[] z = new int[tam];
             imagGris = new int[tam];
-            //  Creamos el array de imagen con los p�xeles de la imagen
             x = wr.getSamples(0, 0, ancho, alto, 0, x);
             y = wr.getSamples(0, 0, ancho, alto, 1, y);
             z = wr.getSamples(0, 0, ancho, alto, 2, z);
@@ -115,11 +131,10 @@ public class AmadasunCoarsenessMeasure implements TextureMeasure<Double> {
                 imagGris[i] = (int) Math.round(0.30 * x[i] + 0.59 * y[i] + 0.11 * z[i]);
             }
         } else if (wr.getNumBands() == 1) {
-            imagGris = new int[bi.getWidth() * bi.getHeight()];
-            //  Creamos el array de imagen con los p�xeles de la imagen
-            imagGris = wr.getSamples(0, 0, bi.getWidth(), bi.getHeight(), 0, imagGris);
+            imagGris = new int[tam];
+            imagGris = wr.getSamples(0, 0, ancho, alto, 0, imagGris);
         }
         return imagGris;
-    }
+    }*/
 
 }

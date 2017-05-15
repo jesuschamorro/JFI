@@ -103,7 +103,8 @@ public class GreyColorSpace extends ColorSpace {
     
     /**
      * Transforms a color value assumed to be in this color space into a value
-     * in the RGB color space.
+     * in the RGB color space. Specifically, it generates a RGB value with the 
+     * three components equal to the grey level.
      *
      * @param colorvalue a float array with length of at least the number of
      * components in this ColorSpace.
@@ -121,8 +122,17 @@ public class GreyColorSpace extends ColorSpace {
     /**
      * Transforms a color value assumed to be in the RGB color space into this
      * color space.
+     * 
+     *  <p>
+     * Specifically, the following equation based on the ITU-R BT.601 conversion
+     * is used:
+     * <code>
+     * Y' = + 0.299 * R' + 0.587 * G' + 0.114 * B' <br>
+     * </code> 
+     * with R', G', B' and Y' in [0..1]
      *
-     * @param rgbvalue a float array with length of at least 3.
+     *
+     * @param rgbvalue a float array with the RGB values in [0..1].
      * @return a float array of length 1 with the grey level value.
      * @throws ArrayIndexOutOfBoundsException if array length is not at least 3
      */
