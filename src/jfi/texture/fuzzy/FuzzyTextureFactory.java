@@ -12,6 +12,7 @@ import jfi.texture.HaralickContrastMeasure;
 import jfi.texture.TamuraDirectionalityMeasure;
 import jfi.texture.AbbadeniDirectionalityMeasure;
 
+
 /**
  * Class for fuzzy texture templates generation.
  * 
