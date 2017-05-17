@@ -2,10 +2,10 @@ package jfi.texture;
 
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import jfi.color.GreyColorSpace;
 
 
 /**
@@ -55,13 +55,13 @@ public class FDCoarsenessMeasure implements TextureMeasure<Double> {
     @Override
     public Double apply(BufferedImage image) {
         BufferedImage grayscaleImage;
-        if (image.getColorModel().getColorSpace().getType() != ColorSpace.TYPE_GRAY){
-            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);  
-            ColorConvertOp op = new ColorConvertOp(cs, null);  
-            grayscaleImage = op.filter(image, null);
+        if (image.getRaster().getNumBands() == 1)
+            grayscaleImage = image;        
+        else{
+            ColorSpace cs = new GreyColorSpace();
+            jfi.color.ColorConvertOp op = new jfi.color.ColorConvertOp(cs, null);  
+            grayscaleImage = op.filter(image, null, false);
         }
-        else
-            grayscaleImage = image;
         return FDMeasure(grayscaleImage);
     }
     
@@ -121,8 +121,6 @@ public class FDCoarsenessMeasure implements TextureMeasure<Double> {
         }
 
         double pendiente = fit(epsilons, A, epsilon);
-        
-        System.out.println(2 - pendiente);
         return 2 - pendiente;
     }
     

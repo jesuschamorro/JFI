@@ -2,7 +2,7 @@ package jfi.texture;
 
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
+import jfi.color.GreyColorSpace;
 
 /**
  *
@@ -21,13 +21,13 @@ public class TamuraContrastMeasure implements TextureMeasure<Double> {
     @Override
     public Double apply(BufferedImage image) {
         BufferedImage grayscaleImage;
-        if (image.getColorModel().getColorSpace().getType() != ColorSpace.TYPE_GRAY){
-            ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);  
-            ColorConvertOp op = new ColorConvertOp(cs, null);  
-            grayscaleImage = op.filter(image, null);
+        if (image.getRaster().getNumBands() == 1)
+            grayscaleImage = image;        
+        else{
+            ColorSpace cs = new GreyColorSpace();
+            jfi.color.ColorConvertOp op = new jfi.color.ColorConvertOp(cs, null);  
+            grayscaleImage = op.filter(image, null, false);
         }
-        else
-            grayscaleImage = image;
         return tamuraMeasure(grayscaleImage);
     }
 

@@ -124,12 +124,12 @@ public class PolynomialFunction2D implements PolynomialFunction<Point2D.Double>{
      */
     private double polynomial(Double x, Double y){
         double result = 0.0;
-        int coeff_index;
+        int coeff_index = 0;
         for(int i=0; i<=polynomial_degree; i++){
             for(int j=0; j<=i; j++){
                 //Pendiente: chequear desbordamiento
-                coeff_index = (int)JFIMath.factorial((long)i) + j;
                 result += coeficients[coeff_index]*Math.pow(x,j)*Math.pow(y,i-j);
+                coeff_index++;
             }
         }
         return result;

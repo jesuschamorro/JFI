@@ -2,7 +2,6 @@ package jfi.texture;
 
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-//import java.awt.image.ColorConvertOp;
 import java.security.InvalidParameterException;
 import jfi.color.ColorConvertOp;
 import jfi.color.GreyColorSpace;
@@ -54,14 +53,13 @@ public class AmadasunCoarsenessMeasure implements TextureMeasure<Double> {
     @Override
     public Double apply(BufferedImage image) {
         BufferedImage grayscaleImage;
-        if (image.getColorModel().getColorSpace().getType() != ColorSpace.TYPE_GRAY){
-            ColorSpace cs = new GreyColorSpace(); //ColorSpace.getInstance(ColorSpace.CS_GRAY);  
+        if (image.getRaster().getNumBands() == 1)
+            grayscaleImage = image;        
+        else{
+            ColorSpace cs = new GreyColorSpace();
             ColorConvertOp op = new ColorConvertOp(cs, null);  
             grayscaleImage = op.filter(image, null, false);
         }
-        else
-            grayscaleImage = image;
-        //return 1.0;
         return amadasunMeasure(grayscaleImage);
     }
 
@@ -113,6 +111,11 @@ public class AmadasunCoarsenessMeasure implements TextureMeasure<Double> {
         return grosor;
     }
     
+    
+    @Override
+    public String toString(){
+        return "Amadasun fineness measure";
+    }
 
     /*public int[] transformaNivelesGris(BufferedImage bi) {
         WritableRaster wr = bi.getRaster();

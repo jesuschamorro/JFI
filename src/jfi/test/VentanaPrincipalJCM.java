@@ -17,6 +17,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,6 +25,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import jfi.fuzzy.DiscreteFuzzySet;
@@ -35,6 +38,8 @@ import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
 import jfi.shape.Contour;
 import jfi.shape.fuzzy.FuzzyContour;
 import jfi.shape.fuzzy.FuzzyContourFactory;
+import jfi.texture.fuzzy.FuzzyTexture;
+import jfi.texture.fuzzy.FuzzyTextureFactory;
 
 
 
@@ -54,6 +59,17 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         //testFuzzySets();
         //testFuzzyContour();
         //pruebas_cardinales();
+        
+        try {
+            FuzzyTexture ft = FuzzyTextureFactory.getInstance(FuzzyTextureFactory.TYPE_DIRECTIONALITY_TAMURA_ABBADENI);
+            BufferedImage bi;
+            bi = ImageIO.read(new File("C:\\Texturas\\Direccionalidad\\BD\\encuesta\\30.jpg"));
+            double md = ft.membershipDegree(bi);
+            System.out.println(md);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(VentanaPrincipalJCM.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         
         
@@ -470,7 +486,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         
        
         
-        //new VentanaPrincipalJCM().setVisible(true);
+        new VentanaPrincipalJCM().setVisible(true);
     }
     
     
