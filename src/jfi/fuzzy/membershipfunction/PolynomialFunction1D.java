@@ -21,7 +21,7 @@ import jfi.utils.Interval;
  * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class PolynomialFunction1D implements PolynomialFunction<Double>{
+public class PolynomialFunction1D implements PolynomialFunctionInterface<Double>{
 
     /**
      * The degree of the polynomial

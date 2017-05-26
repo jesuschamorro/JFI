@@ -2,7 +2,6 @@ package jfi.fuzzy.membershipfunction;
 
 import java.awt.geom.Point2D;
 import java.security.InvalidParameterException;
-import jfi.utils.JFIMath;
 
 /**
  * Class representing an bidimensional polynomial-based membership function. It 
@@ -23,7 +22,7 @@ import jfi.utils.JFIMath;
  * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class PolynomialFunction2D implements PolynomialFunction<Point2D.Double>{
+public class PolynomialFunction2D implements PolynomialFunctionInterface<Point2D.Double>{
     /**
      * The degree of the polynomial
      */

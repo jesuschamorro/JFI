@@ -17,7 +17,7 @@ public class PolynomialFunctionFactory {
      * 
      * @return A new instance of PolynomialFunction1D
      */
-    public static PolynomialFunction getInstance(int type){
+    public static PolynomialFunctionInterface getInstance(int type){
 
         switch (type) {
         case TYPE_COARSENESS_AMADASUN:

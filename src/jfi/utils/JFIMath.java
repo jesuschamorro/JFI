@@ -307,12 +307,29 @@ public class JFIMath {
     
     /**
      * Calculates the factorial of a given number.
-     * 
+     *
      * @param n the number
      * @return the factorial
      * @throws ArithmeticException if the result overflows a long
      */
-    public static long factorial(long n) {		
-      return n == 0 ? 1 : Math.multiplyExact(n, factorial(n - 1));
-   }
+    public static long factorial(long n) {
+        return n == 0 ? 1 : Math.multiplyExact(n, factorial(n - 1));
+    }
+
+    /**
+     * Calculates the binomial coefficient "n choose k".
+     * 
+     * @param n the number of elements
+     * @param k the size of the subset
+     * @return the binomial coefficient
+     */
+    public static long binomialCoefficient(int n, int k){
+        long output = 1;
+        //for(int i=1; i<=k; i++){
+        //    output *= (n+1-i)/i;
+        //};
+        output = factorial(n)/( factorial(k) * factorial(n-k));
+        return output;
+    }
+    
 }
