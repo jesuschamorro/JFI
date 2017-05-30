@@ -1,8 +1,7 @@
 package jfi.texture.fuzzy;
 
 import java.security.InvalidParameterException;
-import jfi.fuzzy.membershipfunction.PolynomialFunction1D;
-import jfi.fuzzy.membershipfunction.PolynomialFunction2D;
+import jfi.fuzzy.membershipfunction.PolynomialFunction;
 import jfi.texture.AmadasunCoarsenessMeasure;
 import jfi.texture.CorrelationCoarsenessMeasure;
 import jfi.texture.FDCoarsenessMeasure;
@@ -120,10 +119,8 @@ public class FuzzyTextureFactory {
          * measure
          */
         private static TextureMembershipFunction getCoarsenessAmadasunInstance() {
-            //double alpha = 0.172686592236232;
-            //double beta = 0.585775908328506;
             double coeficients[] = {1.87066736922147, -6.48351627234047, 9.49014397876514, -6.61278585052942};
-            PolynomialFunction1D mfunction = new PolynomialFunction1D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients);
             TextureMeasure measure = new AmadasunCoarsenessMeasure();
             return new TextureMembershipFunction(mfunction, measure);
         }
@@ -137,10 +134,8 @@ public class FuzzyTextureFactory {
          * coarseness measure
          */
         private static TextureMembershipFunction getCoarsenessCorrelationInstance() {
-            //double alpha = 0.030078166046685;
-            //double beta = 0.771130357228117;
             double coeficients[] = {1.04855239337754, -1.70133043615012, 2.99614780551409, -3.31098414030745};
-            PolynomialFunction1D mfunction = new PolynomialFunction1D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients);
             TextureMeasure measure = new CorrelationCoarsenessMeasure();
             return new TextureMembershipFunction(mfunction, measure);
         }
@@ -153,10 +148,8 @@ public class FuzzyTextureFactory {
          * @return a default polynomial membership function for FD coarseness measure
          */
         private static TextureMembershipFunction getCoarsenessFDInstance() {
-            //double alpha = 2.6157468368018;
-            //double beta = 4.28319723812041;
             double coeficients[] = {-28.6901663311276, 24.491196501627, -6.8486819672468, 0.641828076149647};
-            PolynomialFunction1D mfunction = new PolynomialFunction1D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients);
             TextureMeasure measure = new FDCoarsenessMeasure();
             return new TextureMembershipFunction(mfunction, measure);
         }        
@@ -169,14 +162,11 @@ public class FuzzyTextureFactory {
          * @return a default polynomial membership function of two variables for
          * the Amadasun and Correlation coarseness measures
          */
-        private static TextureMembershipFunction getCoarsenessAmadasunCorrelationInstance() {
-            //double coeficients[] = {1.47499105940904, -1.40315232203117, -2.36176232354071,
-            //                        2.03894057701965, 2.18145639951272, -0.593502374987317,
-            //                        0.0, 0.0, -2.21467438820318, 0.0};		
+        private static TextureMembershipFunction getCoarsenessAmadasunCorrelationInstance() {	
             double coeficients[] = {1.47499105940904, -1.40315232203117, -2.36176232354071,
                                     2.18145639951272, 2.03894057701965, -0.593502374987317,
                                     -2.21467438820318, 0.0, 0.0, 0.0};
-            PolynomialFunction2D mfunction = new PolynomialFunction2D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients, 2);
             TextureMeasure measure1 = new AmadasunCoarsenessMeasure();
             TextureMeasure measure2 = new CorrelationCoarsenessMeasure();
             return new TextureMembershipFunction(mfunction, measure1, measure2);
@@ -191,13 +181,10 @@ public class FuzzyTextureFactory {
          * the FD and Amadasun coarseness measures
          */
         private static TextureMembershipFunction getCoarsenessFDAmadasunInstance() {
-            //double coeficients[] = {-12.1564073984986, -27.3508169133145, 15.1935169107938,
-            //                        1.55839523317858, 51.148613918219, -4.51740426692254,
-            //                        -0.647538386874109, 0.0, -38.063965088385, 0.417530298268412};
             double coeficients[] = {-12.1564073984986, -27.3508169133145, 15.1935169107938,
                                     51.148613918219, 1.55839523317858, -4.51740426692254,
                                     -38.063965088385, -0.647538386874109, 0.0, 0.417530298268412};
-            PolynomialFunction2D mfunction = new PolynomialFunction2D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients, 2);
             TextureMeasure measure1 = new FDCoarsenessMeasure();
             TextureMeasure measure2 = new AmadasunCoarsenessMeasure();
             return new TextureMembershipFunction(mfunction, measure1, measure2);
@@ -212,13 +199,10 @@ public class FuzzyTextureFactory {
          * the Correlation and FD coarseness measures
          */
         private static TextureMembershipFunction getCoarsenessCorrelationFDInstance() {
-            //double coeficients[] = {-14.002884725279, 13.0289019271327, 4.36543898439526,
-            //                        -1.57795467281365, -3.8050189067351, -4.62307282421302,
-            //                        0.0, 1.33113686816522, 0.372563573848496, 0.0};
             double coeficients[] = {-14.002884725279, 13.0289019271327, 4.36543898439526,
                                     -3.8050189067351, -1.57795467281365, -4.62307282421302,
                                     0.372563573848496, 0.0, 1.33113686816522, 0.0};
-            PolynomialFunction2D mfunction = new PolynomialFunction2D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients, 2);
             TextureMeasure measure1 = new CorrelationCoarsenessMeasure();
             TextureMeasure measure2 = new FDCoarsenessMeasure();
             return new TextureMembershipFunction(mfunction, measure1, measure2);
@@ -234,10 +218,8 @@ public class FuzzyTextureFactory {
          * measure
          */
         private static TextureMembershipFunction getContrastTamuraInstance() {
-            //double alpha = 0.177451308621112;
-            //double beta = 0.962033896743631;
             double coeficients[] = {-0.572797975960776, 3.8763399205201, -3.95358266570628, 1.68772834619706};
-            PolynomialFunction1D mfunction = new PolynomialFunction1D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients);
             TextureMeasure measure = new TamuraContrastMeasure();
             return new TextureMembershipFunction(mfunction, measure);
         }
@@ -251,10 +233,8 @@ public class FuzzyTextureFactory {
          * measure
          */
         private static TextureMembershipFunction getContrastHaralickInstance() {
-            //double alpha = 0.250201442417639;
-            //double beta = 1.87734020908613;
             double coeficients[] = {-0.410013110132171, 2.06793922263109, -1.87136583491134, 0.623174661550225};
-            PolynomialFunction1D mfunction = new PolynomialFunction1D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients);
             TextureMeasure measure = new HaralickContrastMeasure();
             return new TextureMembershipFunction(mfunction, measure);
         }
@@ -268,13 +248,10 @@ public class FuzzyTextureFactory {
          * Tamura and Haralick contrast measures
          */
         private static TextureMembershipFunction getContrastTamuraHaralickInstance() {
-            //double coeficients[] = {-0.763798479121629, -0.156200555711584, 6.06372176140489,
-            //                        0.515847371994987, 0.0341192712377689, -10.4566818022673,
-            //                        0.0, -0.112520260691099, -0.0130882977049654, 6.17548971591803};
             double coeficients[] = {-0.763798479121629, -0.156200555711584, 6.06372176140489,
                                     0.0341192712377689, 0.515847371994987, -10.4566818022673,
                                     -0.0130882977049654, 0.0, -0.112520260691099, 6.17548971591803};
-            PolynomialFunction2D mfunction = new PolynomialFunction2D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients, 2);
             TextureMeasure measure1 = new TamuraContrastMeasure();
             TextureMeasure measure2 = new HaralickContrastMeasure();
             return new TextureMembershipFunction(mfunction, measure1, measure2);
@@ -290,10 +267,8 @@ public class FuzzyTextureFactory {
          * measure
          */
         private static TextureMembershipFunction getDirectionalityTamuraInstance() {
-            //double alpha = 0.859372719913204;
-            //double beta = 0.986527326088852;
             double coeficients[] = {-511.968522225476, 1657.3455394384, -1792.31164934142, 648.139541015052};
-            PolynomialFunction1D mfunction = new PolynomialFunction1D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients);
             TextureMeasure measure = new TamuraDirectionalityMeasure();
             return new TextureMembershipFunction(mfunction, measure);
         }
@@ -307,10 +282,8 @@ public class FuzzyTextureFactory {
          * measure
          */
         private static TextureMembershipFunction getDirectionalityAbbadeniInstance() {
-            //double alpha = 0.436168945257281;
-            //double beta = 0.923356849009415;
             double coeficients[] = {-5.85660764047519, 26.6931630330267, -38.9620785247236, 19.5973685907395};
-            PolynomialFunction1D mfunction = new PolynomialFunction1D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients);
             TextureMeasure measure = new AbbadeniDirectionalityMeasure();
             return new TextureMembershipFunction(mfunction, measure);
         }
@@ -324,13 +297,10 @@ public class FuzzyTextureFactory {
          * Tamura and Abbadeni directionality measures
          */
         private static TextureMembershipFunction getDirectionalityTamuraAbbadeniInstance() {
-            //double coeficients[] = {-204.789238636328, -1.33549175271706, 648.462555731697,
-            //                        5.83078827470319, -5.7224187417743, -686.199629240745,
-            //                        0.0, 0.0, 2.90474813082403, 242.0293116841};
             double coeficients[] = {-204.789238636328, -1.33549175271706, 648.462555731697,
                                     -5.7224187417743, 5.83078827470319, -686.199629240745,
                                     2.90474813082403, 0.0, 0.0, 242.0293116841};
-            PolynomialFunction2D mfunction = new PolynomialFunction2D(coeficients);
+            PolynomialFunction mfunction = new PolynomialFunction(coeficients, 2);
             TextureMeasure measure1 = new TamuraDirectionalityMeasure();
             TextureMeasure measure2 = new AbbadeniDirectionalityMeasure();
             return new TextureMembershipFunction(mfunction, measure1, measure2);

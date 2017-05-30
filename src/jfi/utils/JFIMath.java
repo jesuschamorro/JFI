@@ -324,12 +324,12 @@ public class JFIMath {
      * @return the binomial coefficient
      */
     public static long binomialCoefficient(int n, int k){
-        long output = 1;
-        //for(int i=1; i<=k; i++){
-        //    output *= (n+1-i)/i;
-        //};
-        output = factorial(n)/( factorial(k) * factorial(n-k));
-        return output;
+        double output = 1;
+        for(int i=1; i<=k; i++){
+            output *= (double)(n+1-i)/(double)i;
+        }
+        //output = factorial(n)/( factorial(k) * factorial(n-k));
+        return (long)output;
     }
     
 }
