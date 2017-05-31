@@ -17,7 +17,6 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,8 +24,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import jfi.fuzzy.DiscreteFuzzySet;
@@ -35,14 +32,10 @@ import jfi.fuzzy.cardinal.EDCardinal;
 import jfi.fuzzy.cardinal.SigmaCount;
 import jfi.fuzzy.membershipfunction.PiecewiseFunction;
 import jfi.fuzzy.membershipfunction.PolynomialFunction;
-import jfi.fuzzy.membershipfunction.PolynomialFunction1D;
-import jfi.fuzzy.membershipfunction.PolynomialFunction2D;
 import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
 import jfi.shape.Contour;
 import jfi.shape.fuzzy.FuzzyContour;
 import jfi.shape.fuzzy.FuzzyContourFactory;
-import jfi.texture.fuzzy.FuzzyTexture;
-import jfi.texture.fuzzy.FuzzyTextureFactory;
 import jfi.utils.MultivariateFunction;
 
 
@@ -442,23 +435,23 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         System.out.println("Prueba");
         double coeficients[] = {1.87066736922147, -6.48351627234047, 9.49014397876514, -6.61278585052942};
         PolynomialFunction pf = new PolynomialFunction(1.87066736922147, -6.48351627234047, 9.49014397876514, -6.61278585052942);
-        PolynomialFunction1D mfunction = new PolynomialFunction1D(coeficients);
+        
         
         System.out.println("Aplicando 1D: ");
         double x = 0.2;
         System.out.println(pf.apply(x));
-        System.out.println(mfunction.apply(x));
+        
         
         System.out.println("Aplicando 2D: ");
         double coeficients2[] = {1.47499105940904, -1.40315232203117, -2.36176232354071,
                                     2.18145639951272, 2.03894057701965, -0.593502374987317,
                                     -2.21467438820318, 0.0, 0.0, 0.0};
         PolynomialFunction pf2 = new PolynomialFunction(coeficients2,2);
-        PolynomialFunction2D mfunction2 = new PolynomialFunction2D(coeficients2);
+        
         double x1 = 0.4,x2=0.7;
         System.out.println(pf2.getDimension()+" "+pf2.getPolynomialDegree());
         System.out.println(pf2.apply(x1,x2));
-        System.out.println(mfunction2.apply(new Point2D.Double(x1,x2)));
+        
         
         System.out.println("Aplicando Generico: ");
         MultivariateFunction<Double, Double> poly2 = (xx1,xx2) -> (0.5*xx1 + xx2[0]);

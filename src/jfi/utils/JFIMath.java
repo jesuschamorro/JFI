@@ -325,10 +325,10 @@ public class JFIMath {
      */
     public static long binomialCoefficient(int n, int k){
         double output = 1;
+        //Faster implementation of factorial(n)/( factorial(k) * factorial(n-k))
         for(int i=1; i<=k; i++){
             output *= (double)(n+1-i)/(double)i;
         }
-        //output = factorial(n)/( factorial(k) * factorial(n-k));
         return (long)output;
     }
     
