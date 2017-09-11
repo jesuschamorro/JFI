@@ -59,11 +59,11 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
         /**
          * Kernel size relative to the nearest point.
          */
-        private final static double KERNEL_RELATIVE_DISTANCE = 0.0;
+        public final static double KERNEL_RELATIVE_DISTANCE = 0.0;
         /**
          * Support size relative to the nearest point.
          */
-        private final static double SUPPORT_RELATIVE_DISTANCE = 1.0;
+        public final static double SUPPORT_RELATIVE_DISTANCE = 1.0;
         
         /**
          * Creates a new fuzzy color space based on spherical membership

@@ -23,7 +23,7 @@ public class SphericalFuzzyColor extends FunctionBasedFuzzySet<Point3D> implemen
      * @see jfi.fuzzy.membershipfunction.SphericalFunction
      */
     public SphericalFuzzyColor(String label, Point3D center, double a, double b) {
-        super(label, new SphericalFunction(center, a, b));        
+        super(label, new SphericalFunction(center, a, b));    
     }
     
     /**
@@ -53,4 +53,30 @@ public class SphericalFuzzyColor extends FunctionBasedFuzzySet<Point3D> implemen
         return membershipDegree(p);
     }
     
+    /**
+     * Returns the center of this spherical function.
+     * 
+     * @return the center of this spherical function.
+     */
+    public Point3D getCenter(){
+        return ((SphericalFunction)this.getMembershipFunction()).getCenter();
+    }
+    
+    /**
+     * Returns the parameter 'a' of this spherical function.
+     * 
+     * @return the parameter 'a' of this spherical function.
+     */
+    public double getKernelRadius() {
+        return ((SphericalFunction)this.getMembershipFunction()).getA();
+    }
+    
+    /**
+     * Returns the parameter 'b' of this spherical function.
+     * 
+     * @return the parameter 'b' of this spherical function.
+     */
+    public double getSupportRadius() {
+        return ((SphericalFunction)this.getMembershipFunction()).getB();
+    }
 }

@@ -26,6 +26,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
+import javax.swing.tree.DefaultMutableTreeNode;
+import jfi.color.ISCCColorTree;
 import jfi.fuzzy.DiscreteFuzzySet;
 import jfi.fuzzy.LevelSet;
 import jfi.fuzzy.cardinal.EDCardinal;
@@ -33,6 +35,7 @@ import jfi.fuzzy.cardinal.SigmaCount;
 import jfi.fuzzy.membershipfunction.PiecewiseFunction;
 import jfi.fuzzy.membershipfunction.PolynomialFunction;
 import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
+import jfi.geometry.Point3D;
 import jfi.shape.Contour;
 import jfi.shape.fuzzy.FuzzyContour;
 import jfi.shape.fuzzy.FuzzyContourFactory;
@@ -461,6 +464,40 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
 
     }
 
+    
+    private static void pruebaDistanciasISCC() {
+        ISCCColorTree t = new ISCCColorTree();
+        Map.Entry<String, Point3D> e, e2, e3;
+        DefaultMutableTreeNode node, node2, node3;
+        for (int c = 0; c < t.getChildCount(t.getRoot()); c++) {
+            node = (DefaultMutableTreeNode) t.getChild(t.getRoot(), c);
+            e = (Entry<String, Point3D>) node.getUserObject();
+            System.out.println(e.getKey());
+            for (int c2 = 0; c2 < node.getChildCount(); c2++) {
+                node2 = (DefaultMutableTreeNode) node.getChildAt(c2);
+                e2 = (Entry<String, Point3D>) node2.getUserObject();
+                System.out.print("-> " + e2.getKey());
+
+                //Distancia respecto a primer nivel
+                double minDist = Double.MAX_VALUE;
+                String label = "";
+                for (int i = 0; i < t.getChildCount(t.getRoot()); i++) {
+                    node3 = (DefaultMutableTreeNode) t.getChild(t.getRoot(), i);
+                    e3 = (Entry<String, Point3D>) node3.getUserObject();
+                    Point3D p = e3.getValue();
+                    double dist = e2.getValue().distance(p);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        label = e3.getKey();
+                    }
+                    System.out.print("  (" + e3.getKey() + ":" + dist + "), ");
+                }
+                System.out.println("");
+                System.out.println(" (" + minDist + "->" + label + ")");
+            }
+
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -497,8 +534,9 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
 
-        pruebaPolynomialFunction();
+        //pruebaPolynomialFunction();
         
+        //pruebaDistanciasISCC();
        
         
         //new VentanaPrincipalJCM().setVisible(true);

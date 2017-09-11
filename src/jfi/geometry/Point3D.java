@@ -105,6 +105,51 @@ public class Point3D {
     }
     
     /**
+     * Applies a scaling transformation to this point.
+     * 
+     * @param sx the scale factor for the z-coordinate
+     * @param sy the scale factor for the z-coordinate
+     * @param sz the scale factor for the z-coordinate
+     */
+    public void scale(double sx, double sy, double sz){
+        this.x *= sx;
+        this.y *= sy;
+        this.z *= sz;
+    }
+    
+    /**
+     * Applies a scaling transformation to this point.
+     * 
+     * @param s the scale factor for the three coordinates
+     */
+    public void scale(double s){
+        this.scale(s,s,s);
+    }
+    
+    /**
+     * Applies a translation transformation to this point.
+     * 
+     * @param dx the distance for the z-coordinate
+     * @param dy the distance for the z-coordinate
+     * @param dz the distance for the z-coordinate
+     */
+    public void translate(double dx, double dy, double dz){
+        this.x += dx;
+        this.y += dy;
+        this.z += dz;
+    }
+    
+    /**
+     * Applies a translation transformation to this point.
+     * 
+     * @param offset the distance offset for the three coordinates.
+     *
+     */
+    public void translate(double offset){
+        this.translate(offset, offset, offset);
+    }
+    
+    /**
      * Returns a string that represents the value of this point.
      *
      * @return a string representation of this point.

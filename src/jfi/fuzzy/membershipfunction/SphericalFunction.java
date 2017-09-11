@@ -13,11 +13,11 @@ public class SphericalFunction implements MembershipFunction<Point3D>{
      */
     private Point3D center;
     /**
-     * Parameter 'a' of the spherical function.
+     * Parameter 'a' of the spherical function. It defines the kernel radius.
      */
     private double a;
     /**
-     * Parameter 'b' of the spherical function.
+     * Parameter 'b' of the spherical function. It defines the support radius.
      */
     private double b;
 
