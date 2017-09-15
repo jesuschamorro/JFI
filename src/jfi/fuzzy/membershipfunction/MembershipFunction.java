@@ -3,7 +3,6 @@ package jfi.fuzzy.membershipfunction;
 import jfi.fuzzy.AlphaCuttable;
 import java.util.function.Function;
 /**
- * 
  * Class representing a membership function of a fuzzy set. 
  * 
  * <p>

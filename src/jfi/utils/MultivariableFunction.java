@@ -12,7 +12,7 @@ package jfi.utils;
  * @param <R> the type of the result of the function.
  */
 @FunctionalInterface
-public interface MultivariateFunction<D, R> {
+public interface MultivariableFunction<D, R> {
 
     /**
      * Applies this function to the given argument.

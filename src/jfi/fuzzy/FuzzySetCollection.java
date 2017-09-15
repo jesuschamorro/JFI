@@ -50,7 +50,7 @@ public class FuzzySetCollection<T extends FuzzySet<D>,D> extends ArrayList<T> {
      * fuzzy sets collection.
      * @throws NullPointerException if the specified collection is null.
      */
-    public FuzzySetCollection(Collection<T> fuzzySets) { //(Collection<FuzzySet<D>>
+    public FuzzySetCollection(Collection<T> fuzzySets) { 
         super(fuzzySets);
     }
 

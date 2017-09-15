@@ -107,7 +107,6 @@ public class FunctionBasedFuzzySet<D> implements FuzzySet<D>, AlphaCuttable {
     @Override
     public double membershipDegree(D e) {
         return mfunction.apply(e);
-
     }
 
     /**

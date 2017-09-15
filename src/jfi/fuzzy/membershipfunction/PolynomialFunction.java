@@ -3,7 +3,7 @@ package jfi.fuzzy.membershipfunction;
 import java.security.InvalidParameterException;
 import java.util.List;
 import jfi.utils.JFIMath;
-import jfi.utils.MultivariateFunction;
+import jfi.utils.MultivariableFunction;
 
 /**
  * Polynomial-based membership function.
@@ -27,7 +27,7 @@ public class PolynomialFunction implements MembershipFunction<List<Double>> {
     /**
      * Polynomial function associated to this membership function.
      */
-    protected MultivariateFunction<Double, Double> polynomial;
+    protected MultivariableFunction<Double, Double> polynomial;
     /**
      * Default dimension.
      */
@@ -47,7 +47,7 @@ public class PolynomialFunction implements MembershipFunction<List<Double>> {
         setDimension(dimension);
         setCoefficients(coefficients); //It also set the degree
         //A polynomial must be created for this dimension
-        MultivariateFunction polynomial = createPolynomial(this.dimension);
+        MultivariableFunction polynomial = createPolynomial(this.dimension);
         if (polynomial != null) {
             setPolynomial(polynomial);
         } else {
@@ -100,7 +100,7 @@ public class PolynomialFunction implements MembershipFunction<List<Double>> {
      * @param dimension the dimension (number of variables) of the polynominal.
      * @param polynomial the polynomial. 
      */
-    public PolynomialFunction(int degree, int dimension, MultivariateFunction<Double, Double> polynomial) {
+    public PolynomialFunction(int degree, int dimension, MultivariableFunction<Double, Double> polynomial) {
         setDimension(dimension);
         this.polynomial_degree = degree;
         this.setPolynomial(polynomial);
@@ -199,8 +199,8 @@ public class PolynomialFunction implements MembershipFunction<List<Double>> {
      * @return a polynomial for the given dimension (or <t>null<t> if the
      * dimension is not supported.
      */
-    private MultivariateFunction<Double, Double> createPolynomial(int dimension) {
-        MultivariateFunction<Double, Double> polynomial;
+    private MultivariableFunction<Double, Double> createPolynomial(int dimension) {
+        MultivariableFunction<Double, Double> polynomial;
         switch (dimension) {
             case 1:
                 polynomial = new Polynomial1D();
@@ -219,7 +219,7 @@ public class PolynomialFunction implements MembershipFunction<List<Double>> {
      *
      * @param polynomial the polynomial function.
      */
-    private void setPolynomial(MultivariateFunction<Double, Double> polynomial) {
+    private void setPolynomial(MultivariableFunction<Double, Double> polynomial) {
         if (polynomial == null) {
             throw new InvalidParameterException("Null polynomial.");
         }
@@ -279,7 +279,7 @@ public class PolynomialFunction implements MembershipFunction<List<Double>> {
      *
      * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
      */
-    class Polynomial1D implements MultivariateFunction<Double, Double> {
+    class Polynomial1D implements MultivariableFunction<Double, Double> {
         /**
          * {@inheritDoc}
          */
@@ -304,7 +304,7 @@ public class PolynomialFunction implements MembershipFunction<List<Double>> {
      *
      * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
      */
-    class Polynomial2D implements MultivariateFunction<Double, Double> {
+    class Polynomial2D implements MultivariableFunction<Double, Double> {
         /**
          * {@inheritDoc}
          */

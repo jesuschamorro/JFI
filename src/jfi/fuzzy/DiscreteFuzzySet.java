@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
+import jfi.fuzzy.Iterable.FuzzyItem;
 
 /**
  * Class representing a fuzzy set on a discrete domain. The reference set is a
@@ -13,9 +14,10 @@ import java.util.Set;
  * of elements, where each of these elements have a degree of membership.
  * 
  * @param <D> the domain of the fuzzy set.
+ * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class DiscreteFuzzySet<D> implements FuzzySet<D>, AlphaCuttable, Iterable<Entry<D,Double>> {
+public class DiscreteFuzzySet<D> implements FuzzySet<D>, Iterable<D>, AlphaCuttable { 
     /**
      * The label associated to the fuzzy set.
      */
@@ -92,11 +94,11 @@ public class DiscreteFuzzySet<D> implements FuzzySet<D>, AlphaCuttable, Iterable
      * are returned in the order in which they were inserted into the set.
      *
      * @return an iterator over the elements in this fuzzy set
-     */
-    @Override
-    public Iterator<Entry<D,Double>> iterator(){
-        return dataMap.entrySet().iterator();
-    }
+     */    
+      @Override
+      public Iterator<FuzzyItem<D>> iterator() {
+        return new DiscreteFuzzySetIterator();
+      }
     
     /**
      * Return a set view of the reference set associated to this fuzzy set
@@ -143,7 +145,8 @@ public class DiscreteFuzzySet<D> implements FuzzySet<D>, AlphaCuttable, Iterable
      */
     @Override
     public double membershipDegree(D e) {
-        return dataMap.get(e);
+        Double degree = dataMap.get(e);
+        return degree!=null ? degree : 0.0;
     }
     
     /**
@@ -210,4 +213,56 @@ public class DiscreteFuzzySet<D> implements FuzzySet<D>, AlphaCuttable, Iterable
     public String toString(){
         return dataMap.toString();
     }
+
+    
+    /**
+     * An iterator over a discrete fuzzy set.
+     */
+    private class DiscreteFuzzySetIterator implements Iterator<FuzzyItem<D>>{
+        /**
+         * Iterator over de map.
+         */
+        private final Iterator<Entry<D,Double>> it;
+        /**
+         * Constructs a default iterator.
+         */
+        public DiscreteFuzzySetIterator(){
+            it = dataMap.entrySet().iterator();
+        }
+        
+        /**
+         * Returns {@code true} if the iteration has more elements. 
+         * 
+         * @return {@code true} if the iteration has more elements
+         */
+        @Override
+        public boolean hasNext() {
+            return it.hasNext();
+        }
+
+        /**
+         * Returns the next element in the iteration.
+         *
+         * @return the next element in the iteration
+         */
+        @Override
+        public Iterable.FuzzyItem<D> next() {
+            Entry<D, Double> n = it.next();
+            FuzzyItem fi = new FuzzyItem() {
+                @Override
+                public D getElement() {
+                    return n.getKey();
+                }
+                @Override
+                public Double getDegree() {
+                    return n.getValue();
+                }
+                @Override
+                public String toString() {
+                    return n.toString();
+                }
+            };
+            return fi;
+        }
+    } // End inner class DefaultIterator
 }

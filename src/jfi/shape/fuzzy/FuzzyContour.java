@@ -8,7 +8,6 @@ import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import jfi.fuzzy.DiscreteFuzzySet;
 import jfi.shape.Contour;
 import jfi.shape.ImageMask;
@@ -140,12 +139,12 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
             int x, y, band=transparency?3:0, grey_level;
             Point offset = bounded ? bounds.getLocation() : new Point(0,0);
             WritableRaster imgRaster = img.getRaster();
-            for (Entry<Point2D, Double> e : this) {
-                x = (int) Math.round(e.getKey().getX()) - offset.x;
-                y = (int) Math.round(e.getKey().getY()) - offset.y;
-                grey_level = (int) (255.0 * e.getValue());
+            for(FuzzyItem<Point2D> e:  this){
+                x = (int) Math.round(e.getElement().getX()) - offset.x;
+                y = (int) Math.round(e.getElement().getY()) - offset.y;
+                grey_level = (int) (255.0 * e.getDegree());
                 imgRaster.setSample(x, y, band, grey_level);
-            }            
+            }      
         }
         return img;
     }
@@ -171,8 +170,8 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
 
-        for (Entry<Point2D,Double> e : this) {
-            Point2D point = e.getKey();
+        for(FuzzyItem<Point2D> e:  this){      
+            Point2D point = e.getElement();
             if (maxX < Math.round(point.getX())) {
                 maxX = (int) Math.round(point.getX());
             }

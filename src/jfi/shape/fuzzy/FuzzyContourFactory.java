@@ -6,7 +6,7 @@ import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
 import jfi.shape.Contour;
 import jfi.shape.ContourIterator;
 import jfi.shape.ContourSegment;
-import jfi.utils.FuzzyHedges;
+import jfi.fuzzy.operators.Hedge;
 import jfi.utils.JFIMath;
 
 /**
@@ -247,9 +247,9 @@ public class FuzzyContourFactory {
             ldegree_right = linearityDegree(right_segment,alpha);
             ldegree_center = linearityDegree(centered_segment,DEFAULT_ALPHA_VERTICITY_CENTER,DEFAULT_BETA_VERTICITY_CENTER);
             
-            ldegree_left = FuzzyHedges.concentration(ldegree_left,DEFAULT_CONCENTRATION_VERTICITY_LEFT);
-            ldegree_right = FuzzyHedges.concentration(ldegree_right,DEFAULT_CONCENTRATION_VERTICITY_RIGHT);
-            noldegree_center = FuzzyHedges.concentration(1.0-ldegree_center,DEFAULT_CONCENTRATION_VERTICITY_CENTER);
+            ldegree_left = Hedge.concentration(ldegree_left,DEFAULT_CONCENTRATION_VERTICITY_LEFT);
+            ldegree_right = Hedge.concentration(ldegree_right,DEFAULT_CONCENTRATION_VERTICITY_RIGHT);
+            noldegree_center = Hedge.concentration(1.0-ldegree_center,DEFAULT_CONCENTRATION_VERTICITY_CENTER);
 
             degree = JFIMath.min(ldegree_left,ldegree_right, noldegree_center);                                    
             fcontour.setMembershipDegree(point,degree);

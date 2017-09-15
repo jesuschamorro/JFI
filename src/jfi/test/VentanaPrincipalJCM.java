@@ -29,17 +29,22 @@ import javax.swing.JFileChooser;
 import javax.swing.tree.DefaultMutableTreeNode;
 import jfi.color.ISCCColorTree;
 import jfi.fuzzy.DiscreteFuzzySet;
+import jfi.fuzzy.GranularFuzzySet;
+import jfi.fuzzy.Iterable.FuzzyItem;
 import jfi.fuzzy.LevelSet;
 import jfi.fuzzy.cardinal.EDCardinal;
 import jfi.fuzzy.cardinal.SigmaCount;
 import jfi.fuzzy.membershipfunction.PiecewiseFunction;
 import jfi.fuzzy.membershipfunction.PolynomialFunction;
 import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
+import jfi.fuzzy.operators.Hedge;
+import jfi.fuzzy.operators.TConorm;
+import jfi.fuzzy.operators.TNorm;
 import jfi.geometry.Point3D;
 import jfi.shape.Contour;
 import jfi.shape.fuzzy.FuzzyContour;
 import jfi.shape.fuzzy.FuzzyContourFactory;
-import jfi.utils.MultivariateFunction;
+import jfi.utils.MultivariableFunction;
 
 
 
@@ -221,7 +226,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
     
     
     
-    private void testFuzzySets(){
+    static private void testFuzzySets(){
         DiscreteFuzzySet<Point2D> fcontorno;
         fcontorno = new DiscreteFuzzySet<>();
         Point2D p;
@@ -235,12 +240,13 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         fcontorno.remove(new Point(8,8));
         
         System.out.println();
-        Iterator<Entry<Point2D,Double>> it = fcontorno.iterator();
-        Entry<Point2D,Double> e;
+        
+        Iterator<FuzzyItem<Point2D>> it = fcontorno.iterator();
+        FuzzyItem<Point2D> e;
         while (it.hasNext()) {
             e = it.next();
-            p =e.getKey();
-            System.out.println(p.toString()+ e.getValue());
+            p =e.getElement();
+            System.out.println(p.toString()+ e.getDegree());
         }
         
         System.out.println(fcontorno.getReferenceSet().toString());
@@ -312,13 +318,13 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         }
      
         System.out.println();
-        Iterator<Entry<Point2D,Double>> it = fcontorno.iterator();
-        Entry<Point2D,Double> e;
+        
+        Iterator<FuzzyItem<Point2D>> it = fcontorno.iterator();
+        FuzzyItem<Point2D> e;        
         while (it.hasNext()) {
             e = it.next();
-            System.out.println(e.getKey().toString()+ e.getValue());
+            System.out.println(e.getElement().toString()+ e.getDegree());
         }
-        
         
     }
     
@@ -327,11 +333,13 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         Point2D p;
 
         int i = 0;
-        Iterator<Entry<Point2D,Double>> it = c.iterator();
-        Entry<Point2D,Double> e;
+        
+        Iterator<FuzzyItem<Point2D>> it = c.iterator();
+        FuzzyItem<Point2D> e;     
+        
         while (it.hasNext()) {
             e = it.next();
-            p = e.getKey();
+            p = e.getElement();
             c.setMembershipDegree(p, (double)(i++%11)/10.0 );            
             System.out.println("["+i+"] "+p.toString()+ c.membershipDegree(p));
         }
@@ -457,7 +465,7 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         
         
         System.out.println("Aplicando Generico: ");
-        MultivariateFunction<Double, Double> poly2 = (xx1,xx2) -> (0.5*xx1 + xx2[0]);
+        MultivariableFunction<Double, Double> poly2 = (xx1,xx2) -> (0.5*xx1 + xx2[0]);
         
         PolynomialFunction pf3 = new PolynomialFunction(1,2,poly2);
         System.out.println(pf3.apply(1.0,0.20));
@@ -498,6 +506,56 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
 
         }
     }
+    
+    private static void pruebasTNormas() {
+        TNorm norm = (a,b) -> Math.min(a,b); 
+        double out = norm.apply(0.7, 0.9);
+        System.out.println(out);
+        
+        norm = TNorm.MIN;
+        out = norm.apply(0.9,0.4);
+        System.out.println(out);
+        norm = TNorm.PRODUCT;
+        out = norm.apply(0.9,0.4);
+        System.out.println(out);
+        norm = TNorm.DIFFERENCE;
+        out = norm.apply(0.9,0.4);
+        System.out.println(out);
+        
+        
+        DiscreteFuzzySet<Integer> fset1 = new DiscreteFuzzySet();   
+        DiscreteFuzzySet fset2 = new DiscreteFuzzySet();  
+        //
+        fset1.add(1,0.0);
+        fset1.add(2,0.3);
+        fset1.add(3,0.5);
+        fset1.add(4,0.9);
+        fset1.add(5,0.9);
+        fset1.add(8,0.9);
+        //
+        fset2.add(6,0.9);
+        fset2.add(7,0.9);
+        fset2.add(8,1.0);
+        fset2.add(9,1.0);
+        fset2.add(5,0.7);
+        fset2.add(3,0.7);
+        //
+        
+        norm = TNorm.MIN;
+        DiscreteFuzzySet outputfs = norm.apply(fset1,fset2);
+        System.out.println(outputfs);
+        
+        TConorm cnorm = TConorm.MAX;
+        outputfs = cnorm.apply(fset1,fset2);
+        System.out.println(outputfs);
+       
+        
+        GranularFuzzySet gfs = new GranularFuzzySet("",TConorm.BOUNDED_SUM,fset1,fset1);
+        //gfs.add(fset1);
+        //gfs.add(fset2);
+        System.out.println(gfs.membershipDegree(3));
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -534,15 +592,22 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
 
-        //pruebaPolynomialFunction();
-        
+        //pruebaPolynomialFunction();        
         //pruebaDistanciasISCC();
-       
+        
+        pruebasTNormas();
+        
         
         //new VentanaPrincipalJCM().setVisible(true);
     }
     
-    
+    public static double product(double degree1, double...degrees){
+        double output = degree1; 
+        for(double d: degrees){
+            output = output*d;
+        }
+        return output;
+    }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane escritorio;
