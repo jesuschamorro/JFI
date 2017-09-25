@@ -159,4 +159,17 @@ public class Point3D {
         return "Point3D[" + x + ", " + y + ", " + z +"]";
     }
 
+    /**
+     * Indicates whether some other point is "equal to" this one.
+     *
+     * @param p reference point with which to compare.
+     * @return {@code true} if this point is the same as the argument;
+     * {@code false} otherwise.
+     */
+    public boolean equals(Point3D p) {
+        double EPSILON = 0.00001;
+        return ( Math.abs(x-p.x)<EPSILON && 
+                 Math.abs(y-p.y)<EPSILON && 
+                 Math.abs(z-p.z)<EPSILON);
+    }
 }

@@ -54,6 +54,10 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
      */
     static public final int TYPE_COMPLETE = 3;
     /**
+     * Type constant associated to a custom set of colors.
+     */
+    static public final int TYPE_CUSTOM = 4;
+    /**
      * The type of ISCC color set used. 
      */
     private final int type;
@@ -73,14 +77,20 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
      * @param type the set of colors used. 
      */
     public ISCCColorMap(int type) {
-        Map.Entry set[];
+        Map.Entry set[] = {};
         switch(type){
             case TYPE_BASIC:
                 set = ISCC_BASIC;
                 break;
             case TYPE_EXTENDED:
                 set = ISCC_EXTENDED;
-                break;    
+                break;  
+            case TYPE_COMPLETE:
+                set = ISCC_COMPLETE;
+                break; 
+            case TYPE_CUSTOM:
+                //Empty set
+                break;     
             default:    
                 throw new InvalidParameterException("Unknown type");
         }
@@ -89,6 +99,7 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
         }
         this.type = type;
     }
+     
     
     /**
      * Returns the type of this ISCC color map.
@@ -100,7 +111,30 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
     }
     
     /**
-     * Set of ISCC basic colors.
+     * Returns the subset of colors from this ISCC set that matches with the
+     * given pattern.
+     * 
+     * The pattern have to be defined on the basis of a regular expression (see
+     * {@link java.util.regex.Pattern}). Patterns for the thirteen basic color
+     * families are defined as constants in this class, but any regular
+     * expression can be used.
+     *
+     * @param pattern the regular expression that define the pattern.
+     * @return a subset of ISCC colors matching the pattern.
+     */
+    public ISCCColorMap getSubset(String pattern) {
+        ISCCColorMap output = new ISCCColorMap(TYPE_CUSTOM);
+        for (Entry<String, Point3D> e : this.entrySet()) {            
+            if (e.getKey().matches(pattern)) {
+                output.put(e.getKey(), e.getValue());
+            }
+        }
+        return output;
+    }
+    
+        
+    /**
+     * ISCC basic set of colors.
      */
     static public Map.Entry ISCC_BASIC[] = {
         new AbstractMap.SimpleEntry("Pink", new Point3D(254, 181, 186)),
@@ -109,7 +143,7 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
         new AbstractMap.SimpleEntry("Brown", new Point3D(128, 70, 27)),
         new AbstractMap.SimpleEntry("Yellow", new Point3D(243, 195, 1)),
         new AbstractMap.SimpleEntry("Olive", new Point3D(102, 93, 30)),
-        new AbstractMap.SimpleEntry("Yellow-green", new Point3D(141, 182, 1)),
+        new AbstractMap.SimpleEntry("Yellow-Green", new Point3D(141, 182, 1)),
         new AbstractMap.SimpleEntry("Green", new Point3D(1, 136, 86)),
         new AbstractMap.SimpleEntry("Blue", new Point3D(1, 161, 194)),
         new AbstractMap.SimpleEntry("Purple", new Point3D(154, 78, 174)),
@@ -119,50 +153,508 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
     };
     
     /**
-     * Set of ISCC extended colors.
+     * ISCC extended set of colors.
      */
     static public Map.Entry ISCC_EXTENDED[] = {
-        // Pink family 
+        // A. Pink family 
         new AbstractMap.SimpleEntry("Pink", new Point3D(254, 181, 186)),
-        new AbstractMap.SimpleEntry("YellowishPink", new Point3D(254, 183, 165)),
-        new AbstractMap.SimpleEntry("BrownishPink", new Point3D(194, 172, 153)),
-        new AbstractMap.SimpleEntry("PurplishPink", new Point3D(230, 143, 172)),
-        // Red family
+        new AbstractMap.SimpleEntry("Yellowish-Pink", new Point3D(254, 183, 165)),
+        new AbstractMap.SimpleEntry("Brownish-Pink", new Point3D(194, 172, 153)),
+        new AbstractMap.SimpleEntry("Purplish-Pink", new Point3D(230, 143, 172)),
+        // B. Red family
         new AbstractMap.SimpleEntry("Red", new Point3D(190, 1, 50)),
-        new AbstractMap.SimpleEntry("PurplishRed", new Point3D(206, 70, 118)),
-        // Orange family        
+        new AbstractMap.SimpleEntry("Purplish-Red", new Point3D(206, 70, 118)),
+        // C. Orange family        
         new AbstractMap.SimpleEntry("Orange", new Point3D(243, 132, 1)),        
-        new AbstractMap.SimpleEntry("YellowOrange", new Point3D(246, 166, 1)),
-        new AbstractMap.SimpleEntry("ReddishOrange", new Point3D(226, 88, 34)),
-        new AbstractMap.SimpleEntry("BrownishOrange", new Point3D(174, 105, 56)),
-        // Brown family
+        new AbstractMap.SimpleEntry("Yellow-Orange", new Point3D(246, 166, 1)),
+        new AbstractMap.SimpleEntry("Reddish-Orange", new Point3D(226, 88, 34)),
+        new AbstractMap.SimpleEntry("Brownish-Orange", new Point3D(174, 105, 56)),
+        // D. Brown family
         new AbstractMap.SimpleEntry("Brown", new Point3D(128, 70, 27)),
-        new AbstractMap.SimpleEntry("ReddishBrown", new Point3D(136, 45, 23)),
-        new AbstractMap.SimpleEntry("YellowishBrown", new Point3D(153, 101, 21)),
-        new AbstractMap.SimpleEntry("OliveBrown", new Point3D(107, 79, 13)),
-        // Yellow family
+        new AbstractMap.SimpleEntry("Reddish-Brown", new Point3D(136, 45, 23)),
+        new AbstractMap.SimpleEntry("Yellowish-Brown", new Point3D(153, 101, 21)),
+        new AbstractMap.SimpleEntry("Olive-Brown", new Point3D(107, 79, 13)),
+        // E. Yellow family
         new AbstractMap.SimpleEntry("Yellow", new Point3D(243, 195, 1)),        
-        new AbstractMap.SimpleEntry("GreenishYellow", new Point3D(220, 211, 1)),
-        // Olive family
+        new AbstractMap.SimpleEntry("Greenish-Yellow", new Point3D(220, 211, 1)),
+        // F. Olive family
         new AbstractMap.SimpleEntry("Olive", new Point3D(102, 93, 30)),
-        new AbstractMap.SimpleEntry("GreenOlive", new Point3D(64, 79, 1)),
-        // Yellow-green family
+        new AbstractMap.SimpleEntry("Green-Olive", new Point3D(64, 79, 1)),
+        // G. Yellow-green family
         new AbstractMap.SimpleEntry("Yellow-green", new Point3D(141, 182, 1)),
-        // Green family
+        // H. Green family
         new AbstractMap.SimpleEntry("Green", new Point3D(1, 136, 86)),        
-        new AbstractMap.SimpleEntry("YellowishGreen", new Point3D(39, 166, 76)),
-        new AbstractMap.SimpleEntry("BluishGreen", new Point3D(1, 136, 130)),
-        // Blue family
+        new AbstractMap.SimpleEntry("Yellowish-Green", new Point3D(39, 166, 76)),
+        new AbstractMap.SimpleEntry("Bluish-Green", new Point3D(1, 136, 130)),
+        // I. Blue family
         new AbstractMap.SimpleEntry("Blue", new Point3D(1, 161, 194)),
-        new AbstractMap.SimpleEntry("GreenishBlue", new Point3D(1, 133, 161)),
-        new AbstractMap.SimpleEntry("PurplishBlue", new Point3D(48, 38, 122)),
-        // Purple family        
+        new AbstractMap.SimpleEntry("Greenish-Blue", new Point3D(1, 133, 161)),
+        new AbstractMap.SimpleEntry("Purplish-Blue", new Point3D(48, 38, 122)),
+        // J. Purple family        
         new AbstractMap.SimpleEntry("Purple", new Point3D(154, 78, 174)),
         new AbstractMap.SimpleEntry("Violet", new Point3D(144, 101, 202)),
-        new AbstractMap.SimpleEntry("ReddishPurple", new Point3D(135, 1, 116)),
-        // Grey level family
+        new AbstractMap.SimpleEntry("Reddish-Purple", new Point3D(135, 1, 116)),
+        // K. Grey level family
         new AbstractMap.SimpleEntry("White", new Point3D(252, 252, 249)),
         new AbstractMap.SimpleEntry("Gray", new Point3D(135, 134, 134)),
         new AbstractMap.SimpleEntry("Black", new Point3D(7, 7, 7))
     };
+    
+    /**
+     * ISCC complete set of colors.
+     */
+    static public Map.Entry ISCC_COMPLETE[] = {
+        // A. Pink family 
+        // A.1 "Pink" brach (=vivid pink)
+        new AbstractMap.SimpleEntry("Vivid Pink", new Point3D(254.0,181.0,186.0)),
+        new AbstractMap.SimpleEntry("Strong Pink", new Point3D(234.0,147.0,153.0)),
+        new AbstractMap.SimpleEntry("Deep Pink", new Point3D(228.0,113.0,122.0)),
+        new AbstractMap.SimpleEntry("Light Pink", new Point3D(249.0,204.0,202.0)),
+        new AbstractMap.SimpleEntry("Moderate Pink", new Point3D(222.0,165.0,164.0)),
+        new AbstractMap.SimpleEntry("Dark Pink", new Point3D(192.0,128.0,129.0)),
+        new AbstractMap.SimpleEntry("Pale Pink", new Point3D(234.0,216.0,215.0)),
+        new AbstractMap.SimpleEntry("Grayish Pink", new Point3D(196.0,174.0,173.0)),
+        // A.2 "YellowishPink" brach (=vivid yellowish-pink)
+        new AbstractMap.SimpleEntry("Vivid Yellowish-Pink", new Point3D(254.0,183.0,165.0)),
+        new AbstractMap.SimpleEntry("Strong Yellowish-Pink", new Point3D(248.0,131.0,121.0)),
+        new AbstractMap.SimpleEntry("Deep Yellowish-Pink", new Point3D(230.0,103.0,97.0)),
+        new AbstractMap.SimpleEntry("Light Yellowish-Pink", new Point3D(244.0,194.0,194.0)),
+        new AbstractMap.SimpleEntry("Moderate Yellowish-Pink", new Point3D(217.0,166.0,169.0)),
+        new AbstractMap.SimpleEntry("Dark Yellowish-Pink", new Point3D(196.0,131.0,121.0)),
+        new AbstractMap.SimpleEntry("Pale Yellowish-Pink", new Point3D(236.0,213.0,197.0)),
+        new AbstractMap.SimpleEntry("Grayish Yellowish-Pink", new Point3D(199.0,173.0,163.0)),
+        // A.3 "BrownishPink" brach (=brownish-pink)
+        new AbstractMap.SimpleEntry("Brownish-Pink", new Point3D(194, 172, 153)),
+        // A.4 "Purplish-Pink" brach (=strong purplish-pink)
+        new AbstractMap.SimpleEntry("Brilliant Purplish-Pink", new Point3D(254.0,200.0,214.0)),
+        new AbstractMap.SimpleEntry("Strong Purplish-Pink", new Point3D(230.0,143.0,172.0)),
+        new AbstractMap.SimpleEntry("Deep Purplish-Pink", new Point3D(222.0,111.0,161.0)),
+        new AbstractMap.SimpleEntry("Light Purplish-Pink", new Point3D(239.0,187.0,204.0)),
+        new AbstractMap.SimpleEntry("Moderate Purplish-Pink", new Point3D(213.0,151.0,174.0)),
+        new AbstractMap.SimpleEntry("Dark Purplish-Pink", new Point3D(193.0,126.0,145.0)),
+        new AbstractMap.SimpleEntry("Pale Purplish-Pink", new Point3D(232.0,204.0,215.0)),
+        new AbstractMap.SimpleEntry("Grayish Purplish-Pink", new Point3D(195.0,166.0,177.0)),
+        
+        // B. Red family
+        // B.1 "Red" brach (=vivid red)
+        new AbstractMap.SimpleEntry("Vivid Red", new Point3D(190.0,1.0,50.0)),
+        new AbstractMap.SimpleEntry("Strong Red", new Point3D(188.0,63.0,74.0)),
+        new AbstractMap.SimpleEntry("Deep Red", new Point3D(132.0,27.0,45.0)),
+        new AbstractMap.SimpleEntry("Very Deep Red", new Point3D(92.0,9.0,35.0)),
+        new AbstractMap.SimpleEntry("Moderate Red", new Point3D(171.0,78.0,82.0)),
+        new AbstractMap.SimpleEntry("Dark Red", new Point3D(114.0,47.0,55.0)),
+        new AbstractMap.SimpleEntry("Very Dark Red", new Point3D(63.0,23.0,40.0)),
+        new AbstractMap.SimpleEntry("Light Grayish Red", new Point3D(173.0,136.0,132.0)),
+        new AbstractMap.SimpleEntry("Grayish Red", new Point3D(144.0,93.0,93.0)),
+        new AbstractMap.SimpleEntry("Dark Grayish Red", new Point3D(84.0,61.0,63.0)),
+        new AbstractMap.SimpleEntry("Blackish Red", new Point3D(46.0,29.0,33.0)),        
+        // B.2 "Purplish-Red" brach (=vivid purplish-red)
+        new AbstractMap.SimpleEntry("Vivid Purplish-Red", new Point3D(206.0,70.0,118.0)),
+        new AbstractMap.SimpleEntry("Strong Purplish-Red", new Point3D(179.0,68.0,108.0)),
+        new AbstractMap.SimpleEntry("Deep Purplish-Red", new Point3D(120.0,24.0,74.0)),
+        new AbstractMap.SimpleEntry("Very Deep Purplish-Red", new Point3D(84.0,19.0,59.0)),
+        new AbstractMap.SimpleEntry("Moderate Purplish-Red", new Point3D(168.0,81.0,110.0)),
+        new AbstractMap.SimpleEntry("Dark Purplish-Red", new Point3D(103.0,49.0,71.0)),
+        new AbstractMap.SimpleEntry("Very Dark Purplish-Red", new Point3D(56.0,21.0,44.0)),
+        new AbstractMap.SimpleEntry("Light Grayish Purplish-Red", new Point3D(175.0,134.0,142.0)),
+        new AbstractMap.SimpleEntry("Grayish Purplish-Red", new Point3D(145.0,95.0,109.0)),
+        
+        // C. Orange family    
+        // C.1 "Orange" brach (=vivid orange)
+        new AbstractMap.SimpleEntry("Vivid Orange", new Point3D(243.0,132.0,1.0)),   
+        new AbstractMap.SimpleEntry("Brilliant Orange", new Point3D(253.0,148.0,63.0)),   
+        new AbstractMap.SimpleEntry("Strong Orange", new Point3D(237.0,135.0,45.0)),   
+        new AbstractMap.SimpleEntry("Deep Orange", new Point3D(190.0,101.0,22.0)),   
+        new AbstractMap.SimpleEntry("Light Orange", new Point3D(250.0,181.0,127.0)),   
+        new AbstractMap.SimpleEntry("Moderate Orange", new Point3D(217.0,144.0,88.0)),   
+        // C.2 "Yellow-Orange" brach (=vivid yellow-orange)
+        new AbstractMap.SimpleEntry("Vivid Yellow-Orange", new Point3D(246.0,166.0,1.0)),
+        new AbstractMap.SimpleEntry("Brilliant Yellow-Orange", new Point3D(254.0,193.0,79.0)),
+        new AbstractMap.SimpleEntry("Strong Yellow-Orange", new Point3D(234.0,162.0,33.0)),
+        new AbstractMap.SimpleEntry("Deep Yellow-Orange", new Point3D(201.0,133.0,1.0)),
+        new AbstractMap.SimpleEntry("Light Yellow-Orange", new Point3D(251.0,201.0,127.0)),
+        new AbstractMap.SimpleEntry("Moderate Yellow-Orange", new Point3D(227.0,168.0,87.0)),
+        new AbstractMap.SimpleEntry("Dark Yellow-Orange", new Point3D(190.0,138.0,61.0)),
+        new AbstractMap.SimpleEntry("Pale Yellow-Orange", new Point3D(250.0,214.0,165.0)),
+        // C.3 "Reddish-Orange" brach (=vivid reddish-orange)
+        new AbstractMap.SimpleEntry("Vivid Reddish-Orange", new Point3D(226.0,88.0,34.0)),
+        new AbstractMap.SimpleEntry("Strong Reddish-Orange", new Point3D(217.0,96.0,59.0)),
+        new AbstractMap.SimpleEntry("Deep Reddish-Orange", new Point3D(170.0,56.0,30.0)),
+        new AbstractMap.SimpleEntry("Moderate Reddish-Orange", new Point3D(203.0,109.0,81.0)),
+        new AbstractMap.SimpleEntry("Dark Reddish-Orange", new Point3D(158.0,71.0,50.0)),
+        new AbstractMap.SimpleEntry("Grayish Reddish-Orange", new Point3D(180.0,116.0,94.0)),
+        // C.4 "Brownish-Orange" brach (=brownish-orange)
+        new AbstractMap.SimpleEntry("Brownish-Orange", new Point3D(174, 105, 56)),
+                
+        // D. Brown family
+        // D.1 "Brown" brach (= strong-brown)
+        new AbstractMap.SimpleEntry("Strong Brown", new Point3D(128.0,70.0,27.0)),
+        new AbstractMap.SimpleEntry("Deep Brown", new Point3D(89.0,51.0,25.0)),
+        new AbstractMap.SimpleEntry("Light Brown", new Point3D(166.0,123.0,91.0)),
+        new AbstractMap.SimpleEntry("Moderate Brown", new Point3D(111.0,78.0,55.0)),
+        new AbstractMap.SimpleEntry("Dark Brown", new Point3D(66.0,37.0,24.0)),
+        new AbstractMap.SimpleEntry("Light Grayish Brown", new Point3D(149.0,128.0,112.0)),
+        new AbstractMap.SimpleEntry("Grayish Brown", new Point3D(99.0,81.0,71.0)),
+        new AbstractMap.SimpleEntry("Dark Grayish Brown", new Point3D(62.0,50.0,44.0)),
+        // D.2 "Reddish-Brown" brach (=strong reddish-brown)
+        new AbstractMap.SimpleEntry("Strong Reddish-Brown", new Point3D(136.0,45.0,23.0)),
+        new AbstractMap.SimpleEntry("Deep Reddish-Brown", new Point3D(86.0,7.0,12.0)),
+        new AbstractMap.SimpleEntry("Light Reddish-Brown", new Point3D(168.0,124.0,109.0)),
+        new AbstractMap.SimpleEntry("Moderate Reddish-Brown", new Point3D(121.0,68.0,59.0)),
+        new AbstractMap.SimpleEntry("Dark Reddish-Brown", new Point3D(62.0,29.0,30.0)),
+        new AbstractMap.SimpleEntry("Light Grayish Reddish-Brown", new Point3D(151.0,127.0,115.0)),
+        new AbstractMap.SimpleEntry("Grayish Reddish-Brown", new Point3D(103.0,76.0,71.0)),
+        new AbstractMap.SimpleEntry("Dark Grayish Reddish-Brown", new Point3D(67.0,48.0,46.0)),        
+        // D.3 "Yellowish-Brown" brach (=strong yellowish-brown)       
+        new AbstractMap.SimpleEntry("Strong Yellowish-Brown", new Point3D(153.0,101.0,21.0)),
+        new AbstractMap.SimpleEntry("Deep Yellowish-Brown", new Point3D(101.0,69.0,34.0)),
+        new AbstractMap.SimpleEntry("Light Yellowish-Brown", new Point3D(193.0,154.0,107.0)),
+        new AbstractMap.SimpleEntry("Moderate Yellowish-Brown", new Point3D(130.0,102.0,68.0)),
+        new AbstractMap.SimpleEntry("Dark Yellowish-Brown", new Point3D(75.0,54.0,33.0)),
+        new AbstractMap.SimpleEntry("Light Grayish Yellowish-Brown", new Point3D(174.0,155.0,130.0)),
+        new AbstractMap.SimpleEntry("Grayish Yellowish-Brown", new Point3D(126.0,109.0,90.0)),
+        new AbstractMap.SimpleEntry("Dark Grayish Yellowish-Brown", new Point3D(72.0,60.0,50.0)),
+        // D.4 "Olive-Brown" brach (=no coincidence in iscc-complete)        
+        new AbstractMap.SimpleEntry("Light Olive-Brown", new Point3D(150.0,113.0,23.0)),
+        new AbstractMap.SimpleEntry("Moderate Olive-Brown", new Point3D(108.0,84.0,30.0)),
+        new AbstractMap.SimpleEntry("Dark Olive-Brown", new Point3D(59.0,49.0,33.0)),
+        
+        // E. Yellow family
+        // E.1 "Yellow" brach (=vivid yellow) 
+        new AbstractMap.SimpleEntry("Vivid Yellow", new Point3D(243.0,195.0,1.0)),   
+        new AbstractMap.SimpleEntry("Brilliant Yellow", new Point3D(250.0,218.0,94.0)),   
+        new AbstractMap.SimpleEntry("Strong Yellow", new Point3D(212.0,175.0,55.0)),   
+        new AbstractMap.SimpleEntry("Deep Yellow", new Point3D(175.0,141.0,19.0)),   
+        new AbstractMap.SimpleEntry("Light Yellow", new Point3D(248.0,222.0,126.0)),   
+        new AbstractMap.SimpleEntry("Moderate Yellow", new Point3D(201.0,174.0,93.0)),   
+        new AbstractMap.SimpleEntry("Dark Yellow", new Point3D(171.0,145.0,68.0)),   
+        new AbstractMap.SimpleEntry("Pale Yellow", new Point3D(243.0,229.0,171.0)),   
+        new AbstractMap.SimpleEntry("Grayish Yellow", new Point3D(194.0,178.0,128.0)),   
+        new AbstractMap.SimpleEntry("Dark Grayish Yellow", new Point3D(161.0,143.0,96.0)),   
+        // E.2 "Greenish-Yellow" brach (=vivid greenish-yellow)
+        new AbstractMap.SimpleEntry("Vivid Greenish-Yellow", new Point3D(220.0,211.0,1.0)),
+        new AbstractMap.SimpleEntry("Brilliant Greenish-Yellow", new Point3D(233.0,228.0,80.0)),
+        new AbstractMap.SimpleEntry("Strong Greenish-Yellow", new Point3D(190.0,183.0,46.0)),
+        new AbstractMap.SimpleEntry("Deep Greenish-Yellow", new Point3D(155.0,148.0,1.0)),
+        new AbstractMap.SimpleEntry("Light Greenish-Yellow", new Point3D(234.0,230.0,121.0)),
+        new AbstractMap.SimpleEntry("Moderate Greenish-Yellow", new Point3D(185.0,180.0,89.0)),
+        new AbstractMap.SimpleEntry("Dark Greenish-Yellow", new Point3D(152.0,148.0,62.0)),
+        new AbstractMap.SimpleEntry("Pale Greenish-Yellow", new Point3D(235.0,232.0,164.0)),
+        new AbstractMap.SimpleEntry("Grayish Greenish-Yellow", new Point3D(185.0,181.0,125.0)),
+        
+        // F. Olive family
+        // F.1 "Olive" brach (=moderate olive) 
+        new AbstractMap.SimpleEntry("Light Olive", new Point3D(134.0,126.0,54.0)),
+        new AbstractMap.SimpleEntry("Moderate Olive", new Point3D(102.0,93.0,30.0)),
+        new AbstractMap.SimpleEntry("Dark Olive", new Point3D(64.0,61.0,33.0)),
+        new AbstractMap.SimpleEntry("Light Grayish Olive", new Point3D(140.0,135.0,103.0)),
+        new AbstractMap.SimpleEntry("Grayish Olive", new Point3D(91.0,88.0,66.0)),
+        new AbstractMap.SimpleEntry("Dark Grayish Olive", new Point3D(54.0,53.0,39.0)),        
+        // F.2 "Green-Olive" brach (=strong green-olive)
+        new AbstractMap.SimpleEntry("Strong Green-Olive", new Point3D(64.0,79.0,1.0)),
+        new AbstractMap.SimpleEntry("Deep Green-Olive", new Point3D(35.0,47.0,1.0)),
+        new AbstractMap.SimpleEntry("Moderate Green-Olive", new Point3D(74.0,93.0,35.0)),
+        new AbstractMap.SimpleEntry("Dark Green-Olive", new Point3D(43.0,61.0,38.0)),
+        new AbstractMap.SimpleEntry("Grayish Green-Olive", new Point3D(81.0,87.0,68.0)),
+        new AbstractMap.SimpleEntry("Dark Grayish Green-Olive", new Point3D(49.0,54.0,43.0)),
+             
+        // G. Yellow-green family
+        // G.1 "Yellow-Green" brach (=vivid yellow-green)
+        new AbstractMap.SimpleEntry("Vivid Yellow-Green", new Point3D(141.0,182.0,1.0)),
+        new AbstractMap.SimpleEntry("Brilliant Yellow-Green", new Point3D(189.0,218.0,87.0)),
+        new AbstractMap.SimpleEntry("Strong Yellow-Green", new Point3D(126.0,159.0,46.0)),
+        new AbstractMap.SimpleEntry("Deep Yellow-Green", new Point3D(70.0,113.0,41.0)),
+        new AbstractMap.SimpleEntry("Light Yellow-Green", new Point3D(201.0,220.0,137.0)),
+        new AbstractMap.SimpleEntry("Moderate Yellow-Green", new Point3D(138.0,154.0,91.0)),
+        new AbstractMap.SimpleEntry("Pale Yellow-Green", new Point3D(218.0,223.0,183.0)),
+        new AbstractMap.SimpleEntry("Grayish Yellow-Green", new Point3D(143.0,151.0,121.0)),
+        
+        // H. Green family
+        // H.1 "Green" brach (=vivid green) 
+        new AbstractMap.SimpleEntry("Vivid Green", new Point3D(1.0,136.0,86.0)), 
+        new AbstractMap.SimpleEntry("Brilliant Green", new Point3D(62.0,180.0,137.0)), 
+        new AbstractMap.SimpleEntry("Strong Green", new Point3D(1.0,121.0,89.0)), 
+        new AbstractMap.SimpleEntry("Deep Green", new Point3D(1.0,84.0,61.0)), 
+        new AbstractMap.SimpleEntry("Very Light Green", new Point3D(142.0,209.0,178.0)), 
+        new AbstractMap.SimpleEntry("Light Green", new Point3D(106.0,171.0,142.0)), 
+        new AbstractMap.SimpleEntry("Moderate Green", new Point3D(59.0,120.0,97.0)), 
+        new AbstractMap.SimpleEntry("Dark Green", new Point3D(27.0,77.0,62.0)), 
+        new AbstractMap.SimpleEntry("Very Dark Green", new Point3D(28.0,53.0,45.0)), 
+        new AbstractMap.SimpleEntry("Very Pale Green", new Point3D(199.0,230.0,215.0)), 
+        new AbstractMap.SimpleEntry("Pale Green", new Point3D(141.0,163.0,153.0)), 
+        new AbstractMap.SimpleEntry("Grayish Green", new Point3D(94.0,113.0,106.0)), 
+        new AbstractMap.SimpleEntry("Dark Grayish Green", new Point3D(58.0,75.0,71.0)), 
+        new AbstractMap.SimpleEntry("Blackish Green", new Point3D(26.0,36.0,33.0)), 
+        // H.2 "Yellowish-Green" brach (=vivid yellowish-green)     
+        new AbstractMap.SimpleEntry("Vivid Yellowish-Green", new Point3D(39.0,166.0,76.0)),
+        new AbstractMap.SimpleEntry("Brilliant Yellowish-Green", new Point3D(131.0,211.0,125.0)),
+        new AbstractMap.SimpleEntry("Strong Yellowish-Green", new Point3D(68.0,148.0,74.0)),
+        new AbstractMap.SimpleEntry("Deep Yellowish-Green", new Point3D(1.0,98.0,45.0)),
+        new AbstractMap.SimpleEntry("Very Deep Yellowish-Green", new Point3D(1.0,49.0,24.0)),
+        new AbstractMap.SimpleEntry("Very Light Yellowish-Green", new Point3D(182.0,229.0,175.0)),
+        new AbstractMap.SimpleEntry("Light Yellowish-Green", new Point3D(147.0,197.0,146.0)),
+        new AbstractMap.SimpleEntry("Moderate Yellowish-Green", new Point3D(103.0,146.0,103.0)),
+        new AbstractMap.SimpleEntry("Dark Yellowish-Green", new Point3D(53.0,94.0,59.0)),
+        new AbstractMap.SimpleEntry("Very Dark Yellowish-Green", new Point3D(23.0,54.0,32.0)),
+        // H.3 "Bluish-Green" brach (=vivid bluish-green)
+        new AbstractMap.SimpleEntry("Vivid Bluish-Green", new Point3D(1.0,136.0,130.0)),
+        new AbstractMap.SimpleEntry("Brilliant Bluish-Green", new Point3D(1.0,166.0,147.0)),
+        new AbstractMap.SimpleEntry("Strong Bluish-Green", new Point3D(1.0,122.0,116.0)),
+        new AbstractMap.SimpleEntry("Deep Bluish-Green", new Point3D(1.0,68.0,63.0)),
+        new AbstractMap.SimpleEntry("Very Light Bluish-Green", new Point3D(150.0,222.0,209.0)),
+        new AbstractMap.SimpleEntry("Light Bluish-Green", new Point3D(102.0,173.0,164.0)),
+        new AbstractMap.SimpleEntry("Moderate Bluish-Green", new Point3D(49.0,120.0,115.0)),
+        new AbstractMap.SimpleEntry("Dark Bluish-Green", new Point3D(1.0,75.0,73.0)),
+        new AbstractMap.SimpleEntry("Very Dark Bluish-Green", new Point3D(1.0,42.0,41.0)),
+        
+        // I. Blue family
+        // I.1 "Blue" brach (=vivid blue)        
+        new AbstractMap.SimpleEntry("Vivid Blue", new Point3D(1.0,161.0,194.0)),
+        new AbstractMap.SimpleEntry("Brilliant Blue", new Point3D(73.0,151.0,208.0)),
+        new AbstractMap.SimpleEntry("Strong Blue", new Point3D(1.0,103.0,165.0)),
+        new AbstractMap.SimpleEntry("Deep Blue", new Point3D(1.0,65.0,106.0)),
+        new AbstractMap.SimpleEntry("Very Light Blue", new Point3D(161.0,202.0,241.0)),
+        new AbstractMap.SimpleEntry("Light Blue", new Point3D(112.0,163.0,204.0)),
+        new AbstractMap.SimpleEntry("Moderate Blue", new Point3D(67.0,107.0,149.0)),
+        new AbstractMap.SimpleEntry("Dark Blue", new Point3D(1.0,48.0,78.0)),
+        new AbstractMap.SimpleEntry("Very Pale Blue", new Point3D(188.0,212.0,230.0)),
+        new AbstractMap.SimpleEntry("Pale Blue", new Point3D(145.0,163.0,176.0)),
+        new AbstractMap.SimpleEntry("Grayish Blue", new Point3D(83.0,104.0,120.0)),
+        new AbstractMap.SimpleEntry("Dark Grayish Blue", new Point3D(54.0,69.0,79.0)),
+        new AbstractMap.SimpleEntry("Blackish Blue", new Point3D(32.0,40.0,48.0)),
+        // I.2 "Greenish-Blue" brach (=vivid greenish-blue)        
+        new AbstractMap.SimpleEntry("Vivid Greenish-Blue", new Point3D(1.0,133.0,161.0)),
+        new AbstractMap.SimpleEntry("Brilliant Greenish-Blue", new Point3D(35.0,158.0,186.0)),
+        new AbstractMap.SimpleEntry("Strong Greenish-Blue", new Point3D(1.0,119.0,145.0)),
+        new AbstractMap.SimpleEntry("Deep Greenish-Blue", new Point3D(46.0,132.0,149.0)),
+        new AbstractMap.SimpleEntry("Very Light Greenish-Blue", new Point3D(156.0,209.0,220.0)),
+        new AbstractMap.SimpleEntry("Light Greenish-Blue", new Point3D(102.0,170.0,188.0)),
+        new AbstractMap.SimpleEntry("Moderate Greenish-Blue", new Point3D(54.0,117.0,136.0)),
+        new AbstractMap.SimpleEntry("Dark Greenish-Blue", new Point3D(1.0,73.0,88.0)),
+        new AbstractMap.SimpleEntry("Very Dark Greenish-Blue", new Point3D(1.0,46.0,59.0)),
+        // I.3 "Purplish-Blue" brach (=vivid purplish-blue)
+        new AbstractMap.SimpleEntry("Vivid Purplish-Blue", new Point3D(48.0,38.0,122.0)),
+        new AbstractMap.SimpleEntry("Brilliant Purplish-Blue", new Point3D(108.0,121.0,184.0)),
+        new AbstractMap.SimpleEntry("Strong Purplish-Blue", new Point3D(84.0,90.0,167.0)),
+        new AbstractMap.SimpleEntry("Deep Purplish-Blue", new Point3D(39.0,36.0,88.0)),
+        new AbstractMap.SimpleEntry("Very Light Purplish-Blue", new Point3D(179.0,188.0,226.0)),
+        new AbstractMap.SimpleEntry("Light Purplish-Blue", new Point3D(135.0,145.0,191.0)),
+        new AbstractMap.SimpleEntry("Moderate Purplish-Blue", new Point3D(78.0,81.0,128.0)),
+        new AbstractMap.SimpleEntry("Dark Purplish-Blue", new Point3D(37.0,36.0,64.0)),
+        new AbstractMap.SimpleEntry("Very Pale Purplish-Blue", new Point3D(192.0,200.0,225.0)),
+        new AbstractMap.SimpleEntry("Pale Purplish-Blue", new Point3D(140.0,146.0,172.0)),
+        new AbstractMap.SimpleEntry("Grayish Purplish-Blue", new Point3D(76.0,81.0,109.0)),
+
+        // J. Purple family  
+        // J.1 "Purple" brach (=vivid purple)
+        new AbstractMap.SimpleEntry("Vivid Purple", new Point3D(154.0,78.0,174.0)),
+        new AbstractMap.SimpleEntry("Brilliant Purple", new Point3D(211.0,153.0,230.0)),
+        new AbstractMap.SimpleEntry("Strong Purple", new Point3D(135.0,86.0,146.0)),
+        new AbstractMap.SimpleEntry("Deep Purple", new Point3D(96.0,47.0,107.0)),
+        new AbstractMap.SimpleEntry("Very Deep Purple", new Point3D(64.0,26.0,76.0)),
+        new AbstractMap.SimpleEntry("Very Light Purple", new Point3D(213.0,186.0,219.0)),
+        new AbstractMap.SimpleEntry("Light Purple", new Point3D(182.0,149.0,192.0)),
+        new AbstractMap.SimpleEntry("Moderate Purple", new Point3D(134.0,96.0,142.0)),
+        new AbstractMap.SimpleEntry("Dark Purple", new Point3D(86.0,60.0,92.0)),
+        new AbstractMap.SimpleEntry("Very Dark Purple", new Point3D(48.0,25.0,52.0)),
+        new AbstractMap.SimpleEntry("Very Pale Purple", new Point3D(214.0,202.0,221.0)),
+        new AbstractMap.SimpleEntry("Pale Purple", new Point3D(170.0,152.0,169.0)),
+        new AbstractMap.SimpleEntry("Grayish Purple", new Point3D(121.0,104.0,120.0)),
+        new AbstractMap.SimpleEntry("Dark Grayish Purple", new Point3D(80.0,64.0,77.0)),
+        new AbstractMap.SimpleEntry("Blackish Purple", new Point3D(41.0,30.0,41.0)),
+        // J.2 "Violet" brach (=vivid violet)
+        new AbstractMap.SimpleEntry("Vivid Violet", new Point3D(144.0,101.0,202.0)),
+        new AbstractMap.SimpleEntry("Brilliant Violet", new Point3D(126.0,115.0,184.0)),
+        new AbstractMap.SimpleEntry("Strong Violet", new Point3D(96.0,78.0,151.0)),
+        new AbstractMap.SimpleEntry("Deep Violet", new Point3D(50.0,23.0,77.0)),
+        new AbstractMap.SimpleEntry("Very Light Violet", new Point3D(220.0,208.0,254.0)),
+        new AbstractMap.SimpleEntry("Light Violet", new Point3D(140.0,130.0,182.0)),
+        new AbstractMap.SimpleEntry("Moderate Violet", new Point3D(96.0,78.0,129.0)),
+        new AbstractMap.SimpleEntry("Dark Violet", new Point3D(47.0,33.0,64.0)),
+        new AbstractMap.SimpleEntry("Very Pale Violet", new Point3D(196.0,195.0,221.0)),
+        new AbstractMap.SimpleEntry("Pale Violet", new Point3D(150.0,144.0,171.0)),
+        new AbstractMap.SimpleEntry("Grayish Violet", new Point3D(85.0,76.0,105.0)),
+        // J.3 "Reddish-Purple" brach (=vivid reddish-purple)
+        new AbstractMap.SimpleEntry("Vivid Reddish-Purple", new Point3D(135.0,1.0,116.0)),
+        new AbstractMap.SimpleEntry("Strong Reddish-Purple", new Point3D(158.0,79.0,136.0)),
+        new AbstractMap.SimpleEntry("Deep Reddish-Purple", new Point3D(112.0,41.0,99.0)),
+        new AbstractMap.SimpleEntry("Very Deep Reddish-Purple", new Point3D(84.0,25.0,78.0)),
+        new AbstractMap.SimpleEntry("Light Reddish-Purple", new Point3D(183.0,132.0,167.0)),
+        new AbstractMap.SimpleEntry("Moderate Reddish-Purple", new Point3D(145.0,92.0,131.0)),
+        new AbstractMap.SimpleEntry("Dark Reddish-Purple", new Point3D(93.0,57.0,84.0)),
+        new AbstractMap.SimpleEntry("Very Dark Reddish-Purple", new Point3D(52.0,23.0,49.0)),
+        new AbstractMap.SimpleEntry("Pale Reddish-Purple", new Point3D(170.0,138.0,158.0)),
+        new AbstractMap.SimpleEntry("Grayish Reddish-Purple", new Point3D(131.0,100.0,121.0)),
+            
+        // K. Grey level family
+        // "White" brach (=no coincidence in iscc-complete)
+        new AbstractMap.SimpleEntry("White", new Point3D(250.0,250.0,250.0)),
+        new AbstractMap.SimpleEntry("Pinkish White", new Point3D(234.0,227.0,225.0)),
+        new AbstractMap.SimpleEntry("Yellowish White", new Point3D(240.0,234.0,214.0)),
+        new AbstractMap.SimpleEntry("Greenish White", new Point3D(223.0,237.0,232.0)),
+        new AbstractMap.SimpleEntry("Bluish White", new Point3D(233.0,233.0,237.0)),
+        new AbstractMap.SimpleEntry("Purplish White", new Point3D(232.0,227.0,229.0)),
+        // "Gray" brach (=no coincidence in iscc-complete)
+        new AbstractMap.SimpleEntry("Light Gray", new Point3D(185.0,184.0,181.0)),
+        new AbstractMap.SimpleEntry("Medium Gray", new Point3D(132.0,132.0,130.0)),
+        new AbstractMap.SimpleEntry("Dark Gray", new Point3D(85.0,85.0,85.0)),
+        new AbstractMap.SimpleEntry("Pinkish Gray", new Point3D(193.0,182.0,179.0)),
+        new AbstractMap.SimpleEntry("Reddish Gray", new Point3D(143.0,129.0,127.0)),
+        new AbstractMap.SimpleEntry("Dark Reddish Gray", new Point3D(92.0,80.0,79.0)),        
+        new AbstractMap.SimpleEntry("Light Brownish Gray", new Point3D(142.0,130.0,121.0)),
+        new AbstractMap.SimpleEntry("Brownish Gray", new Point3D(91.0,80.0,79.0)),
+        new AbstractMap.SimpleEntry("Yellowish Gray", new Point3D(191.0,184.0,165.0)),
+        new AbstractMap.SimpleEntry("Light Olive Gray", new Point3D(138.0,135.0,118.0)),
+        new AbstractMap.SimpleEntry("Olive Gray", new Point3D(87.0,85.0,76.0)),
+        new AbstractMap.SimpleEntry("Light Greenish Gray", new Point3D(178.0,190.0,181.0)),
+        new AbstractMap.SimpleEntry("Greenish Gray", new Point3D(125.0,137.0,132.0)),
+        new AbstractMap.SimpleEntry("Dark Greenish Gray", new Point3D(78.0,87.0,85.0)),
+        new AbstractMap.SimpleEntry("Light Bluish Gray", new Point3D(180.0,188.0,192.0)),
+        new AbstractMap.SimpleEntry("Bluish Gray", new Point3D(129.0,135.0,139.0)),
+        new AbstractMap.SimpleEntry("Dark Bluish Gray", new Point3D(81.0,88.0,94.0)),
+        new AbstractMap.SimpleEntry("Light Purplish Gray", new Point3D(191.0,185.0,189.0)),
+        new AbstractMap.SimpleEntry("Purplish Gray", new Point3D(139.0,133.0,137.0)),
+        new AbstractMap.SimpleEntry("Dark Purplish Gray", new Point3D(93.0,85.0,91.0)),
+        // "Black" brach (=no coincidence in iscc-complete)       
+        new AbstractMap.SimpleEntry("Black", new Point3D(3.0,3.0,3.0)),
+        new AbstractMap.SimpleEntry("Reddish Black", new Point3D(40.0,32.0,34.0)),
+        new AbstractMap.SimpleEntry("Brownish Black", new Point3D(40.0,32.0,28.0)),
+        new AbstractMap.SimpleEntry("Olive Black", new Point3D(37.0,36.0,29.0)),
+        new AbstractMap.SimpleEntry("Greenish Black", new Point3D(30.0,35.0,33.0)),
+        new AbstractMap.SimpleEntry("Bluish Black", new Point3D(32.0,36.0,40.0)),
+        new AbstractMap.SimpleEntry("Purplish Black", new Point3D(36.0,33.0,36.0))
+    };
+    
+    /*
+     * Patterns for the main color families.
+     */
+    static public String PINK_PATTERN = ".*Pink$";
+    static public String PINK_CORE_PATTERN = ".*( Pink)$";   
+    static public String PINK_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Pink$";
+    static public String PINK_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Pink)$";
+    static public String RED_PATTERN = ".*Red$";
+    static public String RED_CORE_PATTERN = ".*( Red)$";
+    static public String RED_NODARK_PATTERN = "(?!.*Dark|.*Blackish).*Red$";  
+    static public String RED_CORE_NODARK_PATTERN = "(?!.*Dark|.*Blackish).*( Red)$";
+    static public String ORANGE_PATTERN = ".*Orange$";
+    static public String ORANGE_CORE_PATTERN = ".*( Orange)$";  
+    static public String ORANGE_NODARK_PATTERN = "(?!.*Dark).*Orange$";
+    static public String ORANGE_CORE_NODARK_PATTERN = "(?!.*Dark).*( Orange)$";
+    static public String BROWN_PATTERN = ".*Brown$";
+    static public String BROWN_CORE_PATTERN = ".*( Brown)$";
+    static public String BROWN_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Brown$";
+    static public String BROWN_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Brown)$";
+    static public String YELLOW_PATTERN = ".*Yellow$";
+    static public String YELLOW_CORE_PATTERN = ".*( Yellow)$";    
+    static public String YELLOW_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Yellow$";
+    static public String YELLOW_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Yellow)$";
+    static public String OLIVE_PATTERN = ".*Olive$";
+    static public String OLIVE_CORE_PATTERN = ".*( Olive)$";    
+    static public String OLIVE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Olive$";
+    static public String OLIVE_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Olive)$";
+    static public String YELLOWGREEN_PATTERN = ".*Yellow-Green$";
+    static public String YELLOWGREEN_CORE_PATTERN = ".*( Yellow-Green)$";
+    static public String YELLOWGREEN_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Yellow-Green)$";
+    static public String YELLOWGREEN_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Yellow-Green)$";    
+    static public String GREEN_PATTERN = "(?!.*Yellow-).*Green$";
+    static public String GREEN_CORE_PATTERN = "(?!.*Yellow-).*( Green)$";
+    static public String GREEN_NODARK_PATTERN = "(?!.*Dark|.*Blackish|.*Grayish|.*Yellow-).*Green$";
+    static public String GREEN_CORE_NODARK_PATTERN = "(?!.*Dark|.*Blackish|.*Grayish|.*Yellow-).*( Green)$";
+    static public String BLUE_PATTERN = ".*Blue";
+    static public String BLUE_CORE_PATTERN = ".*( Blue)";
+    static public String BLUE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*Blue$";
+    static public String BLUE_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Blue)$";
+    static public String PURPLE_PATTERN = ".*(Purple|Violet)$";
+    static public String PURPLE_CORE_PATTERN = ".*( Purple| Violet)$";
+    static public String PURPLE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*(Purple|Violet)$";
+    static public String PURPLE_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Purple| Violet)$";
+    static public String PURPLEONLY_PATTERN = ".*Purple$";
+    static public String PURPLEONLY_CORE_PATTERN = ".*( Purple)$";
+    static public String PURPLEONLY_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*Purple$";
+    static public String PURPLEONLY_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Purple)$";
+    static public String VIOLET_PATTERN = ".*Violet$";
+    static public String VIOLET_CORE_PATTERN = ".*( Violet)$";
+    static public String VIOLET_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*Violet$";
+    static public String VIOLET_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Violet)$";
+    static public String WHITE_PATTERN = ".*White$";
+    static public String GRAY_PATTERN = ".*Gray$";
+    static public String GRAY_NODARK_PATTERN = "(?!.*Dark).*Gray$";
+    static public String BLACK_PATTERN = ".*Black$";
 }
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

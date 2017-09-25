@@ -6,6 +6,10 @@ import jfi.fuzzy.operators.TConorm;
 /**
  * Class representing a fuzzy set defined as the union of "atomic" fuzzy sets.
  * 
+ * There are not restrictions about the fuzzy sets, except that they have to
+ * share the same domain. The union is performed by using a t-conorm, defined as
+ * a data member of the object (by default, the maximum is used).
+ *
  * @param <D> the domain of the fuzzy set.
  * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
@@ -19,6 +23,10 @@ public class GranularFuzzySet<D> extends FuzzySetCollection<FuzzySet<D>,D> imple
      * The t-conorm used for the union of the "atomic" fuzzy sets.
      */
     protected TConorm tconorm;
+    /**
+     * The default t-norm used for the union.  
+     */
+    private static TConorm DEFAULT_TCONORM = TConorm.MAX;
         
     /**
      * Constructs an empty fuzzy set.
@@ -38,7 +46,7 @@ public class GranularFuzzySet<D> extends FuzzySetCollection<FuzzySet<D>,D> imple
      * @param label label of the fuzzy set.
      */
     public GranularFuzzySet(String label) {
-        this(label,TConorm.MAX);      
+        this(label,DEFAULT_TCONORM);      
     }
 
     /**
@@ -46,7 +54,7 @@ public class GranularFuzzySet<D> extends FuzzySetCollection<FuzzySet<D>,D> imple
      * {@link jfi.fuzzy.operators.TConorm#MAX} as t-conorm.
      */
     public GranularFuzzySet() {
-        this("", TConorm.MAX);
+        this("", DEFAULT_TCONORM);
     }
     
     /**
@@ -58,7 +66,7 @@ public class GranularFuzzySet<D> extends FuzzySetCollection<FuzzySet<D>,D> imple
      * @param collection list of atomic fuzzy set to be placed into this
      * granular fuzzy set
      */
-    public GranularFuzzySet(String label, TConorm tconorm, FuzzySet... collection) {
+    public GranularFuzzySet(String label, TConorm tconorm, FuzzySet<D>... collection) {
         this(label,tconorm);
         this.addAll(Arrays.asList(collection));
     }
@@ -71,8 +79,8 @@ public class GranularFuzzySet<D> extends FuzzySetCollection<FuzzySet<D>,D> imple
      * @param collection list of atomic fuzzy set to be placed into this
      * granular fuzzy set
      */
-    public GranularFuzzySet(FuzzySet... collection) {
-        this("", TConorm.MAX,collection);
+    public GranularFuzzySet(FuzzySet<D>... collection) {
+        this("", DEFAULT_TCONORM,collection);
     }
     
     /**

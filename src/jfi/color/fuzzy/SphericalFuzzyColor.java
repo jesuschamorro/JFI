@@ -44,7 +44,7 @@ public class SphericalFuzzyColor extends FunctionBasedFuzzySet<Point3D> implemen
      * Returns the membership degree of the given crisp color to this fuzzy
      * color.
      *
-     * @param c an crips color.
+     * @param c a crisp color.
      * @return the membership degree.
      */
     @Override

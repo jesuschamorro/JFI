@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.tree.DefaultMutableTreeNode;
+import jfi.color.ISCCColorMap;
 import jfi.color.ISCCColorTree;
 import jfi.fuzzy.DiscreteFuzzySet;
 import jfi.fuzzy.GranularFuzzySet;
@@ -593,9 +594,16 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         //</editor-fold>
 
         //pruebaPolynomialFunction();        
-        //pruebaDistanciasISCC();
+        //pruebaDistanciasISCC();        
+        //pruebasTNormas(); Blackish
         
-        pruebasTNormas();
+        ISCCColorMap isccmap = new ISCCColorMap(ISCCColorMap.TYPE_COMPLETE);
+        //ISCCColorMap map = isccmap.getSubset(".*Gray$");
+        ISCCColorMap map = isccmap.getSubset(ISCCColorMap.VIOLET_CORE_NODARK_PATTERN);
+        Set<String> ks = map.keySet();
+        System.out.println("#"+ks.size());
+        System.out.println(ks);
+        
         
         
         //new VentanaPrincipalJCM().setVisible(true);
