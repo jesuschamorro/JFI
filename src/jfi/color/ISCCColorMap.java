@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import jfi.geometry.Point3D;
+import jfi.utils.Pair;
 
 /**
  * Class for storing the ISCC–NBS color data.
@@ -136,7 +137,7 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
     /**
      * ISCC basic set of colors.
      */
-    static public Map.Entry ISCC_BASIC[] = {
+    static final public Map.Entry ISCC_BASIC[] = {
         new AbstractMap.SimpleEntry("Pink", new Point3D(254, 181, 186)),
         new AbstractMap.SimpleEntry("Red", new Point3D(190, 1, 50)),
         new AbstractMap.SimpleEntry("Orange", new Point3D(243, 132, 1)),
@@ -155,7 +156,7 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
     /**
      * ISCC extended set of colors.
      */
-    static public Map.Entry ISCC_EXTENDED[] = {
+    static final public Map.Entry ISCC_EXTENDED[] = {
         // A. Pink family 
         new AbstractMap.SimpleEntry("Pink", new Point3D(254, 181, 186)),
         new AbstractMap.SimpleEntry("Yellowish-Pink", new Point3D(254, 183, 165)),
@@ -181,7 +182,7 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
         new AbstractMap.SimpleEntry("Olive", new Point3D(102, 93, 30)),
         new AbstractMap.SimpleEntry("Green-Olive", new Point3D(64, 79, 1)),
         // G. Yellow-green family
-        new AbstractMap.SimpleEntry("Yellow-green", new Point3D(141, 182, 1)),
+        new AbstractMap.SimpleEntry("Yellow-Green", new Point3D(141, 182, 1)),
         // H. Green family
         new AbstractMap.SimpleEntry("Green", new Point3D(1, 136, 86)),        
         new AbstractMap.SimpleEntry("Yellowish-Green", new Point3D(39, 166, 76)),
@@ -203,7 +204,7 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
     /**
      * ISCC complete set of colors.
      */
-    static public Map.Entry ISCC_COMPLETE[] = {
+    static final public Map.Entry ISCC_COMPLETE[] = {
         // A. Pink family 
         // A.1 "Pink" brach (=vivid pink)
         new AbstractMap.SimpleEntry("Vivid Pink", new Point3D(254.0,181.0,186.0)),
@@ -525,136 +526,184 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
         new AbstractMap.SimpleEntry("Purplish Black", new Point3D(36.0,33.0,36.0))
     };
     
+    
+ 
+    /**
+     * Returns a customized version of the ISCC complete set of colors.
+     * 
+     * @return a customized version of the ISCC complete set of colors.
+     */
+    static final public ISCCColorMap CUSTOMIZED_ISCC_COMPLETE(){
+        ISCCColorMap output = new ISCCColorMap(TYPE_COMPLETE);        
+        // B. Red family
+        output.replace("Vivid Red", new Point3D(230.0,25.0,25.0));        
+        // H. Green family
+        output.put("RGB-Pure Green", new Point3D(25.0,230.0,25.0));  
+        // I. Blue family
+        output.replace("Vivid Blue", new Point3D(25.0,25.0,230.0));  
+        // K. Grey level family
+        output.replace("Light Gray", new Point3D(165.0,165.0,165.0));
+        output.replace("Medium Gray", new Point3D(132.0,132.0,132.0));        
+        output.replace("Dark Gray", new Point3D(99.0,99.0,99.0)); 
+        output.replace("Black", new Point3D(7, 7, 7));
+        
+        return output;
+    }
+
+    
+    
     /*
      * Patterns for the main color families.
      */
-    static public String PINK_PATTERN = ".*Pink$";
-    static public String PINK_CORE_PATTERN = ".*( Pink)$";   
-    static public String PINK_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Pink$";
-    static public String PINK_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Pink)$";
-    static public String RED_PATTERN = ".*Red$";
-    static public String RED_CORE_PATTERN = ".*( Red)$";
-    static public String RED_NODARK_PATTERN = "(?!.*Dark|.*Blackish).*Red$";  
-    static public String RED_CORE_NODARK_PATTERN = "(?!.*Dark|.*Blackish).*( Red)$";
-    static public String ORANGE_PATTERN = ".*Orange$";
-    static public String ORANGE_CORE_PATTERN = ".*( Orange)$";  
-    static public String ORANGE_NODARK_PATTERN = "(?!.*Dark).*Orange$";
-    static public String ORANGE_CORE_NODARK_PATTERN = "(?!.*Dark).*( Orange)$";
-    static public String BROWN_PATTERN = ".*Brown$";
-    static public String BROWN_CORE_PATTERN = ".*( Brown)$";
-    static public String BROWN_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Brown$";
-    static public String BROWN_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Brown)$";
-    static public String YELLOW_PATTERN = ".*Yellow$";
-    static public String YELLOW_CORE_PATTERN = ".*( Yellow)$";    
-    static public String YELLOW_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Yellow$";
-    static public String YELLOW_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Yellow)$";
-    static public String OLIVE_PATTERN = ".*Olive$";
-    static public String OLIVE_CORE_PATTERN = ".*( Olive)$";    
-    static public String OLIVE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Olive$";
-    static public String OLIVE_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Olive)$";
-    static public String YELLOWGREEN_PATTERN = ".*Yellow-Green$";
-    static public String YELLOWGREEN_CORE_PATTERN = ".*( Yellow-Green)$";
-    static public String YELLOWGREEN_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Yellow-Green)$";
-    static public String YELLOWGREEN_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Yellow-Green)$";    
-    static public String GREEN_PATTERN = "(?!.*Yellow-).*Green$";
-    static public String GREEN_CORE_PATTERN = "(?!.*Yellow-).*( Green)$";
-    static public String GREEN_NODARK_PATTERN = "(?!.*Dark|.*Blackish|.*Grayish|.*Yellow-).*Green$";
-    static public String GREEN_CORE_NODARK_PATTERN = "(?!.*Dark|.*Blackish|.*Grayish|.*Yellow-).*( Green)$";
-    static public String BLUE_PATTERN = ".*Blue";
-    static public String BLUE_CORE_PATTERN = ".*( Blue)";
-    static public String BLUE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*Blue$";
-    static public String BLUE_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Blue)$";
-    static public String PURPLE_PATTERN = ".*(Purple|Violet)$";
-    static public String PURPLE_CORE_PATTERN = ".*( Purple| Violet)$";
-    static public String PURPLE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*(Purple|Violet)$";
-    static public String PURPLE_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Purple| Violet)$";
-    static public String PURPLEONLY_PATTERN = ".*Purple$";
-    static public String PURPLEONLY_CORE_PATTERN = ".*( Purple)$";
-    static public String PURPLEONLY_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*Purple$";
-    static public String PURPLEONLY_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Purple)$";
-    static public String VIOLET_PATTERN = ".*Violet$";
-    static public String VIOLET_CORE_PATTERN = ".*( Violet)$";
-    static public String VIOLET_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*Violet$";
-    static public String VIOLET_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Violet)$";
-    static public String WHITE_PATTERN = ".*White$";
-    static public String GRAY_PATTERN = ".*Gray$";
-    static public String GRAY_NODARK_PATTERN = "(?!.*Dark).*Gray$";
-    static public String BLACK_PATTERN = ".*Black$";
+    static final public String PINK_PATTERN = ".*Pink$";
+    static final public String PINK_CORE_PATTERN = ".*( Pink)$";   
+    static final public String PINK_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Pink$";
+    static final public String PINK_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Pink)$";
+    
+    static final public String RED_PATTERN = ".*Red$";
+    static final public String RED_CORE_PATTERN = ".*( Red)$";
+    static final public String RED_NODARK_PATTERN = "(?!.*Dark|.*Blackish|.*Grayish).*Red$";  
+    static final public String RED_CORE_NODARK_PATTERN = "(?!.*Dark|.*Blackish|.*Grayish).*( Red)$";
+    
+    static final public String ORANGE_PATTERN = ".*Orange$";
+    static final public String ORANGE_CORE_PATTERN = ".*( Orange)$";  
+    static final public String ORANGE_NODARK_PATTERN = "(?!.*Dark).*Orange$";
+    static final public String ORANGE_CORE_NODARK_PATTERN = "(?!.*Dark).*( Orange)$";
+    
+    static final public String BROWN_PATTERN = ".*Brown$";
+    static final public String BROWN_CORE_PATTERN = ".*( Brown)$";
+    static final public String BROWN_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Brown$";
+    static final public String BROWN_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Brown)$";
+    
+    static final public String YELLOW_PATTERN = ".*Yellow$";
+    static final public String YELLOW_CORE_PATTERN = ".*( Yellow)$";    
+    static final public String YELLOW_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Yellow$";
+    static final public String YELLOW_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Yellow)$";
+    
+    static final public String OLIVE_PATTERN = ".*Olive$";
+    static final public String OLIVE_CORE_PATTERN = ".*( Olive)$";    
+    static final public String OLIVE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*Olive$";
+    static final public String OLIVE_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Olive)$";
+    
+    static final public String YELLOWGREEN_PATTERN = ".*Yellow-Green$";
+    static final public String YELLOWGREEN_CORE_PATTERN = ".*( Yellow-Green)$";
+    static final public String YELLOWGREEN_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Yellow-Green)$";
+    static final public String YELLOWGREEN_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish).*( Yellow-Green)$";   
+    
+    static final public String GREEN_PATTERN = "(?!.*Yellow-).*Green$";
+    static final public String GREEN_CORE_PATTERN = "(?!.*Yellow-).*( Green)$";
+    static final public String GREEN_NODARK_PATTERN = "(?!.*Dark|.*Blackish|.*Grayish|.*Yellow-).*Green$";
+    static final public String GREEN_CORE_NODARK_PATTERN = "(?!.*Dark|.*Blackish|.*Grayish|.*Yellow-).*( Green)$";
+    
+    static final public String BLUE_PATTERN = ".*Blue";
+    static final public String BLUE_CORE_PATTERN = ".*( Blue)";
+    static final public String BLUE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*Blue$";
+    static final public String BLUE_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Blue)$";
+    
+    static final public String PURPLE_PATTERN = ".*(Purple|Violet)$";
+    static final public String PURPLE_CORE_PATTERN = ".*( Purple| Violet)$";
+    static final public String PURPLE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*(Purple|Violet)$";
+    static final public String PURPLE_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Purple| Violet)$";
+    static final public String PURPLEONLY_PATTERN = ".*Purple$";
+    static final public String PURPLEONLY_CORE_PATTERN = ".*( Purple)$";
+    static final public String PURPLEONLY_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*Purple$";
+    static final public String PURPLEONLY_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Purple)$";
+    static final public String VIOLET_PATTERN = ".*Violet$";
+    static final public String VIOLET_CORE_PATTERN = ".*( Violet)$";
+    static final public String VIOLET_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*Violet$";
+    static final public String VIOLET_CORE_NODARK_PATTERN = "(?!.*Dark|.*Grayish|.*Blackish).*( Violet)$";
+    
+    static final public String WHITE_PATTERN = ".*White$";
+    static final public String GRAY_PATTERN = ".*Gray$";
+    static final public String GRAY_NODARK_PATTERN = "(?!.*Dark).*Gray$";
+    static final public String BLACK_PATTERN = ".*Black$";
+
+
+    static final public String NOT(String pattern){
+        return "(?!"+pattern+").*";
+    }
+    
+    static final public Map.Entry ISCC_BASIC_GRANULAR_PROTOTYPE_PATTERNS_pALLnALL[] = {
+        new AbstractMap.SimpleEntry("Pink", new Pair(PINK_PATTERN, NOT(PINK_PATTERN))),
+        new AbstractMap.SimpleEntry("Red", new Pair(RED_PATTERN, NOT(RED_PATTERN))),
+        new AbstractMap.SimpleEntry("Orange", new Pair(ORANGE_PATTERN, NOT(ORANGE_PATTERN))),
+        new AbstractMap.SimpleEntry("Brown", new Pair(BROWN_PATTERN, NOT(BROWN_PATTERN))),
+        new AbstractMap.SimpleEntry("Yellow", new Pair(YELLOW_PATTERN, NOT(YELLOW_PATTERN))),
+        new AbstractMap.SimpleEntry("Olive", new Pair(OLIVE_PATTERN, NOT(OLIVE_PATTERN))),
+        new AbstractMap.SimpleEntry("Yellow-Green", new Pair(YELLOWGREEN_PATTERN, NOT(YELLOWGREEN_PATTERN))),
+        new AbstractMap.SimpleEntry("Green", new Pair(GREEN_PATTERN, NOT(GREEN_PATTERN))),
+        new AbstractMap.SimpleEntry("Blue", new Pair(BLUE_PATTERN, NOT(BLUE_PATTERN))),
+        new AbstractMap.SimpleEntry("Purple", new Pair(PURPLE_PATTERN, NOT(PURPLE_PATTERN))),
+        new AbstractMap.SimpleEntry("White", new Pair(WHITE_PATTERN, NOT(WHITE_PATTERN))),
+        new AbstractMap.SimpleEntry("Gray", new Pair(GRAY_PATTERN, NOT(GRAY_PATTERN))),
+        new AbstractMap.SimpleEntry("Black", new Pair(BLACK_PATTERN, NOT(BLACK_PATTERN)))
+    };
+
+    static final public Map.Entry ISCC_BASIC_GRANULAR_PROTOTYPE_PATTERNS_pCOREnALL[] = {
+        new AbstractMap.SimpleEntry("Pink", new Pair(PINK_CORE_NODARK_PATTERN, NOT(PINK_PATTERN))),
+        new AbstractMap.SimpleEntry("Red", new Pair(RED_CORE_NODARK_PATTERN, NOT(RED_PATTERN))),
+        new AbstractMap.SimpleEntry("Orange", new Pair(ORANGE_CORE_NODARK_PATTERN, NOT(ORANGE_PATTERN))),
+        new AbstractMap.SimpleEntry("Brown", new Pair(BROWN_CORE_NODARK_PATTERN, NOT(BROWN_PATTERN))),
+        new AbstractMap.SimpleEntry("Yellow", new Pair(YELLOW_CORE_NODARK_PATTERN, NOT(YELLOW_PATTERN))),
+        new AbstractMap.SimpleEntry("Olive", new Pair(OLIVE_CORE_NODARK_PATTERN, NOT(OLIVE_PATTERN))),
+        new AbstractMap.SimpleEntry("Yellow-Green", new Pair(YELLOWGREEN_CORE_NODARK_PATTERN, NOT(YELLOWGREEN_PATTERN))),
+        new AbstractMap.SimpleEntry("Green", new Pair(GREEN_CORE_NODARK_PATTERN, NOT(GREEN_PATTERN))),
+        new AbstractMap.SimpleEntry("Blue", new Pair(BLUE_CORE_NODARK_PATTERN, NOT(BLUE_PATTERN))),
+        new AbstractMap.SimpleEntry("Purple", new Pair(PURPLE_CORE_NODARK_PATTERN, NOT(PURPLE_PATTERN))),
+        new AbstractMap.SimpleEntry("White", new Pair(WHITE_PATTERN, NOT(WHITE_PATTERN))),
+        new AbstractMap.SimpleEntry("Gray", new Pair(GRAY_NODARK_PATTERN, NOT(GRAY_PATTERN))),
+        new AbstractMap.SimpleEntry("Black", new Pair(BLACK_PATTERN, NOT(BLACK_PATTERN)))
+    };
+
+    
+    static final public Map.Entry ISCC_BASIC_GRANULAR_PROTOTYPE_PATTERNS_pCUSTOMIZEDnALL[] = {
+        new AbstractMap.SimpleEntry("Pink", new Pair("Vivid Pink|Strong Pink|Deep Pink|Light Pink|Moderate Pink|Pale Pink", NOT(PINK_PATTERN))),
+        new AbstractMap.SimpleEntry("Red", new Pair("Vivid Red|Strong Red|Deep Red|Very Deep Red|Moderate Red|Vivid Purplish-Red", NOT(RED_PATTERN))),
+        new AbstractMap.SimpleEntry("Orange", new Pair("Vivid Orange|Brilliant Orange|Strong Orange|Deep Orange|Moderate Orange", NOT(ORANGE_PATTERN))),
+        new AbstractMap.SimpleEntry("Brown", new Pair("Strong Brown|Deep Brown|Light Brown|Moderate Brown|Dark Brown", NOT(BROWN_PATTERN))),
+        new AbstractMap.SimpleEntry("Yellow", new Pair("Vivid Yellow|Strong Yellow|Deep Yellow|Light Yellow|Moderate Yellow|Pale Yellow", NOT(YELLOW_PATTERN))),
+        new AbstractMap.SimpleEntry("Olive", new Pair("Light Olive|Moderate Olive", NOT(OLIVE_PATTERN))),
+        new AbstractMap.SimpleEntry("Yellow-Green", new Pair("Vivid Yellow-Green|Brilliant Yellow-Green|Moderate Yellow-Green", NOT(YELLOWGREEN_PATTERN))),
+        new AbstractMap.SimpleEntry("Green", new Pair("Vivid Green|Brilliant Green|Light Green|Moderate Green|RGB-Pure Green", NOT(GREEN_PATTERN))),
+        new AbstractMap.SimpleEntry("Blue", new Pair("Vivid Blue|Brilliant Blue|Strong Blue|Deep Blue|Very Light Blue|Moderate Blue|Pale Blue|Vivid Greenish-Blue", NOT(BLUE_PATTERN))),
+        new AbstractMap.SimpleEntry("Purple", new Pair("Vivid Purple|Brilliant Purple|Strong Purple|Light Purple|Moderate Purple|Vivid Violet|Brilliant Violet|Strong Violet|Light Violet|Moderate Violet", NOT(PURPLE_PATTERN))),
+        new AbstractMap.SimpleEntry("White", new Pair("White", NOT(WHITE_PATTERN))),
+        new AbstractMap.SimpleEntry("Gray", new Pair("Light Gray|Medium Gray|Dark Gray", NOT(GRAY_PATTERN))),
+        new AbstractMap.SimpleEntry("Black", new Pair("Black", NOT(BLACK_PATTERN)))
+    };
+    
+    static final public Map.Entry ISCC_BASIC_GRANULAR_PROTOTYPE_PATTERNS_pCUSTOMIZEDnCUSTOMIZED[] = {
+        //Pair of positives and negatives prototypes, expressed as a pattern over the ISCC complete set of colors
+        new AbstractMap.SimpleEntry("Pink", new Pair("Vivid Pink|Strong Pink|Deep Pink|Light Pink|Moderate Pink|Pale Pink",
+                "Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+        new AbstractMap.SimpleEntry("Red", new Pair("Vivid Red|Strong Red|Deep Red|Very Deep Red|Moderate Red|Vivid Purplish-Red", 
+                "Vivid Pink|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+        new AbstractMap.SimpleEntry("Orange", new Pair("Vivid Orange|Brilliant Orange|Strong Orange|Deep Orange|Moderate Orange", 
+                "Vivid Pink|Vivid Red|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+        new AbstractMap.SimpleEntry("Brown", new Pair("Strong Brown|Deep Brown|Light Brown|Moderate Brown|Dark Brown", 
+                "Vivid Pink|Vivid Red|Vivid Orange|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+        new AbstractMap.SimpleEntry("Yellow", new Pair("Vivid Yellow|Strong Yellow|Deep Yellow|Light Yellow|Moderate Yellow|Pale Yellow", 
+                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black"+
+                "|Deep Yellow-Orange")),
+        new AbstractMap.SimpleEntry("Olive", new Pair("Light Olive|Moderate Olive", 
+                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+        new AbstractMap.SimpleEntry("Yellow-Green",new Pair("Vivid Yellow-Green|Brilliant Yellow-Green|Moderate Yellow-Green", 
+                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+        new AbstractMap.SimpleEntry("Green", new Pair("Vivid Green|Brilliant Green|Light Green|Moderate Green|RGB-Pure Green", 
+                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+        new AbstractMap.SimpleEntry("Blue", new Pair("Vivid Blue|Brilliant Blue|Strong Blue|Deep Blue|Very Light Blue|Moderate Blue|Pale Blue|Vivid Greenish-Blue", 
+                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Purple|White|Medium Gray|Black")),
+        new AbstractMap.SimpleEntry("Purple", new Pair("Vivid Purple|Brilliant Purple|Strong Purple|Light Purple|Moderate Purple|Vivid Violet|Brilliant Violet|Strong Violet|Light Violet|Moderate Violet", 
+                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|White|Medium Gray|Black")),
+        new AbstractMap.SimpleEntry("White", new Pair("White", 
+                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|Medium Gray|Black")),
+        new AbstractMap.SimpleEntry("Gray", new Pair("Light Gray|Medium Gray|Dark Gray", 
+                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Black")),
+        new AbstractMap.SimpleEntry("Black", new Pair("Black", 
+                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray"))
+    };
+    
+    
 }
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

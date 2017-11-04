@@ -1,5 +1,6 @@
 package jfi.color.fuzzy;
 
+import java.security.InvalidParameterException;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -57,34 +58,14 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
      */
     static public class Factory{
         /**
-         * Default kernel factor used for calculating the kernel radius.
+         * Default kernel factor used for calculating the kernel radius in an
+         * sphere-based fuzzy color space.
          */
-        public final static double DEFAULT_KERNEL_RADIUS = 0.0;
-        
+        public final static double DEFAULT_KERNEL_FACTOR = 0.0;
+                
         /**
          * Creates a new fuzzy color space based on spherical membership
-         * functions. Given a set of color prototipes (represented by a
-         * three-dimensional point), the kernel and support of each color are
-         * calculated on the basis of the minimum distance between the color
-         * prototype and the rest of points in the set.For calculating the
-         * kernel size, the default {@link #DEFAULT_KERNEL_RADIUS} factor is 
-         * used.
-         *
-         * @param prototypes the set of color prototypes.
-         * @return a new fuzzy color space based on spherical membership
-         * functions.
-         */
-        static public FuzzyColorSpace<Point3D> getSphericalFCS(Point3D... prototypes){            
-            LinkedHashMap<String,Point3D> map = new LinkedHashMap(prototypes.length);
-            for(int i=0; i<prototypes.length; i++){                
-                map.put("Color "+i,prototypes[i]);
-            }
-            return getSphericalFCS(map);
-        }
-        
-        /**
-         * Creates a new fuzzy color space based on spherical membership
-         * functions. Given a set of color prototipes (represented by a
+         * functions. Given a set of color prototypes (represented by a
          * three-dimensional point), the kernel and support of each color are
          * calculated on the basis of the minimum distance between the color
          * prototype and the rest of points in the set.
@@ -95,9 +76,9 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
          * other kernel. For example, if the kernel factor is 0.0 (meaning a
          * kernel with a single point located in the center of the sphere), the
          * suppot radius will be equal to the minimum distance between its
-         * prototipe and the rest of points in the set.
+         * prototype and the rest of points in the set.
          *
-         * @param prototypes a map of color prototipes with its names.
+         * @param prototypes a map of color prototypes with its names.
          * @param kernel_factor a value in the interval [0..1] related to the
          * size of the kernel. A kernel factor equals to 1.0 means that the
          * kernel radius should be equal to half of the distance to its nearest
@@ -115,10 +96,13 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
             int index_ep, index_eq;
             Point3D p;
             
-            // A kernel factor equals to 1.0 means that the kernel radius should 
-            // be equal to half of the distance to the nearest point; so, this 
-            // radius is obtained by multiplying 'min' by the factor divided 
-            // by two
+            // The kernel factor must be between 0 and 1. A factor equals to 1.0 
+            // means that the kernel radius should be equal to half of the 
+            // distance to the nearest point; so, this radius is obtained by 
+            // multiplying 'min' by the factor divided by two
+            if (kernel_factor < 0.0 || kernel_factor > 1.0) {
+                throw new InvalidParameterException("The kernel factor must be between 0 and 1");
+            }
             kernel_factor /= 2.0;            
             // Firstly, for each prototype, the kernel radius is calculated on
             // the basis of the distance to the nearest point. At most, it will
@@ -166,7 +150,7 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
         
         /**
          * Creates a new fuzzy color space based on spherical membership
-         * functions. Given a set of color prototipes (represented by a
+         * functions. Given a set of color prototypes (represented by a
          * three-dimensional point), the kernel and support of each color are
          * calculated on the basis of the minimum distance between the color
          * prototype and the rest of points in the set. For calculating the
@@ -178,7 +162,28 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
          * functions.
          */
         static public FuzzyColorSpace<Point3D> getSphericalFCS(Map<String,Point3D> prototypes){
-            return getSphericalFCS(prototypes,DEFAULT_KERNEL_RADIUS);           
+            return getSphericalFCS(prototypes,DEFAULT_KERNEL_FACTOR);           
+        }
+               
+        /**
+         * Creates a new fuzzy color space based on spherical membership
+         * functions. Given a set of color prototypes (represented by a
+         * three-dimensional point), the kernel and support of each color are
+         * calculated on the basis of the minimum distance between the color
+         * prototype and the rest of points in the set. For calculating the
+         * kernel size, the default {@link #DEFAULT_KERNEL_RADIUS} factor is 
+         * used.
+         *
+         * @param prototypes the set of color prototypes.
+         * @return a new fuzzy color space based on spherical membership
+         * functions.
+         */
+        static public FuzzyColorSpace<Point3D> getSphericalFCS(Point3D... prototypes){            
+            LinkedHashMap<String,Point3D> map = new LinkedHashMap(prototypes.length);
+            for(int i=0; i<prototypes.length; i++){                
+                map.put("Color "+i,prototypes[i]);
+            }
+            return getSphericalFCS(map);
         }
     }
     

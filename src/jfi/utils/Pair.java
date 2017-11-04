@@ -1,4 +1,4 @@
-package jfi.relations;
+package jfi.utils;
 
 /**
  * Class representirn a pair of elements.
@@ -74,4 +74,14 @@ public class Pair<T,U> {
     public U getRight() {
         return right;
     }  
+    
+    /**
+     * Returns a string representation of this objetc.
+     *
+     * @return a string representation of this object.
+     */
+    @Override
+    public String toString() {
+        return "("+left+","+right+")";
+    }
 }

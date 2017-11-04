@@ -4,7 +4,7 @@ import java.util.Arrays;
 import jfi.fuzzy.operators.TConorm;
 
 /**
- * Class representing a fuzzy set defined as the union of "atomic" fuzzy sets.
+ * Class representing a fuzzy set defined as the union of other fuzzy sets.
  * 
  * There are not restrictions about the fuzzy sets, except that they have to
  * share the same domain. The union is performed by using a t-conorm, defined as
@@ -20,7 +20,7 @@ public class GranularFuzzySet<D> extends FuzzySetCollection<FuzzySet<D>,D> imple
      */
     protected String label;
     /**
-     * The t-conorm used for the union of the "atomic" fuzzy sets.
+     * The t-conorm used for the union of the single fuzzy sets.
      */
     protected TConorm tconorm;
     /**
@@ -58,7 +58,7 @@ public class GranularFuzzySet<D> extends FuzzySetCollection<FuzzySet<D>,D> imple
     }
     
     /**
-     * Constructs a new granular fuzzy set containing the atomic fuzzy sets of
+     * Constructs a new granular fuzzy set containing the single fuzzy sets of
      * the specified collection.
      *
      * @param label label of the fuzzy set.

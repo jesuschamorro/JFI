@@ -75,6 +75,39 @@ public class SphericalFunction implements MembershipFunction<Point3D>{
     }
 
     /**
+     * Set the center of this spherical function.
+     * 
+     * @param center the center of the spherical function.
+     */
+    public final void setCenter(Point3D center) {
+        this.center = center;       
+    }
+    
+    /**
+     * Set the parameter 'a' of this spherical function.
+     * 
+     * @param a the parameter 'a' of the spherical function.
+     */
+    public final void setA(double a) {
+        if (a > this.b) {
+            throw new InvalidParameterException("The parameter 'a' must be smaller or equal than 'b'");
+        }
+        this.a = a; 
+    }
+    
+    /**
+     * Set the parameter 'b' of this spherical function.
+     * 
+     * @param b the parameter 'b' of the spherical function.
+     */
+    public final void setB(double b) {
+        if (this.a > b) {
+            throw new InvalidParameterException("The parameter 'a' must be smaller or equal than 'b'");
+        }
+        this.b = b;
+    }
+    
+    /**
      * Returns the center of this spherical function.
      * 
      * @return the center of this spherical function.

@@ -105,6 +105,33 @@ public class Point3D {
     }
     
     /**
+     * Returns a new point resulting of adding this point and the given point.
+     * 
+     * @param p the given point.
+     * @return a new added point.
+     */
+    public Point3D add(Point3D p) {        
+        double px = p.getX() + this.getX();
+        double py = p.getY() + this.getY();
+        double pz = p.getZ() + this.getZ();
+        return new Point3D(px,py,pz);
+    }
+    
+    /**
+     * Returns a new point resulting of subtracting this point and the given
+     * point.
+     * 
+     * @param p the given point.
+     * @return a new subtracted point.
+     */
+    public Point3D subtract(Point3D p) {        
+        double px = this.getX() - p.getX();
+        double py = this.getY() - p.getY();
+        double pz = this.getZ() - p.getZ();
+        return new Point3D(px,py,pz);
+    }
+    
+    /**
      * Applies a scaling transformation to this point.
      * 
      * @param sx the scale factor for the z-coordinate

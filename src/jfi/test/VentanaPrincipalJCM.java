@@ -598,13 +598,16 @@ public class VentanaPrincipalJCM extends javax.swing.JFrame {
         //pruebasTNormas(); Blackish
         
         ISCCColorMap isccmap = new ISCCColorMap(ISCCColorMap.TYPE_COMPLETE);
-        //ISCCColorMap map = isccmap.getSubset(".*Gray$");
-        ISCCColorMap map = isccmap.getSubset(ISCCColorMap.VIOLET_CORE_NODARK_PATTERN);
+        //ISCCColorMap map = isccmap.getSubset(".*Gray$");        
+        //ISCCColorMap map = isccmap.getSubset(ISCCColorMap.PINK_PATTERN);
+        
+        String pattern = "(Vivid Pink)|(Deep Red)|Strong Yellowish-Pink";
+        ISCCColorMap map = isccmap.getSubset(pattern);
         Set<String> ks = map.keySet();
         System.out.println("#"+ks.size());
         System.out.println(ks);
         
-        
+
         
         //new VentanaPrincipalJCM().setVisible(true);
     }

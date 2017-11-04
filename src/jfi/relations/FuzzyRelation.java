@@ -1,5 +1,6 @@
 package jfi.relations;
 
+import jfi.utils.Pair;
 import jfi.fuzzy.FuzzySet;
 
 /**
