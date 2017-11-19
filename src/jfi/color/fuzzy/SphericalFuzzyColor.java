@@ -4,13 +4,14 @@ import java.awt.Color;
 import jfi.fuzzy.FunctionBasedFuzzySet;
 import jfi.fuzzy.membershipfunction.SphericalFunction;
 import jfi.geometry.Point3D;
+import jfi.utils.Prototyped;
 
 /**
  * Fuzzy color based on a spherical membership function.
  * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class SphericalFuzzyColor extends FunctionBasedFuzzySet<Point3D> implements FuzzyColor<Point3D>{
+public class SphericalFuzzyColor extends FunctionBasedFuzzySet<Point3D> implements FuzzyColor<Point3D>, Prototyped<Point3D>{
     
     /**
      * Constructs a new fuzzy color based on a spherical membership function.
@@ -54,7 +55,7 @@ public class SphericalFuzzyColor extends FunctionBasedFuzzySet<Point3D> implemen
     }
     
     /**
-     * Returns the center of this spherical function.
+     * Returns the center of this sphere-based fuzzy color.
      * 
      * @return the center of this spherical function.
      */
@@ -79,4 +80,27 @@ public class SphericalFuzzyColor extends FunctionBasedFuzzySet<Point3D> implemen
     public double getSupportRadius() {
         return ((SphericalFunction)this.getMembershipFunction()).getB();
     }
+    
+    /**
+     * Returns the prototype associated to this color which corresponds to the 
+     * center of this sphere-based fuzzy color.
+     * 
+     * @return the prototype associated to this fuzzy color
+     */
+    @Override
+    public Point3D getPrototype() {
+        return this.getCenter();
+    }
+    
+    /**
+     * Returns a string that represents the value of this fuzzy color.
+     *
+     * @return a string representation of this fuzzy color.
+     */
+    @Override
+    public String toString() {
+        return "("+getCenter()+","+getKernelRadius()+","+getSupportRadius()+")";
+    }
+
+    
 }

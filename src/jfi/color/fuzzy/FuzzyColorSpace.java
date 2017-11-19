@@ -88,7 +88,7 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
          * @return a new fuzzy color space based on spherical membership
          * functions.
          */
-        static public FuzzyColorSpace<Point3D> getSphericalFCS(Map<String,Point3D> prototypes, double kernel_factor){
+        static public FuzzyColorSpace<Point3D> createSphereBasedFCS(Map<String,Point3D> prototypes, double kernel_factor){
             FuzzyColorSpace<Point3D> fcs = new FuzzyColorSpace();
             Set<Map.Entry<String,Point3D>> set = prototypes.entrySet();           
             double kernel_radius[] = new double[set.size()];
@@ -161,8 +161,8 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
          * @return a new fuzzy color space based on spherical membership
          * functions.
          */
-        static public FuzzyColorSpace<Point3D> getSphericalFCS(Map<String,Point3D> prototypes){
-            return getSphericalFCS(prototypes,DEFAULT_KERNEL_FACTOR);           
+        static public FuzzyColorSpace<Point3D> createSphereBasedFCS(Map<String,Point3D> prototypes){
+            return createSphereBasedFCS(prototypes,DEFAULT_KERNEL_FACTOR);           
         }
                
         /**
@@ -178,12 +178,73 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
          * @return a new fuzzy color space based on spherical membership
          * functions.
          */
-        static public FuzzyColorSpace<Point3D> getSphericalFCS(Point3D... prototypes){            
+        static public FuzzyColorSpace<Point3D> createSphereBasedFCS(Point3D... prototypes){            
             LinkedHashMap<String,Point3D> map = new LinkedHashMap(prototypes.length);
             for(int i=0; i<prototypes.length; i++){                
                 map.put("Color "+i,prototypes[i]);
             }
-            return getSphericalFCS(map);
+            return createSphereBasedFCS(map);
+        }
+        
+        /**
+         * Creates a new fuzzy color space based on the fuzzy c-means membership
+         * functions. Given a set of color prototypes (represented by a
+         * three-dimensional point), a fuzzy partition on the sense of FCM will
+         * be built over a 3D color space. Each cluster will define a fuzzy
+         * color.
+         *
+         * @param prototypes a map of color prototypes with its names.
+         * @param m the parameter <tt>m</tt> of the Fuzzy C-Means membership
+         * function.
+         * @return a new fuzzy color space based on the fuzzy c-means membership
+         * function.
+         */
+        static public FuzzyColorSpace<Point3D> createFuzzyCMeansFCS(Map<String,Point3D> prototypes, double m){
+            FuzzyColorSpace<Point3D> fcs = new FuzzyColorSpace();
+            Set<Map.Entry<String, Point3D>> set = prototypes.entrySet();
+            Point3D[] prototypes_vector = prototypes.values().toArray(new Point3D[0]);
+            FuzzyCMeamsColor fcmc;
+            for (Map.Entry<String, Point3D> me : set) {
+                fcmc = new FuzzyCMeamsColor(me.getKey(), me.getValue(), prototypes_vector, m);                
+                fcs.add(fcmc);
+            } 
+            return fcs;
+        }
+        
+        /**
+         * Creates a new fuzzy color space based on the fuzzy c-means membership
+         * functions. Given a set of color prototypes (represented by a
+         * three-dimensional point), a fuzzy partition on the sense of FCM will
+         * be built over a 3D color space. Each cluster will define a fuzzy
+         * color. The default fuzzy c-means m-value
+         * {@link jfi.color.fuzzy.FuzzyCMeamsColor#DEFAULT_M} is used.
+         *
+         * @param prototypes a map of color prototypes with its names.
+         * @return a new fuzzy color space based on the fuzzy c-means membership
+         * function.
+         */
+        static public FuzzyColorSpace<Point3D> createFuzzyCMeansFCS(Map<String,Point3D> prototypes){
+            return createFuzzyCMeansFCS(prototypes,FuzzyCMeamsColor.DEFAULT_M);
+        }
+        
+        /**
+         * Creates a new fuzzy color space based on the fuzzy c-means membership
+         * functions. Given a set of color prototypes (represented by a
+         * three-dimensional point), a fuzzy partition on the sense of FCM will
+         * be built over a 3D color space. Each cluster will define a fuzzy
+         * color. The default fuzzy c-means m-value
+         * {@link jfi.color.fuzzy.FuzzyCMeamsColor#DEFAULT_M} is used.
+         *
+         * @param prototypes the set of color prototypes with its names.
+         * @return a new fuzzy color space based on the fuzzy c-means membership
+         * function.
+         */
+        static public FuzzyColorSpace<Point3D> createFuzzyCMeansFCS(Point3D... prototypes){
+            LinkedHashMap<String,Point3D> map = new LinkedHashMap(prototypes.length);
+            for(int i=0; i<prototypes.length; i++){                
+                map.put("Color "+i,prototypes[i]);
+            }
+            return createFuzzyCMeansFCS(map);
         }
     }
     

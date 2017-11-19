@@ -2,12 +2,15 @@ package jfi.color.fuzzy;
 
 import java.awt.Color;
 import java.security.InvalidParameterException;
+import java.util.ArrayList;
+import java.util.List;
 import jfi.fuzzy.FuzzySet;
 import jfi.fuzzy.GranularFuzzySet;
 import jfi.fuzzy.membershipfunction.SphericalFunction;
 import jfi.fuzzy.operators.TConorm;
 import jfi.geometry.Point3D;
 import jfi.utils.Pair;
+import jfi.utils.Prototyped;
 
 /**
  * Fuzzy color represented as the union of other (single) fuzzy colors.
@@ -19,7 +22,7 @@ import jfi.utils.Pair;
  *
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class GranularFuzzyColor extends GranularFuzzySet<Point3D> implements FuzzyColor<Point3D>{
+public class GranularFuzzyColor extends GranularFuzzySet<Point3D> implements FuzzyColor<Point3D>, Prototyped<Point3D>{
     /**
      * The default t-norm used for the union.  
      */
@@ -80,6 +83,37 @@ public class GranularFuzzyColor extends GranularFuzzySet<Point3D> implements Fuz
         return membershipDegree(p);
     }
     
+    /**
+     * Returns <code>null</code> as the prototype associated to this color.
+     * 
+     * @return the prototype associated to this fuzzy color
+     */
+    @Override
+    public Point3D getPrototype() {
+        return null;
+    }
+    
+    /**
+     * Returns all the prototypes associated to this granular color (if
+     * available).
+     *
+     * @return a list with all the prototypes associated to this color. If no
+     * prototypes are available, and empty list will be returned; if not all the
+     * single colors are prototype-based, only the prototypes corresponding to
+     * the prototype-based ones will be returned.
+     */
+    @Override
+    public List<Point3D> getAllPrototypes(){        
+        ArrayList<Point3D> output = new ArrayList();
+        Point3D prototype;
+        for (FuzzySet fuzzySet : this) {
+            if(fuzzySet instanceof Prototyped){
+                prototype = ((Prototyped<Point3D>)fuzzySet).getPrototype();
+                output.add(prototype);
+            }
+        }       
+        return output; 
+    }
     
     /**
      * Class for generating granular fuzyy colors.

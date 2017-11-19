@@ -533,23 +533,38 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
      * 
      * @return a customized version of the ISCC complete set of colors.
      */
-    static final public ISCCColorMap CUSTOMIZED_ISCC_COMPLETE(){
+    static final public ISCCColorMap POSITIVE_CUSTOMIZED_ISCC_COMPLETE(){
         ISCCColorMap output = new ISCCColorMap(TYPE_COMPLETE);        
         // B. Red family
         output.replace("Vivid Red", new Point3D(230.0,25.0,25.0));        
+        // E. Yellow family
+        output.replace("Vivid Yellow", new Point3D(230.0,230.0,25.0));                   
         // H. Green family
         output.put("RGB-Pure Green", new Point3D(25.0,230.0,25.0));  
         // I. Blue family
-        output.replace("Vivid Blue", new Point3D(25.0,25.0,230.0));  
+        output.replace("Vivid Blue", new Point3D(25.0,25.0,230.0)); 
+        output.put("Sea Blue", new Point3D(37.0,36.0,64.0));
         // K. Grey level family
-        output.replace("Light Gray", new Point3D(165.0,165.0,165.0));
-        output.replace("Medium Gray", new Point3D(132.0,132.0,132.0));        
-        output.replace("Dark Gray", new Point3D(99.0,99.0,99.0)); 
+        output.replace("Light Gray", new Point3D(153.0,153.0,153.0));
+        output.replace("Medium Gray", new Point3D(128.0,128.0,128.0));        
+        output.replace("Dark Gray", new Point3D(103.0,103.0,103.0)); 
         output.replace("Black", new Point3D(7, 7, 7));
         
         return output;
     }
 
+    /**
+     * Returns a customized version of the ISCC complete set of colors.
+     * 
+     * @return a customized version of the ISCC complete set of colors.
+     */
+    static final public ISCCColorMap NEGATIVE_CUSTOMIZED_ISCC_COMPLETE(){
+        ISCCColorMap output = new ISCCColorMap(TYPE_COMPLETE);        
+        output.put("Light Black", new Point3D(55.0,55.0,55.0)); 
+        output.put("Very Dark Blue", new Point3D(18.0,18.0,32.0));          
+        return output;
+    }
+    
     
     
     /*
@@ -654,54 +669,99 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
         new AbstractMap.SimpleEntry("Gray", new Pair(GRAY_NODARK_PATTERN, NOT(GRAY_PATTERN))),
         new AbstractMap.SimpleEntry("Black", new Pair(BLACK_PATTERN, NOT(BLACK_PATTERN)))
     };
-
+    
+    static final String PINK_POSITIVES = "Vivid Pink|Strong Pink|Deep Pink|Light Pink|Moderate Pink|Pale Pink";
+    static final String PINK_NEGATIVES = "Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black";    
+    static final String RED_POSITIVES = "Vivid Red|Strong Red|Deep Red|Very Deep Red|Moderate Red|Vivid Purplish-Red";
+    static final String RED_NEGATIVES = "Vivid Pink|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black";
+    static final String ORANGE_POSITIVES = "Vivid Orange|Brilliant Orange|Strong Orange|Deep Orange|Moderate Orange";
+    static final String ORANGE_NEGATIVES = "Vivid Pink|Vivid Red|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black";
+    static final String BROWN_POSITIVES = "Strong Brown|Deep Brown|Light Brown|Moderate Brown|Dark Brown";
+    static final String BROWN_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black";
+    static final String YELLOW_POSITIVES = "Vivid Yellow|Strong Yellow|Deep Yellow|Light Yellow|Moderate Yellow|Pale Yellow";
+    static final String YELLOW_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black";
+    static final String OLIVE_POSITIVES = "Light Olive|Moderate Olive";
+    static final String OLIVE_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black";
+    static final String YELLOWGREEN_POSITIVES = "Vivid Yellow-Green|Brilliant Yellow-Green|Moderate Yellow-Green";
+    static final String YELLOWGREEN_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black";
+    static final String GREEN_POSITIVES = "Vivid Green|Brilliant Green|Light Green|Moderate Green|RGB-Pure Green";
+    static final String GREEN_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black";
+    static final String BLUE_POSITIVES = "Vivid Blue|Brilliant Blue|Strong Blue|Deep Blue|Very Light Blue|Moderate Blue|Pale Blue|Vivid Greenish-Blue";
+                                        //+"|Sea Blue";
+    static final String BLUE_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Purple|White|Medium Gray|Black";
+                                        //+"|Very Dark Blue";;
+    static final String PURPLE_POSITIVES = "Vivid Purple|Brilliant Purple|Strong Purple|Light Purple|Moderate Purple|Vivid Violet|Brilliant Violet|Strong Violet|Light Violet|Moderate Violet";
+    static final String PURPLE_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|White|Medium Gray|Black";
+    static final String WHITE_POSITIVES = "White";
+    static final String WHITE_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|Medium Gray|Black";
+    static final String GRAY_POSITIVES = "Light Gray|Medium Gray|Dark Gray";
+    static final String GRAY_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Black";
+    static final String BLACK_POSITIVES = "Black";
+    static final String BLACK_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray"+"|Light Black";
     
     static final public Map.Entry ISCC_BASIC_GRANULAR_PROTOTYPE_PATTERNS_pCUSTOMIZEDnALL[] = {
-        new AbstractMap.SimpleEntry("Pink", new Pair("Vivid Pink|Strong Pink|Deep Pink|Light Pink|Moderate Pink|Pale Pink", NOT(PINK_PATTERN))),
-        new AbstractMap.SimpleEntry("Red", new Pair("Vivid Red|Strong Red|Deep Red|Very Deep Red|Moderate Red|Vivid Purplish-Red", NOT(RED_PATTERN))),
-        new AbstractMap.SimpleEntry("Orange", new Pair("Vivid Orange|Brilliant Orange|Strong Orange|Deep Orange|Moderate Orange", NOT(ORANGE_PATTERN))),
-        new AbstractMap.SimpleEntry("Brown", new Pair("Strong Brown|Deep Brown|Light Brown|Moderate Brown|Dark Brown", NOT(BROWN_PATTERN))),
-        new AbstractMap.SimpleEntry("Yellow", new Pair("Vivid Yellow|Strong Yellow|Deep Yellow|Light Yellow|Moderate Yellow|Pale Yellow", NOT(YELLOW_PATTERN))),
-        new AbstractMap.SimpleEntry("Olive", new Pair("Light Olive|Moderate Olive", NOT(OLIVE_PATTERN))),
-        new AbstractMap.SimpleEntry("Yellow-Green", new Pair("Vivid Yellow-Green|Brilliant Yellow-Green|Moderate Yellow-Green", NOT(YELLOWGREEN_PATTERN))),
-        new AbstractMap.SimpleEntry("Green", new Pair("Vivid Green|Brilliant Green|Light Green|Moderate Green|RGB-Pure Green", NOT(GREEN_PATTERN))),
-        new AbstractMap.SimpleEntry("Blue", new Pair("Vivid Blue|Brilliant Blue|Strong Blue|Deep Blue|Very Light Blue|Moderate Blue|Pale Blue|Vivid Greenish-Blue", NOT(BLUE_PATTERN))),
-        new AbstractMap.SimpleEntry("Purple", new Pair("Vivid Purple|Brilliant Purple|Strong Purple|Light Purple|Moderate Purple|Vivid Violet|Brilliant Violet|Strong Violet|Light Violet|Moderate Violet", NOT(PURPLE_PATTERN))),
-        new AbstractMap.SimpleEntry("White", new Pair("White", NOT(WHITE_PATTERN))),
-        new AbstractMap.SimpleEntry("Gray", new Pair("Light Gray|Medium Gray|Dark Gray", NOT(GRAY_PATTERN))),
-        new AbstractMap.SimpleEntry("Black", new Pair("Black", NOT(BLACK_PATTERN)))
+        new AbstractMap.SimpleEntry("Pink", new Pair(PINK_POSITIVES, NOT(PINK_PATTERN))),
+        new AbstractMap.SimpleEntry("Red", new Pair(RED_POSITIVES, NOT(RED_PATTERN))),
+        new AbstractMap.SimpleEntry("Orange", new Pair(ORANGE_POSITIVES, NOT(ORANGE_PATTERN))),
+        new AbstractMap.SimpleEntry("Brown", new Pair(BROWN_POSITIVES, NOT(BROWN_PATTERN))),
+        new AbstractMap.SimpleEntry("Yellow", new Pair(YELLOW_POSITIVES, NOT(YELLOW_PATTERN))),
+        new AbstractMap.SimpleEntry("Olive", new Pair(OLIVE_POSITIVES, NOT(OLIVE_PATTERN))),
+        new AbstractMap.SimpleEntry("Yellow-Green", new Pair(YELLOWGREEN_POSITIVES, NOT(YELLOWGREEN_PATTERN))),
+        new AbstractMap.SimpleEntry("Green", new Pair(GREEN_POSITIVES, NOT(GREEN_PATTERN))),
+        new AbstractMap.SimpleEntry("Blue", new Pair(BLUE_POSITIVES, NOT(BLUE_PATTERN))),
+        new AbstractMap.SimpleEntry("Purple", new Pair(PURPLE_POSITIVES, NOT(PURPLE_PATTERN))),
+        new AbstractMap.SimpleEntry("White", new Pair(WHITE_POSITIVES, NOT(WHITE_PATTERN))),
+        new AbstractMap.SimpleEntry("Gray", new Pair(GRAY_POSITIVES, NOT(GRAY_PATTERN))),
+        new AbstractMap.SimpleEntry("Black", new Pair(BLACK_POSITIVES, NOT(BLACK_PATTERN)))
     };
     
     static final public Map.Entry ISCC_BASIC_GRANULAR_PROTOTYPE_PATTERNS_pCUSTOMIZEDnCUSTOMIZED[] = {
         //Pair of positives and negatives prototypes, expressed as a pattern over the ISCC complete set of colors
-        new AbstractMap.SimpleEntry("Pink", new Pair("Vivid Pink|Strong Pink|Deep Pink|Light Pink|Moderate Pink|Pale Pink",
-                "Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
-        new AbstractMap.SimpleEntry("Red", new Pair("Vivid Red|Strong Red|Deep Red|Very Deep Red|Moderate Red|Vivid Purplish-Red", 
-                "Vivid Pink|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
-        new AbstractMap.SimpleEntry("Orange", new Pair("Vivid Orange|Brilliant Orange|Strong Orange|Deep Orange|Moderate Orange", 
-                "Vivid Pink|Vivid Red|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
-        new AbstractMap.SimpleEntry("Brown", new Pair("Strong Brown|Deep Brown|Light Brown|Moderate Brown|Dark Brown", 
-                "Vivid Pink|Vivid Red|Vivid Orange|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
-        new AbstractMap.SimpleEntry("Yellow", new Pair("Vivid Yellow|Strong Yellow|Deep Yellow|Light Yellow|Moderate Yellow|Pale Yellow", 
-                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black"+
-                "|Deep Yellow-Orange")),
-        new AbstractMap.SimpleEntry("Olive", new Pair("Light Olive|Moderate Olive", 
-                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
-        new AbstractMap.SimpleEntry("Yellow-Green",new Pair("Vivid Yellow-Green|Brilliant Yellow-Green|Moderate Yellow-Green", 
-                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
-        new AbstractMap.SimpleEntry("Green", new Pair("Vivid Green|Brilliant Green|Light Green|Moderate Green|RGB-Pure Green", 
-                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
-        new AbstractMap.SimpleEntry("Blue", new Pair("Vivid Blue|Brilliant Blue|Strong Blue|Deep Blue|Very Light Blue|Moderate Blue|Pale Blue|Vivid Greenish-Blue", 
-                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Purple|White|Medium Gray|Black")),
-        new AbstractMap.SimpleEntry("Purple", new Pair("Vivid Purple|Brilliant Purple|Strong Purple|Light Purple|Moderate Purple|Vivid Violet|Brilliant Violet|Strong Violet|Light Violet|Moderate Violet", 
-                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|White|Medium Gray|Black")),
-        new AbstractMap.SimpleEntry("White", new Pair("White", 
-                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|Medium Gray|Black")),
-        new AbstractMap.SimpleEntry("Gray", new Pair("Light Gray|Medium Gray|Dark Gray", 
-                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Black")),
-        new AbstractMap.SimpleEntry("Black", new Pair("Black", 
-                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray"))
+        new AbstractMap.SimpleEntry("Pink", new Pair(PINK_POSITIVES, PINK_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Red", new Pair(RED_POSITIVES, RED_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Orange", new Pair(ORANGE_POSITIVES,ORANGE_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Brown", new Pair(BROWN_POSITIVES,BROWN_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Yellow", new Pair(YELLOW_POSITIVES,YELLOW_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Olive", new Pair(OLIVE_POSITIVES,OLIVE_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Yellow-Green",new Pair(YELLOWGREEN_POSITIVES,YELLOWGREEN_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Green", new Pair(GREEN_POSITIVES,GREEN_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Blue", new Pair(BLUE_POSITIVES,BLUE_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Purple", new Pair(PURPLE_POSITIVES,PURPLE_NEGATIVES)),
+        new AbstractMap.SimpleEntry("White", new Pair(WHITE_POSITIVES,WHITE_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Gray", new Pair(GRAY_POSITIVES,GRAY_NEGATIVES)),
+        new AbstractMap.SimpleEntry("Black", new Pair(BLACK_POSITIVES,BLACK_NEGATIVES))
     };
+    
+//    static final public Map.Entry ISCC_BASIC_GRANULAR_PROTOTYPE_PATTERNS_pCUSTOMIZEDnCUSTOMIZED[] = {
+//        //Pair of positives and negatives prototypes, expressed as a pattern over the ISCC complete set of colors
+//        new AbstractMap.SimpleEntry("Pink", new Pair("Vivid Pink|Strong Pink|Deep Pink|Light Pink|Moderate Pink|Pale Pink",
+//                "Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+//        new AbstractMap.SimpleEntry("Red", new Pair("Vivid Red|Strong Red|Deep Red|Very Deep Red|Moderate Red|Vivid Purplish-Red", 
+//                "Vivid Pink|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+//        new AbstractMap.SimpleEntry("Orange", new Pair("Vivid Orange|Brilliant Orange|Strong Orange|Deep Orange|Moderate Orange", 
+//                "Vivid Pink|Vivid Red|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+//        new AbstractMap.SimpleEntry("Brown", new Pair("Strong Brown|Deep Brown|Light Brown|Moderate Brown|Dark Brown", 
+//                "Vivid Pink|Vivid Red|Vivid Orange|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+//        new AbstractMap.SimpleEntry("Yellow", new Pair("Vivid Yellow|Strong Yellow|Deep Yellow|Light Yellow|Moderate Yellow|Pale Yellow", 
+//                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black"+
+//                "|Vivid Greenish-Yellow")),
+//        new AbstractMap.SimpleEntry("Olive", new Pair("Light Olive|Moderate Olive", 
+//                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+//        new AbstractMap.SimpleEntry("Yellow-Green",new Pair("Vivid Yellow-Green|Brilliant Yellow-Green|Moderate Yellow-Green", 
+//                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+//        new AbstractMap.SimpleEntry("Green", new Pair("Vivid Green|Brilliant Green|Light Green|Moderate Green|RGB-Pure Green", 
+//                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black")),
+//        new AbstractMap.SimpleEntry("Blue", new Pair("Vivid Blue|Brilliant Blue|Strong Blue|Deep Blue|Very Light Blue|Moderate Blue|Pale Blue|Vivid Greenish-Blue", 
+//                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Purple|White|Medium Gray|Black")),
+//        new AbstractMap.SimpleEntry("Purple", new Pair("Vivid Purple|Brilliant Purple|Strong Purple|Light Purple|Moderate Purple|Vivid Violet|Brilliant Violet|Strong Violet|Light Violet|Moderate Violet", 
+//                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|White|Medium Gray|Black")),
+//        new AbstractMap.SimpleEntry("White", new Pair("White", 
+//                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|Medium Gray|Black")),
+//        new AbstractMap.SimpleEntry("Gray", new Pair("Light Gray|Medium Gray|Dark Gray", 
+//                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Black")),
+//        new AbstractMap.SimpleEntry("Black", new Pair("Black", 
+//                "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray"))
+//    };
     
     
 }
