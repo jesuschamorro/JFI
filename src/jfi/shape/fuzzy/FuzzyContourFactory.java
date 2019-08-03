@@ -2,11 +2,16 @@ package jfi.shape.fuzzy;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
+import jfi.fuzzy.Iterable.FuzzyItem;
 import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
+import jfi.fuzzy.membershipfunction.TriangularFunction;
 import jfi.shape.Contour;
 import jfi.shape.ContourIterator;
 import jfi.shape.ContourSegment;
 import jfi.fuzzy.operators.Hedge;
+import jfi.utils.FuzzyUtils;
 import jfi.utils.JFIMath;
 
 /**
@@ -207,7 +212,7 @@ public class FuzzyContourFactory {
     }
     
     /**
-     * Create a new FuzzyContour using verticity as truth value
+     * Creates a new FuzzyContour using verticity as truth value
      * 
      * @param contour Contour used to create the new FuzzyContourOld
      * @param alpha coefficient of determination of the curve considered 0 
@@ -255,6 +260,85 @@ public class FuzzyContourFactory {
             fcontour.setMembershipDegree(point,degree);
         }
     }
-            
+         
+    /**
+     * Creates a new <code>FuzzyContour</code> modeling the maximality of a
+     * given fuzzy contour.
+     * 
+     * Maximality measures the degree in which a contour point value is higher
+     * than almoost all the values around it.
+     *
+     * @param fcontour fuzzy contour to be analyzed 
+     * @param alpha parameter of the 'almost all' quantifier. It represents the 
+     * number of points (greater than the one studied) above which the point is 
+     * not considered a maximum. The quantifier is modelled with a triangular
+     * membership fuction with parameter (0,0,alpha).
+     * @param window_size size of the window around the countour point used to
+     * check the local maximality.
+     * 
+     * @return a fuzzy contour modeling the maximality
+     */
+    public static FuzzyContour getMaximalityInstance(FuzzyContour fcontour, double alpha, int window_size){        
+        FuzzyContour maxima = new FuzzyContour("Contour.Maximality");
+        TriangularFunction quantifier_almostAll = new TriangularFunction(0.0,0.0,alpha);           
+        
+        ArrayList<Map.Entry> entry_list = new ArrayList(fcontour.entrySet());
+        double i_degree, w_degree;
+        int wsize_half, w_index, w, i, num_higher_points;
+        
+        wsize_half = (int)(window_size/2);  
+        for (i = 0; i < entry_list.size(); i++) {
+            i_degree = (Double) entry_list.get(i).getValue();
+            for (w = -wsize_half, num_higher_points=0; w <= wsize_half; w++) {
+                w_index = (i + w + entry_list.size()) % entry_list.size();
+                w_degree = (Double) entry_list.get(w_index).getValue();
+                if(w != 0 && i_degree < w_degree) num_higher_points++;                
+            }
+            i_degree = quantifier_almostAll.apply(num_higher_points);
+            maxima.add((Point2D) entry_list.get(i).getKey(), i_degree ); 
+        }
+        return maxima;
+    }
+     
+    
+    /**
+     * 
+     * @param contour
+     * @param window_size_curvacity
+     * @param alpha_curvacity
+     * @param window_size_maxima
+     * @param alpha_quantifier_almostall
+     * @param alpha_quantifier_enough
+     * @param beta_quantifier_enough
+     * @return 
+     */
+    public static FuzzyContour getSaliencyInstance(Contour contour, int window_size_curvacity, double alpha_curvacity, 
+            int window_size_maxima, double alpha_quantifier_almostall,double alpha_quantifier_enough, double beta_quantifier_enough) {
+         
+        FuzzyContour saliency = new FuzzyContour("Contour.Saliency");
+        TriangularFunction quantifier_almostAll = new TriangularFunction(0.0, 0.0, alpha_quantifier_almostall);
+        TrapezoidalFunction quantifier_enough = new TrapezoidalFunction(alpha_quantifier_enough,beta_quantifier_enough,1.0,1.0); 
+        double i_degree, w_degree;
+        int wsize_half, w_index, w, i, num_higher_points;
+                
+        FuzzyContour fcontourLinealidad = FuzzyContourFactory.getLinearityInstance(contour, alpha_curvacity, window_size_curvacity);
+        FuzzyContour fcontornoCurvacidad = (FuzzyContour) FuzzyUtils.negation(fcontourLinealidad);
+        ArrayList<Map.Entry> entry_list = new ArrayList(fcontornoCurvacidad.entrySet());
+        
+        wsize_half = (int)(window_size_maxima/2);  
+        for (i = 0; i < entry_list.size(); i++) {
+            i_degree = (Double) entry_list.get(i).getValue();
+            for (w = -wsize_half, num_higher_points=0; w <= wsize_half; w++) {
+                w_index = (i + w + entry_list.size()) % entry_list.size();
+                w_degree = (Double) entry_list.get(w_index).getValue();
+                if(w != 0 && i_degree < w_degree) num_higher_points++;                
+            }
+            i_degree = quantifier_enough.apply(i_degree) * quantifier_almostAll.apply(num_higher_points);
+            saliency.add((Point2D) entry_list.get(i).getKey(), i_degree );  
+        }
+        
+        return saliency;
+    }
+    
     
 }

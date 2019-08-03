@@ -1,8 +1,8 @@
 package jfi.utils;
 
 import java.lang.reflect.Constructor;
-import java.util.Map;
 import jfi.fuzzy.DiscreteFuzzySet;
+import jfi.fuzzy.Iterable.FuzzyItem;
 
 /**
  * Class with some utilities for fuzzy sets
@@ -19,7 +19,7 @@ public class FuzzyUtils {
      */
     public static DiscreteFuzzySet round(DiscreteFuzzySet fuzzyset){
         DiscreteFuzzySet rounded_fset;        
-        Double degree;
+        FuzzyItem fi;
 
         try {
             //We try to create an object of the same class of 'fuzzyset' using
@@ -30,10 +30,10 @@ public class FuzzyUtils {
         } catch (Exception ex) {
             rounded_fset = new DiscreteFuzzySet();
         }       
-        for (Object e : fuzzyset) {
-            degree = (Double) ((Map.Entry) e).getValue();
-            rounded_fset.add(((Map.Entry) e).getKey(), JFIMath.round(degree));
-        }
+        for(Object e : fuzzyset){
+            fi = (FuzzyItem)e;           
+            rounded_fset.add(fi.getElement(), JFIMath.round(fi.getDegree()));
+        }       
         return rounded_fset;
     }
     
@@ -45,7 +45,7 @@ public class FuzzyUtils {
      */
     public static DiscreteFuzzySet negation(DiscreteFuzzySet fuzzyset){
         DiscreteFuzzySet negation_fset;        
-        Double degree;
+        FuzzyItem fi;
 
         try {
             //We try to create an object of the same class of 'fuzzyset' using
@@ -55,11 +55,11 @@ public class FuzzyUtils {
             negation_fset = (DiscreteFuzzySet)constructor.newInstance();
         } catch (Exception ex) {
             negation_fset = new DiscreteFuzzySet();
+        }               
+        for(Object e : fuzzyset){
+            fi = (FuzzyItem)e;           
+            negation_fset.add(fi.getElement(), 1.0-fi.getDegree());
         }       
-        for (Object e : fuzzyset) {
-            degree = (Double) ((Map.Entry) e).getValue();
-            negation_fset.add(((Map.Entry) e).getKey(), 1.0-degree);
-        }
         return negation_fset;
     }
 }

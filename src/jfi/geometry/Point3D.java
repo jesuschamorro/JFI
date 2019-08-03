@@ -193,10 +193,48 @@ public class Point3D {
      * @return {@code true} if this point is the same as the argument;
      * {@code false} otherwise.
      */
-    public boolean equals(Point3D p) {
-        double EPSILON = 0.00001;
-        return ( Math.abs(x-p.x)<EPSILON && 
-                 Math.abs(y-p.y)<EPSILON && 
-                 Math.abs(z-p.z)<EPSILON);
+//    public boolean equals(Point3D p) {
+//        double EPSILON = 0.00001;
+//        return ( Math.abs(x-p.x)<EPSILON && 
+//                 Math.abs(y-p.y)<EPSILON && 
+//                 Math.abs(z-p.z)<EPSILON);
+//    }
+       
+    /**
+     * Indicates whether some other object is "equal to" this one.
+     *
+     * @param obj reference object with which to compare.
+     * @return {@code true} if this point is the same as the argument;
+     * {@code false} otherwise.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        
+        //System.out.println(".");
+        
+        if (obj instanceof Point3D) {
+            Point3D p3d = (Point3D) obj;
+            double EPSILON = 0.00001;
+            return (Math.abs(x - p3d.x) < EPSILON && 
+                    Math.abs(y - p3d.y) < EPSILON && 
+                    Math.abs(z - p3d.z) < EPSILON);
+        }
+        return super.equals(obj);
     }
+
+    /**
+     * Returns a hash code value for this point. This method is
+     * supported for the benefit of hash tables such as those provided by
+     * {@link java.util.HashMap}.
+     * 
+     * @return a hash code value for this point.
+     */
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 19 * hash + (int) (Double.doubleToLongBits(this.x) ^ 
+                (Double.doubleToLongBits(this.x) >>> 32));
+        return hash;
+    }
+    
 }

@@ -5,51 +5,36 @@ import jfi.geometry.Point3D;
 import jfi.utils.Prototyped;
 
 /**
- * Fuzzy color based on the Fuzzy C-Means membership function.
+ * Crisp approach for labeling a color based on the nearest neighbour algorithm. 
+ * Although it implements the {@link jfi.color.fuzzy.FuzzyColor} interface for 
+ * compatibility reasons, the membership degree of any color will be 1 or 0.
  * 
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class FuzzyCMeamsColor implements FuzzyColor<Point3D>, Prototyped<Point3D>{
+public class NearestNeighbourColor implements FuzzyColor<Point3D>, Prototyped<Point3D>{
     private String label;
-    private Point3D color_prototype;
-    private Point3D[] all_prototypes;
-    private double m_fcmParameter;
-    public static final double DEFAULT_M = 2.0;
-    
+    private final Point3D color_prototype;
+    private final Point3D[] all_prototypes;
+     
     /**
-     * Constructs a new fuzzy color based on the Fuzzy C-Means membership
-     * function.
+     * Constructs a new fuzzy color based on the nearest neighbour algorithm.
      *
      * @param label the label associated to the fuzzy color.
      * @param color_prototype the prototype of the cluster associated to the
      * fuzzy color.
      * @param all_prototypes the set of all the prototypes of the fuzzy
      * partition to which this fuzzy color belongs
-     * @param m the parameter <tt>m</tt> of the Fuzzy C-Means membership function.
      */
-    public FuzzyCMeamsColor(String label, Point3D color_prototype, Point3D[] all_prototypes, double m) {
+    public NearestNeighbourColor(String label, Point3D color_prototype, Point3D[] all_prototypes) {
         this.label = label;
         this.color_prototype = color_prototype;
-        this.all_prototypes = all_prototypes;
-        this.m_fcmParameter = m;
+        this.all_prototypes = all_prototypes;        
     }
 
-    /**
-     * Constructs a new fuzzy color based on the Fuzzy C-Means membership function.
-     * 
-     * @param label the label associated to the fuzzy color.
-     * @param color_prototype the prototype of the cluster associated to the
-     * fuzzy color.
-     * @param all_prototypes the set of all the prototypes of the fuzzy
-     * partition to which this fuzzy color belongs
-     */
-    public FuzzyCMeamsColor(String label, Point3D color_prototype, Point3D[] all_prototypes) {
-        this(label,color_prototype,all_prototypes,DEFAULT_M);
-    }
     
     /**
      * Returns the membership degree of the given crisp color to this fuzzy
-     * color.
+     * color. It always will be 1.0 or 0.0.
      *
      * @param c a crisp color.
      * @return the membership degree.
@@ -82,24 +67,27 @@ public class FuzzyCMeamsColor implements FuzzyColor<Point3D>, Prototyped<Point3D
 
     /**
      * Returns the membership degree of the given crisp color to this fuzzy
-     * color.
+     * color. It always will be 1.0 or 0.0.
      *
      * @param p a point representing a crisp color.
      * @return the membership degree.
      */
     @Override
     public double membershipDegree(Point3D p) {
-        double dist_ij, dist_ik, sum = 0.0, output = 1.0;
+        double dist_ij, dist_ik;
         
         dist_ij = p.distance(color_prototype);
         if (dist_ij > 0.0) {
             for (int k = 0; k < all_prototypes.length; k++) {
-                dist_ik = p.distance(all_prototypes[k]);
-                sum += Math.pow(dist_ij / dist_ik, 2.0 / (m_fcmParameter - 1.0));
+                if (all_prototypes[k] != color_prototype) {
+                    dist_ik = p.distance(all_prototypes[k]);
+                    if (dist_ik < dist_ij) {
+                        return 0.0;
+                    }
+                }
             }
-            output = 1.0 / sum;
         }
-        return output;
+        return 1.0;
     }
     
     /**

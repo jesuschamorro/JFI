@@ -154,7 +154,7 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
          * three-dimensional point), the kernel and support of each color are
          * calculated on the basis of the minimum distance between the color
          * prototype and the rest of points in the set. For calculating the
-         * kernel size, the default {@link #DEFAULT_KERNEL_RADIUS} factor is 
+         * kernel size, the default {@link #DEFAULT_KERNEL_FACTOR} factor is 
          * used.
          *
          * @param prototypes a map of color prototypes with its names.
@@ -171,7 +171,7 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
          * three-dimensional point), the kernel and support of each color are
          * calculated on the basis of the minimum distance between the color
          * prototype and the rest of points in the set. For calculating the
-         * kernel size, the default {@link #DEFAULT_KERNEL_RADIUS} factor is 
+         * kernel size, the default {@link #DEFAULT_KERNEL_FACTOR} factor is 
          * used.
          *
          * @param prototypes the set of color prototypes.
@@ -246,6 +246,50 @@ public class FuzzyColorSpace<T> extends FuzzySetCollection<FuzzyColor<T>,T>{
             }
             return createFuzzyCMeansFCS(map);
         }
+        
+        
+        
+        /**
+         * Creates a new fuzzy color space based on the nearest neighbour
+         * algorithm. Although it is based on {@link jfi.color.fuzzy.FuzzyColor}
+         * interface for compatibility reasons, the membership degree of any
+         * color will be 1 or 0.
+         *
+         * @param prototypes a map of color prototypes with its names.
+         * @return a new fuzzy color space based on the nearest neighbour
+         * algorithm.
+         */
+        static public FuzzyColorSpace<Point3D> createNearestNeighbourFCS(Map<String,Point3D> prototypes){
+            FuzzyColorSpace<Point3D> fcs = new FuzzyColorSpace();
+            Set<Map.Entry<String, Point3D>> set = prototypes.entrySet();
+            Point3D[] prototypes_vector = prototypes.values().toArray(new Point3D[0]);
+            NearestNeighbourColor fnnc;
+            for (Map.Entry<String, Point3D> me : set) {
+                fnnc = new NearestNeighbourColor(me.getKey(), me.getValue(), prototypes_vector);                
+                fcs.add(fnnc);
+            } 
+            return fcs;
+        }
+               
+        /**
+         * Creates a new fuzzy color space based on the the nearest neighbour
+         * algorithm. Although it is based on {@link jfi.color.fuzzy.FuzzyColor}
+         * interface for compatibility reasons, the membership degree of any
+         * color will be 1 or 0.
+         *
+         * @param prototypes the set of color prototypes with its names.
+         * @return a new fuzzy color space based on the nearest neighbour
+         * algorithm.
+         */
+        static public FuzzyColorSpace<Point3D> createNearestNeighbourFCS(Point3D... prototypes){
+            LinkedHashMap<String,Point3D> map = new LinkedHashMap(prototypes.length);
+            for(int i=0; i<prototypes.length; i++){                
+                map.put("Color "+i,prototypes[i]);
+            }
+            return createNearestNeighbourFCS(map);
+        }
+        
+        
     }
     
 }

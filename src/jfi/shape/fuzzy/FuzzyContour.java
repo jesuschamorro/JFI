@@ -82,7 +82,7 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
      * @param contour the crisp contour
      */
     public FuzzyContour(String label, Contour contour) {
-        this(label);
+        super(label);
         for(Point2D point:contour){
             this.add(point);  //By default, membership degree is set to 1.0
         }
@@ -98,6 +98,19 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
         this("",contour);
     }
 
+    
+    /**
+     * Constructs a fuzzy contour as a copy of another fuzzy contour.
+     *
+     * @param fcontour the fuzzy contour.
+     */
+    public FuzzyContour(FuzzyContour fcontour) {
+        super(fcontour.label);
+        for(FuzzyItem<Point2D> e: fcontour){
+            this.add(e.getElement(), e.getDegree());
+        }        
+    }
+    
     /**
      * Appends the specified point to fuzzy contour with membership degree 1.0.
      *
@@ -199,24 +212,32 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
     
     /**
      * Return the local maxima, in the sense of degrees, of this fuzzy contour
-     * 
+     *
+     * @param window_size size of the window around the countour point used to
+     * check the local maximality.
+     * @param strict_inequality if <tt>true</tt>, the strict inequality is used
+     * to check the maximality.
      * @return the local maxima
      */
-    public DiscreteFuzzySet<Point2D> localMaxima(){
+    public DiscreteFuzzySet<Point2D> localMaxima(int window_size, boolean strict_inequality){
         FuzzyContour maxima = new FuzzyContour();
         ArrayList<Map.Entry> entry_list = new ArrayList(this.entrySet());
         double i_degree, w_degree;
         int wsize_half, w_index, w, i;
         boolean is_maximum;
         
-        wsize_half = (int) (Contour.DEFAULT_WINDOW_RATIO_SIZE * entry_list.size())/2;
+        wsize_half = window_size/2;
         for (i = 0; i < entry_list.size(); i++) {
             i_degree = (Double) entry_list.get(i).getValue();
             for (w = -wsize_half, is_maximum = true; w <= wsize_half && is_maximum; w++) {
-                w_index = (i + w + entry_list.size()) % entry_list.size();
-                w_degree = (Double) entry_list.get(w_index).getValue();
-                if (w != 0 && i_degree <= w_degree) {
-                    is_maximum = false;
+                if (w != 0) {
+                    w_index = (i + w + entry_list.size()) % entry_list.size();
+                    w_degree = (Double) entry_list.get(w_index).getValue();
+                    if (strict_inequality && i_degree <= w_degree) {
+                        is_maximum = false;
+                    } else if (!strict_inequality && i_degree < w_degree) {
+                        is_maximum = false;
+                    }
                 }
             }
             if (is_maximum) {
@@ -224,5 +245,17 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
             }
         }
         return maxima;
+    }
+    
+    /**
+     * Return the local maxima, in the sense of degrees, of this fuzzy contour.
+     * By default, the strict inequality and a window size calculated as
+     * {@link jfi.shape.Contour.DEFAULT_WINDOW_RATIO_SIZE} by this contour size
+     * is used.
+     *
+     * @return
+     */
+    public DiscreteFuzzySet<Point2D> localMaxima(){
+        return this.localMaxima((int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * this.size()),true);
     }
 }

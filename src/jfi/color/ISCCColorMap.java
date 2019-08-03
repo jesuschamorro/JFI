@@ -561,7 +561,8 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
     static final public ISCCColorMap NEGATIVE_CUSTOMIZED_ISCC_COMPLETE(){
         ISCCColorMap output = new ISCCColorMap(TYPE_COMPLETE);        
         output.put("Light Black", new Point3D(55.0,55.0,55.0)); 
-        output.put("Very Dark Blue", new Point3D(18.0,18.0,32.0));          
+        output.put("Very Dark Blue", new Point3D(18.0,18.0,32.0));   
+        output.replace("White", new Point3D(220.0,220.0,220.0));   
         return output;
     }
     
@@ -686,10 +687,10 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
     static final String YELLOWGREEN_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black";
     static final String GREEN_POSITIVES = "Vivid Green|Brilliant Green|Light Green|Moderate Green|RGB-Pure Green";
     static final String GREEN_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Blue|Vivid Purple|White|Medium Gray|Black";
-    static final String BLUE_POSITIVES = "Vivid Blue|Brilliant Blue|Strong Blue|Deep Blue|Very Light Blue|Moderate Blue|Pale Blue|Vivid Greenish-Blue";
-                                        //+"|Sea Blue";
-    static final String BLUE_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Purple|White|Medium Gray|Black";
-                                        //+"|Very Dark Blue";;
+    static final String BLUE_POSITIVES = "Vivid Blue|Brilliant Blue|Strong Blue|Deep Blue|Very Light Blue|Moderate Blue|Pale Blue|Vivid Greenish-Blue"
+                                        +"|Sea Blue";
+    static final String BLUE_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Purple|White|Medium Gray|Black"
+                                        +"|Very Dark Blue";
     static final String PURPLE_POSITIVES = "Vivid Purple|Brilliant Purple|Strong Purple|Light Purple|Moderate Purple|Vivid Violet|Brilliant Violet|Strong Violet|Light Violet|Moderate Violet";
     static final String PURPLE_NEGATIVES = "Vivid Pink|Vivid Red|Vivid Orange|Strong Brown|Vivid Yellow|Moderate Olive|Vivid Yellow-Green|Vivid Green|Vivid Blue|White|Medium Gray|Black";
     static final String WHITE_POSITIVES = "White";
