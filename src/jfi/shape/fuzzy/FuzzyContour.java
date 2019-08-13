@@ -250,10 +250,10 @@ public final class FuzzyContour extends DiscreteFuzzySet<Point2D> {
     /**
      * Return the local maxima, in the sense of degrees, of this fuzzy contour.
      * By default, the strict inequality and a window size calculated as
-     * {@link jfi.shape.Contour.DEFAULT_WINDOW_RATIO_SIZE} by this contour size
-     * is used.
+     * {@link jfi.shape.Contour#DEFAULT_WINDOW_RATIO_SIZE} multiplied by this
+     * contour size is used.
      *
-     * @return
+     * @return the local maxima
      */
     public DiscreteFuzzySet<Point2D> localMaxima(){
         return this.localMaxima((int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * this.size()),true);

@@ -3,8 +3,6 @@ package jfi.shape.fuzzy;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
-import jfi.fuzzy.Iterable.FuzzyItem;
 import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
 import jfi.fuzzy.membershipfunction.TriangularFunction;
 import jfi.shape.Contour;
@@ -272,7 +270,7 @@ public class FuzzyContourFactory {
      * @param alpha parameter of the 'almost all' quantifier. It represents the 
      * number of points (greater than the one studied) above which the point is 
      * not considered a maximum. The quantifier is modelled with a triangular
-     * membership fuction with parameter (0,0,alpha).
+     * membership function with parameter (0,0,alpha).
      * @param window_size size of the window around the countour point used to
      * check the local maximality.
      * 
@@ -302,15 +300,37 @@ public class FuzzyContourFactory {
      
     
     /**
-     * 
-     * @param contour
-     * @param window_size_curvacity
-     * @param alpha_curvacity
-     * @param window_size_maxima
-     * @param alpha_quantifier_almostall
-     * @param alpha_quantifier_enough
-     * @param beta_quantifier_enough
-     * @return 
+     * Creates a new <code>FuzzyContour</code> modeling the saliency of a given
+     * fuzzy contour. Saliency is measured for each contour point on the basis
+     * of its curvacity and its maximalty: A point is a salience point if (1) it
+     * has curvacity enough and (2) its curvacity value is higher than almoost
+     * all the values around it.
+     *
+     * @param contour contour to be analyzed
+     * @param window_size_curvacity size of the window around the countour point
+     * used to check the local curvacity.
+     * @param alpha_curvacity coefficient of determination of the arch
+     * associated to zero membeship degree to linearity. It is used to calculate
+     * the curvacity.
+     * @param window_size_maxima size of the window around the countour point
+     * used to check the local maximality.
+     * @param alpha_quantifier_almostall parameter of the 'almost all'
+     * quantifier used to calculate the maximality. It represents the number of
+     * points (greater than the one studied) above which the point is not
+     * considered a maximum. The quantifier is modelled with a triangular
+     * membership function with parameter (0,0,alpha).
+     * @param alpha_quantifier_enough parameter alpha of the 'enough' quantifier
+     * used to analyze if a countour point has curvacity enough. Any value lower
+     * than alpha is considered non-enough (i.e., the membebmeship degree to
+     * 'enough' is zero).
+     * @param beta_quantifier_enough parameter alpha of the 'enough' quantifier
+     * used to analyze if a countour point has curvacity enough. Any value
+     * higher than beta is considered enough (i.e., the membebmeship degree to
+     * 'enough' is one). Any value between alfa and beta will have membebmeship
+     * degree to 'enough' between 0 and 1 (the quantifier is modelled with a
+     * trapezoidal function with parameter (alpha,beta,1,1)).
+     *
+     * @return a fuzzy contour modeling the saliency.
      */
     public static FuzzyContour getSaliencyInstance(Contour contour, int window_size_curvacity, double alpha_curvacity, 
             int window_size_maxima, double alpha_quantifier_almostall,double alpha_quantifier_enough, double beta_quantifier_enough) {

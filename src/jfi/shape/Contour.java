@@ -307,15 +307,22 @@ public class Contour extends ArrayList<Point2D> implements Segmentable{
         return segment;
     }
     
+    /**
+     * Return the contour segment connecting the points at the position
+     * <code>start</code> and <code>end</code> (both included) in the contour.
+     * If <code>start==end</code>, a segment with a single point is returned.
+     *
+     * @param start the index of the starting point
+     * @param end the index of the ending point
+     * @param clockwise reaching <code>end</code> from <code>start</code> in
+     * clockwise direcction
+     * @return the contour segment
+     */
     public ArrayList<Point2D> getSegment(int start, int end, boolean clockwise){
-         ArrayList<Point2D> segment = new ArrayList<>(); 
-         int i=start;
-         while(i!=end){
-             //TODO
-             //segment.add(get(i));
-             //i= clockwise ? (i+1)%size() : (i-1+size())%size();
-         }
-         return segment;
+        if(start<0 || start>this.size() || end<0 || end>this.size()){
+            throw new InvalidParameterException("Index out of bounds.");
+        }        
+        return this.getSegment(get(start),get(end), clockwise);
     }
     
     /**
