@@ -5,8 +5,12 @@
 */
 package jfi.shape;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.function.Function;
+import jfi.fuzzy.DiscreteFuzzySet;
+import jfi.shape.fuzzy.FuzzyContour;
 
 
 public class CurvatureFunction implements Function<Integer,Double>{
@@ -143,4 +147,42 @@ public class CurvatureFunction implements Function<Integer,Double>{
     public void normalize(){
         normalize(this.max());
     }
+    
+    /**
+     * Return the local maxima of this curvature function.
+     *
+     * @param window_size size of the window used to check the local maximality.
+     * @param strict_inequality if <tt>true</tt>, the strict inequality is used
+     * to check the maximality.
+     * @return the local maxima
+     */
+    public ArrayList<Integer> localMaxima(int window_size, boolean strict_inequality){
+        ArrayList<Integer> maxima = new ArrayList();
+        
+        double i_value, w_value;
+        int wsize_half, w_index, w, i;
+        int size = curvature.size();
+        boolean is_maximum;
+        
+        wsize_half = window_size/2;
+        for (i = 0; i < size; i++) {
+            i_value = curvature.get(i);
+            for (w = -wsize_half, is_maximum = true; w <= wsize_half && is_maximum; w++) {
+                if (w != 0) {
+                    w_index = (i + w + size) % size;
+                    w_value = curvature.get(w_index);
+                    if (strict_inequality && i_value <= w_value) {
+                        is_maximum = false;
+                    } else if (!strict_inequality && i_value < w_value) {
+                        is_maximum = false;
+                    }
+                }
+            }
+            if (is_maximum) {
+                maxima.add(i);
+            }
+        }
+        return maxima;
+    }
+    
 }

@@ -12,7 +12,7 @@ import jfi.shape.Contour;
  * is measured for each contour point on the basis of its curvacity and its
  * maximalty (two fuzzy properties): A point is a salience point if (1) it has
  * curvacity enough and (2) its curvacity value is higher than almoost all the
- * values around it. Given the fuzzy saliency of a contour, a crisp ser of
+ * values around it. Given the fuzzy saliency of a contour, a crisp set of
  * representative (salience) points are calculated as the centerpoints of the
  * segments generated in a given alpha-cut.
  *
@@ -146,7 +146,7 @@ public class FuzzySaliencePointsSelectionOp {
      * @param alpha the alpha associated to the alpha-cut of the saliency (fuzzy
      * property of a contour) that will be used to select the salience points.
      * Each (crisp) segment of the alpha-cut will have associated a salience
-     * point (specifically, the centerpoitn of the segment).
+     * point (specifically, the centerpoint of the segment).
      * @return the set of salience points associated to the given contour. The
      * salience poits are returned as a <code>FuzzyContour</code>, where each
      * point has a membership degree to the saliency property.
@@ -170,7 +170,7 @@ public class FuzzySaliencePointsSelectionOp {
         //First, the start point is set. In general, it is the first of the point 
         //list, but it is necessary to consider the particular case when the fisrt  
         //point in the list (the one associated to the index 0) is inside the 
-        //alpha-cut and also the last one 
+        //alpha-cut together with the last one 
         int i_start = 0;
         boolean cycle = false;
         while (!cycle && (Double) points.get(i_start).getValue() >= alpha) {

@@ -9,6 +9,7 @@ import jfi.shape.Contour;
 import jfi.shape.ContourIterator;
 import jfi.shape.ContourSegment;
 import jfi.fuzzy.operators.Hedge;
+import jfi.fuzzy.operators.TNorm;
 import jfi.utils.FuzzyUtils;
 import jfi.utils.JFIMath;
 
@@ -303,8 +304,72 @@ public class FuzzyContourFactory {
      * Creates a new <code>FuzzyContour</code> modeling the saliency of a given
      * fuzzy contour. Saliency is measured for each contour point on the basis
      * of its curvacity and its maximalty: A point is a salience point if (1) it
-     * has curvacity enough and (2) its curvacity value is higher than almoost
+     * has curvacity enough and (2) its curvacity value is higher than almost
      * all the values around it.
+     *
+     * @param contour contour to be analyzed
+     * @param window_size_curvacity size of the window around the countour point
+     * used to check the local curvacity.
+     * @param alpha_curvacity coefficient of determination of the arch
+     * associated to zero membeship degree to linearity. It is used to calculate
+     * the curvacity.
+     * @param window_size_maxima size of the window around the countour point
+     * used to check the local maximality.
+     * @param alpha_quantifier_almostall parameter of the 'almost all'
+     * quantifier used to calculate the maximality. It represents the number of
+     * points (greater than the one studied) above which the point is not
+     * considered a maximum. The quantifier is modelled with a triangular
+     * membership function with parameter (0,0,alpha).
+     * @param alpha_quantifier_enough parameter alpha of the 'enough' quantifier
+     * used to analyze if a countour point has curvacity enough. Any value lower
+     * than alpha is considered non-enough (i.e., the membebmeship degree to
+     * 'enough' is zero).
+     * @param beta_quantifier_enough parameter alpha of the 'enough' quantifier
+     * used to analyze if a countour point has curvacity enough. Any value
+     * higher than beta is considered enough (i.e., the membebmeship degree to
+     * 'enough' is one). Any value between alfa and beta will have membebmeship
+     * degree to 'enough' between 0 and 1 (the quantifier is modelled with a
+     * trapezoidal function with parameter (alpha,beta,1,1)).
+     * @param tnorm the tnorm used to aggregate the 'curvacity enough' and the
+     * 'curvacity higher than almost all' membership degrees
+     *
+     * @return a fuzzy contour modeling the saliency.
+     */
+    public static FuzzyContour getSaliencyInstance(Contour contour, int window_size_curvacity, double alpha_curvacity, 
+            int window_size_maxima, double alpha_quantifier_almostall,double alpha_quantifier_enough, double beta_quantifier_enough, TNorm tnorm) {
+         
+        FuzzyContour saliency = new FuzzyContour("Contour.Saliency");
+        TriangularFunction quantifier_almostAll = new TriangularFunction(0.0, 0.0, alpha_quantifier_almostall);
+        TrapezoidalFunction quantifier_enough = new TrapezoidalFunction(alpha_quantifier_enough,beta_quantifier_enough,1.0,1.0); 
+        double i_degree, w_degree;
+        int wsize_half, w_index, w, i, num_higher_points;
+                
+        FuzzyContour fcontourLinealidad = FuzzyContourFactory.getLinearityInstance(contour, alpha_curvacity, window_size_curvacity);
+        FuzzyContour fcontornoCurvacidad = (FuzzyContour) FuzzyUtils.negation(fcontourLinealidad);
+        ArrayList<Map.Entry> entry_list = new ArrayList(fcontornoCurvacidad.entrySet());
+        
+        wsize_half = (int)(window_size_maxima/2);  
+        for (i = 0; i < entry_list.size(); i++) {
+            i_degree = (Double) entry_list.get(i).getValue();
+            for (w = -wsize_half, num_higher_points=0; w <= wsize_half; w++) {
+                w_index = (i + w + entry_list.size()) % entry_list.size();
+                w_degree = (Double) entry_list.get(w_index).getValue();
+                if(w != 0 && i_degree < w_degree) num_higher_points++;                
+            }
+            i_degree = tnorm.apply( quantifier_enough.apply(i_degree) , quantifier_almostAll.apply(num_higher_points) );
+            saliency.add((Point2D) entry_list.get(i).getKey(), i_degree );  
+        }
+        
+        return saliency;
+    }
+    
+    /**
+     * Creates a new <code>FuzzyContour</code> modeling the saliency of a given
+     * fuzzy contour. Saliency is measured for each contour point on the basis
+     * of its curvacity and its maximalty: A point is a salience point if (1) it
+     * has curvacity enough and (2) its curvacity value is higher than almost
+     * all the values around it. By default, the product is used to aggregate 
+     * both concepts.
      *
      * @param contour contour to be analyzed
      * @param window_size_curvacity size of the window around the countour point
@@ -334,31 +399,8 @@ public class FuzzyContourFactory {
      */
     public static FuzzyContour getSaliencyInstance(Contour contour, int window_size_curvacity, double alpha_curvacity, 
             int window_size_maxima, double alpha_quantifier_almostall,double alpha_quantifier_enough, double beta_quantifier_enough) {
-         
-        FuzzyContour saliency = new FuzzyContour("Contour.Saliency");
-        TriangularFunction quantifier_almostAll = new TriangularFunction(0.0, 0.0, alpha_quantifier_almostall);
-        TrapezoidalFunction quantifier_enough = new TrapezoidalFunction(alpha_quantifier_enough,beta_quantifier_enough,1.0,1.0); 
-        double i_degree, w_degree;
-        int wsize_half, w_index, w, i, num_higher_points;
-                
-        FuzzyContour fcontourLinealidad = FuzzyContourFactory.getLinearityInstance(contour, alpha_curvacity, window_size_curvacity);
-        FuzzyContour fcontornoCurvacidad = (FuzzyContour) FuzzyUtils.negation(fcontourLinealidad);
-        ArrayList<Map.Entry> entry_list = new ArrayList(fcontornoCurvacidad.entrySet());
-        
-        wsize_half = (int)(window_size_maxima/2);  
-        for (i = 0; i < entry_list.size(); i++) {
-            i_degree = (Double) entry_list.get(i).getValue();
-            for (w = -wsize_half, num_higher_points=0; w <= wsize_half; w++) {
-                w_index = (i + w + entry_list.size()) % entry_list.size();
-                w_degree = (Double) entry_list.get(w_index).getValue();
-                if(w != 0 && i_degree < w_degree) num_higher_points++;                
-            }
-            i_degree = quantifier_enough.apply(i_degree) * quantifier_almostAll.apply(num_higher_points);
-            saliency.add((Point2D) entry_list.get(i).getKey(), i_degree );  
-        }
-        
-        return saliency;
+        return getSaliencyInstance(contour,window_size_curvacity,alpha_curvacity, 
+                window_size_maxima, alpha_quantifier_almostall, alpha_quantifier_enough, beta_quantifier_enough, TNorm.PRODUCT);
     }
-    
     
 }
