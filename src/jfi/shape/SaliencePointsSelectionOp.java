@@ -1,10 +1,8 @@
 package jfi.shape;
 
 import jfi.shape.fuzzy.*;
-import java.awt.geom.Point2D;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Class implementing the contour salience points selection operator. 
@@ -28,6 +26,10 @@ public class SaliencePointsSelectionOp {
      * contour sie.
      */
     private boolean auto = false;
+    /**
+     * Default window size for maxima calculation.
+     */
+    private static int DEFAULT_WINDOW_SIZE_MAXIMA = 3;
     
 
     /**
@@ -45,7 +47,7 @@ public class SaliencePointsSelectionOp {
      * default parameters.
      */
     public SaliencePointsSelectionOp() {
-        this(3);
+        this(DEFAULT_WINDOW_SIZE_MAXIMA);
         this.auto = true;
         //The 'window_size_maxima' parameter will be calculated automatically in 
         //the apply method (it depends on the contour size). 

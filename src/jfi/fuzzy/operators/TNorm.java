@@ -91,9 +91,5 @@ public interface TNorm extends BinaryOperator<Double>, Aggregation<Double,Double
             output.add(e, this.apply(t.membershipDegree(e), u.membershipDegree(e)));            
         }        
         return output;
-    }
-    
-   
-    
-    
+    }    
 }

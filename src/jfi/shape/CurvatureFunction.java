@@ -6,6 +6,8 @@
 package jfi.shape;
 
 import java.awt.geom.Point2D;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.function.Function;
@@ -163,14 +165,19 @@ public class CurvatureFunction implements Function<Integer,Double>{
         int wsize_half, w_index, w, i;
         int size = curvature.size();
         boolean is_maximum;
+        double diff;
         
         wsize_half = window_size/2;
         for (i = 0; i < size; i++) {
             i_value = curvature.get(i);
+            //To avoid precission problems
+            i_value = BigDecimal.valueOf(i_value).setScale(7, RoundingMode.HALF_UP).doubleValue();            
             for (w = -wsize_half, is_maximum = true; w <= wsize_half && is_maximum; w++) {
                 if (w != 0) {
                     w_index = (i + w + size) % size;
                     w_value = curvature.get(w_index);
+                    //To avoid precission problems
+                    w_value = BigDecimal.valueOf(w_value).setScale(7, RoundingMode.HALF_UP).doubleValue();    
                     if (strict_inequality && i_value <= w_value) {
                         is_maximum = false;
                     } else if (!strict_inequality && i_value < w_value) {

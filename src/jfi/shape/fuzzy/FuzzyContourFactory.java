@@ -43,6 +43,11 @@ public class FuzzyContourFactory {
     public static final double DEFAULT_CONCENTRATION_VERTICITY_CENTER = 2.0;
     
     /**
+     * Default t-norm used to calculate the salience.
+     */
+    public static TNorm DEFAULT_SALIENCY_TNORM = TNorm.PRODUCT;
+    
+    /**
      * Type representing the linearity fuzzy property
      */
     public static final int TYPE_LINEARITY = 1;
@@ -199,6 +204,43 @@ public class FuzzyContourFactory {
         TrapezoidalFunction linearity_adjust = new TrapezoidalFunction(alpha,beta,1.0,1.0); 
         return linearity_adjust.apply(JFIMath.CoefficientDetermination(segment));
     }
+    
+    
+    
+    /**
+     * Creates a new <code>FuzzyContour</code> modeling the linearity property
+     * for a given contour
+     * 
+     * @param contour contour used to create the linearity fuzzy set
+     * 
+     * @return a fuzzy contour modeling the linearity property
+     */
+    public static FuzzyContour getCurvacityInstance(Contour contour){
+        return getCurvacityInstance(contour, DEFAULT_ALPHA, (int)(Contour.DEFAULT_WINDOW_RATIO_SIZE * contour.size()));
+    }
+    
+    /**
+     * Creates a new <code>FuzzyContour</code> modeling the linearity property
+     * for a given contour
+     * 
+     * @param contour contour used to create the linearity fuzzy set
+     * @param alpha coefficient of determination of the curve considered 0 
+     * @param segment_size the segment size around each contour point for linearity 
+     * 
+     * @return a fuzzy contour modeling the linearity property
+     */
+    public static FuzzyContour getCurvacityInstance(Contour contour, double alpha, int segment_size){
+        FuzzyContour fuzzyContour = getLinearityInstance(contour,alpha,segment_size);
+        fuzzyContour = (FuzzyContour) FuzzyUtils.negation(fuzzyContour);
+        fuzzyContour.setLabel("Contour.Curvacity");
+        return fuzzyContour;
+    }
+    
+    
+    
+    
+    
+    
     /**
      * Create a new FuzzyContour using verticity as truth value
      * 
@@ -400,7 +442,7 @@ public class FuzzyContourFactory {
     public static FuzzyContour getSaliencyInstance(Contour contour, int window_size_curvacity, double alpha_curvacity, 
             int window_size_maxima, double alpha_quantifier_almostall,double alpha_quantifier_enough, double beta_quantifier_enough) {
         return getSaliencyInstance(contour,window_size_curvacity,alpha_curvacity, 
-                window_size_maxima, alpha_quantifier_almostall, alpha_quantifier_enough, beta_quantifier_enough, TNorm.PRODUCT);
+                window_size_maxima, alpha_quantifier_almostall, alpha_quantifier_enough, beta_quantifier_enough, DEFAULT_SALIENCY_TNORM);
     }
     
 }

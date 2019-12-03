@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Map;
+import jfi.fuzzy.operators.TNorm;
 import jfi.shape.Contour;
 
 /**
@@ -58,6 +59,12 @@ public class FuzzySaliencePointsSelectionOp {
      */
     private double beta_quantifier_enough;
     /**
+     * T-norm used to calculate the saliency. It is used to aggregate the
+     * 'curvacity enough' and the 'curvacity higher than almost all' membership
+     * degrees
+     */
+    private TNorm tnorm;
+    /**
      * If <tt>true</tt>, the parameters of 'window_size_curvacity' and
      * 'window_size_maxima' are calculated automatically on the basis of the
      * contour sie.
@@ -71,19 +78,24 @@ public class FuzzySaliencePointsSelectionOp {
     /**
      * Default parameter alpha of the 'almost' quantifier.
      */
-    private static double DEFAULT_ALPHA_QUANTIFIER_ALMOST = 4.0;
+    public static double DEFAULT_ALPHA_QUANTIFIER_ALMOST = 4.0;
     /**
      * Default parameter alpha of the 'enough' quantifier.
      */
-    private static double DEFAULT_ALPHA_QUANTIFIER_ENOUGH = 0.2;
+    public static double DEFAULT_ALPHA_QUANTIFIER_ENOUGH = 0.2;
     /**
      * Default parameter beta of the 'enough' quantifier.
      */
-    private static double DEFAULT_BETA_QUANTIFIER_ENOUGH = 0.5;
+    public static double DEFAULT_BETA_QUANTIFIER_ENOUGH = 0.5;
     /**
      * Default alpha used to calculate the alpha-cut over the fuzzy saliency.
      */
-    private static double DEFAULT_ALPHACUT = 0.4;
+    public static double DEFAULT_ALPHACUT = 0.4;
+    /**
+     * Default t-norm used to calculate the salience.
+     */
+    public static TNorm DEFAULT_TNORM = TNorm.PRODUCT;
+    
 
     /**
      * Constructs a new salience points selection operator. This operator is
@@ -117,22 +129,26 @@ public class FuzzySaliencePointsSelectionOp {
      * 'enough' is one). Any value between alfa and beta will have membebmeship
      * degree to 'enough' between 0 and 1 (the quantifier is modelled with a
      * trapezoidal function with parameter (alpha,beta,1,1)).
+     * @param tnorm
      */
-    public FuzzySaliencePointsSelectionOp(int window_size_curvacity, double alpha_curvacity, int window_size_maxima, double alpha_quantifier_almostall, double alpha_quantifier_enough, double beta_quantifier_enough) {
+    public FuzzySaliencePointsSelectionOp(int window_size_curvacity, double alpha_curvacity, int window_size_maxima, double alpha_quantifier_almostall, double alpha_quantifier_enough, double beta_quantifier_enough, TNorm tnorm) {
         this.window_size_curvacity = window_size_curvacity;
         this.alpha_curvacity = alpha_curvacity;
         this.window_size_maxima = window_size_maxima;
         this.alpha_quantifier_almostall = alpha_quantifier_almostall;
         this.alpha_quantifier_enough = alpha_quantifier_enough;
         this.beta_quantifier_enough = beta_quantifier_enough;
+        this.tnorm = tnorm;
     }
 
+    
+    
     /**
      * Constructs a new salience points selection operator operator using the
      * default parameters.
      */
     public FuzzySaliencePointsSelectionOp() {
-        this(0, getAlpha(DEFAULT_ALPHA_ANGLE), 0, DEFAULT_ALPHA_QUANTIFIER_ALMOST, DEFAULT_ALPHA_QUANTIFIER_ENOUGH, DEFAULT_BETA_QUANTIFIER_ENOUGH);
+        this(0, getAlpha(DEFAULT_ALPHA_ANGLE), 0, DEFAULT_ALPHA_QUANTIFIER_ALMOST, DEFAULT_ALPHA_QUANTIFIER_ENOUGH, DEFAULT_BETA_QUANTIFIER_ENOUGH, DEFAULT_TNORM);
         this.auto = true;
         //The 'window_size_curvacity' and 'window_size_maxima' parameters will
         //be calculated automatically in the apply method (they depend on the 
@@ -164,7 +180,7 @@ public class FuzzySaliencePointsSelectionOp {
             this.window_size_maxima = window_size_curvacity / 2;
         }
         //The fuzzy saliency is calculated (contour property)
-        FuzzyContour saliency = FuzzyContourFactory.getSaliencyInstance(contour, window_size_curvacity, alpha_curvacity, window_size_maxima, alpha_quantifier_almostall, alpha_quantifier_enough, beta_quantifier_enough);
+        FuzzyContour saliency = FuzzyContourFactory.getSaliencyInstance(contour, window_size_curvacity, alpha_curvacity, window_size_maxima, alpha_quantifier_almostall, alpha_quantifier_enough, beta_quantifier_enough,tnorm);
         ArrayList<Map.Entry> points = new ArrayList(saliency.entrySet());
 
         //First, the start point is set. In general, it is the first of the point 
@@ -249,7 +265,7 @@ public class FuzzySaliencePointsSelectionOp {
             this.window_size_maxima = window_size_curvacity / 2;
         }
         //The saliency is calculated (the salience poits are calculated on the basis of this property)
-        FuzzyContour saliency = FuzzyContourFactory.getSaliencyInstance(contour, window_size_curvacity, alpha_curvacity, window_size_maxima, alpha_quantifier_almostall, alpha_quantifier_enough, beta_quantifier_enough);
+        FuzzyContour saliency = FuzzyContourFactory.getSaliencyInstance(contour, window_size_curvacity, alpha_curvacity, window_size_maxima, alpha_quantifier_almostall, alpha_quantifier_enough, beta_quantifier_enough,tnorm);
         ArrayList<Map.Entry> points = new ArrayList(saliency.entrySet());
         int start = 0, end = points.size();
         
