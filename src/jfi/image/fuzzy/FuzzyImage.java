@@ -13,7 +13,7 @@ import jfi.fuzzy.AlphaCuttable;
 import jfi.fuzzy.FuzzySet;
 
 /**
- * Class representing a fuzzy image where each pixel have a membership degree.
+ * Class representing a fuzzy image where each pixel has a membership degree.
  * It extends the standard {@link java.awt.image.BufferedImage} class
  * (inheriting its properties and behavior) and, in addition, implements the
  * {@link jfi.fuzzy.FuzzySet} interface (i.e, it is a fuzzy set o pixels).
@@ -36,7 +36,7 @@ public class FuzzyImage extends BufferedImage implements FuzzySet<Point>, AlphaC
     /**
      * The label associated to the fuzzy set.
      */
-    protected String label;
+    protected String label = "";
     /**
      * The membership degree associated to each pixel.
      */
