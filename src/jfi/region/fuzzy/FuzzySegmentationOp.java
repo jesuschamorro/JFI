@@ -187,7 +187,7 @@ public class FuzzySegmentationOp {
                     if (check.getRaster().getSample(newx, newy, 0)==0) {
                         //...and it is not inside the current region, is candidate
                         resemblance = resemblanceOp.apply(p, new Point(newx, newy), image);
-                        degree = tnorm.apply(p.degree, resemblance);                           
+                        degree = tnorm.apply(p.degree, resemblance);   
                         pcandidate = new PointData(newx, newy, resemblance, degree); 
                         //The new candidate is added
                         isAdded = candidates.add(pcandidate);

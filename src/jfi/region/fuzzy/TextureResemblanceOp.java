@@ -65,6 +65,10 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
      * List of image maps.
      */
     private ArrayList<BufferedImage> maps = null;
+    /**
+     * Flag to set whether the points in the border are processed or not. 
+     */
+    boolean analyzeBorder = false;
     
     /**
      * Constructs a new texture resemblance operator using the default fuzzy
@@ -82,6 +86,44 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
     }
     
     /**
+     * Constructs a new texture resemblance operator using as fuzzy textures the
+     * ones given by parameter. The given image will be associated to this
+     * operator; this implies that a series of preliminary calculations will be
+     * made in order to make the application of this operator more efficient if
+     * the image on which it is applied is the one passed in this constructor.
+     *
+     * @param source image associated to this operator.
+     * @param ft the first fuzzy texture set.
+     * @param fts the other fuzzy testure sets.
+     */
+    public TextureResemblanceOp(BufferedImage source, FuzzyTexture ft, FuzzyTexture... fts) {
+        this(ft,fts);
+        this.source = source;
+        this.sourceMapping(); //The texture maps are calculated
+    }    
+    
+    /**
+     * Constructs a new texture resemblance operator using as fuzzy textures the
+     * ones given by parameter.
+     * 
+     * @param ft the first fuzzy texture set.
+     * @param fts the other fuzzy testure sets.
+     */
+    public TextureResemblanceOp(FuzzyTexture ft, FuzzyTexture... fts){
+        this.fuzzyTextures =  new ArrayList(Arrays.asList(fts));          
+        this.fuzzyTextures.add(0,ft);
+    }
+    
+    /**
+     * Constructs a new texture resemblance operator using the default fuzzy
+     * texture sets.
+     */
+    public TextureResemblanceOp(){       
+        this.fuzzyTextures =  new ArrayList();
+        this.fuzzyTextures.add(FuzzyTextureFactory.getInstance(DEFAULT_COARSENESS_TYPE));
+    }
+        
+    /**
      * Calculates the mappings of the source image. 
      */
     private void sourceMapping() {
@@ -98,39 +140,23 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
     }
     
     /**
-     * Constructs a new texture resemblance operator using as fuzzy textures the
-     * ones given by parameter.
-     * 
-     * @param ft the first fuzzy texture set.
-     * @param fts the other fuzzy testure sets.
-     */
-    public TextureResemblanceOp(FuzzyTexture ft, FuzzyTexture... fts){
-        this.fuzzyTextures =  new ArrayList(Arrays.asList(fts));          
-        this.fuzzyTextures.add(0,ft);
-    }
-    
-    /**
-     * Constructs a new texture resemblance operator using by default the fuzzy
-     * texture set based on the Amadasun coarseness measure.
-     */
-    public TextureResemblanceOp(){       
-        this.fuzzyTextures =  new ArrayList();
-        this.fuzzyTextures.add(FuzzyTextureFactory.getInstance(DEFAULT_COARSENESS_TYPE));
-    }
-    
-    /**
      * Apply this resemblance operator.
      * 
-     * @param t the coordinates of the first pixel 
-     * @param u the coordinates of the second pixel 
-     * @param image the image associated to the pixel coordinates
-     * @return the resemblance result
+     * @param t the coordinates of the first pixel. 
+     * @param u the coordinates of the second pixel.
+     * @param image the image associated to the pixel coordinates.
+     * @return the resemblance result.
      */
     @Override
     public Double apply(Point t, Point u, BufferedImage image) {
-        
+        //If the image is the one associated to this operator, the faster apply
+        //method is used (in that case, the precalculated degrees will be used)
         if(image == source ){
             return apply(t,u);
+        }
+        //If the 'noBorder' flag is activated, the border points will be discarded
+        if(!this.analyzeBorder && isOutside(u, image)){
+            return 0.0;
         }
         
         //The subimages are calculated making sure they are inside the image
@@ -174,16 +200,47 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
         }
         return resemblance;
     }
-    
+       
     /**
-     * To do....
+     * Apply this resemblance operator to the associated image (if available).
      * 
-     * @param t
-     * @param u
-     * @return 
+     * @param t the coordinates of the first pixel. 
+     * @param u the coordinates of the second pixel. 
+     * @return the resemblance result. 
+     * @throws NullPointerException if there is not image associated to this operator.
      */
     public Double apply(Point t, Point u) {
-        return 1.0;
+        if (this.source == null) {
+            throw new NullPointerException("There is not image associated to this operator");
+        }
+        //If the 'noBorder' flag is activated, the border points will be discarded
+        if(!this.analyzeBorder && isOutside(u, source)){
+            return 0.0;
+        }
+        //Since the membership degrees are precalculated, we just need to access
+        //to the degree values in each fuzzy texture map.
+        double degreeT, degreeU;
+        double resemblanceTU, resemblance = Double.MAX_VALUE;
+        for(BufferedImage img: this.maps){
+            degreeT = ((double)img.getRaster().getSample(t.x,t.y,0)) / 255.0;
+            degreeU = ((double)img.getRaster().getSample(u.x,u.y,0)) / 255.0;
+            //See the comments  about resemblance calculus in the previous apply method
+            resemblanceTU = degreeT<=degreeU ? degreeT/degreeU : degreeU/degreeT;            
+            resemblance = Math.min(resemblance, resemblanceTU);
+        }        
+        return resemblance;
+    }
+    
+    /**
+     * Check if the given point is outside the border limits.
+     * 
+     * @param p th point to be checked.
+     * @param image the image.
+     * @return <tt>true</tt> if the point is outside; <tt>false</tt> otherwise.
+     */
+    boolean isOutside(Point p, BufferedImage image){
+        return p.x<this.half_width || p.x>=image.getWidth()-this.half_width ||
+               p.y<this.half_height || p.y>=image.getHeight()-this.half_height;             
     }
     
     
@@ -237,6 +294,16 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
      */
     public int getHeight(){
         return this.height;
+    }
+    
+    /**
+     * Flag to set whether the points in the border are processed or not.
+     *
+     * @param b <tt>true</tt> if the border points want to be analyzed;
+     * <tt>false</tt> otherwise.
+     */
+    public void analyzeBorder(boolean b) {
+        this.analyzeBorder = b;
     }
     
     /**
