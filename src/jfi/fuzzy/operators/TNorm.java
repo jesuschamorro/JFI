@@ -1,5 +1,6 @@
 package jfi.fuzzy.operators;
 
+import java.security.InvalidParameterException;
 import java.util.function.BinaryOperator;
 import jfi.fuzzy.DiscreteFuzzySet;
 
@@ -92,4 +93,111 @@ public interface TNorm extends BinaryOperator<Double>, Aggregation<Double,Double
         }        
         return output;
     }    
+    
+    /**
+     * Inner class implementing the Weber t-norm.
+     */
+    public class Weber implements TNorm {
+
+        /**
+         * Lambda paremeter of the Weber t-norm.
+         */
+        private double lambda = 0.0;
+
+        /**
+         * Constructs a Weber t-norm.
+         *
+         * @param lambda the lambda parameter.
+         */
+        public Weber(double lambda) {
+            this.setLambda(lambda);
+        }
+
+        /**
+         * Applies this t-norm to the given arguments.
+         *
+         * @param t the first argument.
+         * @param u the second argument.
+         * @return the t-norm result.
+         */
+        @Override
+        public Double apply(Double t, Double u) {
+            return Math.max(0, (t + u + (t * u * lambda) - 1.0) / 1.0 + lambda);
+        }
+
+        /**
+         * Returns the lambda parameter of this Weber t-norm.
+         *
+         * @return the lambda parameter.
+         */
+        public double getLambda() {
+            return lambda;
+        }
+
+        /**
+         * Set the lambda parameter of this Weber t-norm.
+         *
+         * @param lambda the new lambda parameter.
+         */
+        public final void setLambda(double lambda) {
+            if (lambda <= -1.0) {
+                throw new InvalidParameterException("The lambda parameter must be greater than -1.0");
+            }
+            this.lambda = lambda;
+        }
+    } //End Weber class
+    
+    
+    /**
+     * Inner class implementing the Dubois-Prade t-norm.
+     */
+    public class DuboisPrade implements TNorm {
+        /**
+         * Alpha paremeter of the Dubois-Prade t-norm.
+         */
+        private double alpha = 0.0;
+
+        /**
+         * Constructs a Dubois-Prade t-norm.
+         *
+         * @param alpha the alpha parameter.
+         */
+        public DuboisPrade(double alpha) {
+            this.setAlpha(alpha);
+        }
+
+        /**
+         * Applies this t-norm to the given arguments.
+         *
+         * @param t the first argument.
+         * @param u the second argument.
+         * @return the t-norm result.
+         */
+        @Override
+        public Double apply(Double t, Double u) {
+            return t*u / Math.max(Math.max(t,u),alpha);
+        }
+
+        /**
+         * Returns the alpha parameter of this Dubois-Prade t-norm.
+         *
+         * @return the alpha parameter.
+         */
+        public double getAlpha() {
+            return alpha;
+        }
+
+        /**
+         * Set the alpha parameter of this Dubois-Prade t-norm.
+         *
+         * @param alpha the new alpha parameter.
+         */
+        public final void setAlpha(double alpha) {
+            if (alpha < 0.0 || alpha > 1.0) {
+                throw new InvalidParameterException("The alpha parameter must be between 0 and 1");
+            }
+            this.alpha = alpha;
+        }
+    } //End Weber class
+    
 }

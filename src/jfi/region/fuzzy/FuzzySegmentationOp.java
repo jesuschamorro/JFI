@@ -136,8 +136,7 @@ public class FuzzySegmentationOp {
         clearCheckImage();  
         candidates.clear();      
         //The seed is added to the region, and their neighborhood as candidates
-        addCheckedPoint(new PointData(seed.x,seed.y,1.0,1.0), image);
-        fRegion.setMembershipDegree(seed, 1.0);
+        addRegionPoint(new PointData(seed.x,seed.y,1.0,1.0), fRegion, image);
         //Region growing process
         PointData selected;
         while(!candidates.isEmpty()){  
@@ -145,10 +144,7 @@ public class FuzzySegmentationOp {
             //list is ordered, by default, using the natural ordering, it will 
             //be the last one of the list.
             selected = candidates.pollLast();
-            addCheckedPoint(selected, image);   
-            //The membership degree is calculated when the point is selected as 
-            //candidate (and, if applicable, it is updated in the growing process)
-            fRegion.setMembershipDegree(selected, selected.degree );        
+            addRegionPoint(selected, fRegion, image);                       
         }   
         return fRegion;
     }
@@ -158,10 +154,16 @@ public class FuzzySegmentationOp {
      * 
      * @param p the point to be added.
      */
-    private void addCheckedPoint(PointData p, BufferedImage image){
+    private void addRegionPoint(PointData p, FuzzyRegion fRegion, BufferedImage image){
+        //If the pixel is not yet in the region...
         if (check.getRaster().getSample(p.x, p.y, 0) == 0) {
+            //The pixel is set as visited
             ((WritableRaster) check.getRaster()).setSample(p.x, p.y, 0, 1);
+            //The neighborhood pixels are added as candidates 
             this.addNeighborhoodPixels(p, image);
+            //The membership degree is calculated when the point is selected as 
+            //candidate (and, if applicable, it is updated in the growing process)
+            fRegion.setMembershipDegree(p, p.degree );
         }
     }
     
@@ -193,7 +195,7 @@ public class FuzzySegmentationOp {
                             //If the candidate is already in the list, we must 
                             //check the resemblance. The canddidate "access" to 
                             //the region should be "higher resemblance" one                     
-                            pcurrent = candidates.floor(pcandidate);
+                            pcurrent = candidates.ceiling(pcandidate);
                             if (pcurrent.resemblance < resemblance) {
                                 //If we only updated the resemblance value of the
                                 //current point, the list would not be ordered.
@@ -313,11 +315,11 @@ public class FuzzySegmentationOp {
          *
          * @param x the X coordinate
          * @param y the Y coordinate
-         * @param data
+         * @param resemblance the resemblance data associated to this point.
          */
-        public PointData(int x, int y, double data){
+        public PointData(int x, int y, double resemblance){
             super(x,y);
-            this.resemblance = data;
+            this.resemblance = resemblance;
             this.degree = NO_VALUE;
         }
         public PointData(int x, int y, double resemblance, double degree){
