@@ -191,7 +191,7 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
             //is equivalent to the call to the implication method. If we assume
             //the Goguen implication operator, the previous code is equivalent
             //to the following one:
-            resemblanceTU = degreeT<=degreeU ? degreeT/degreeU : degreeU/degreeT;
+            resemblanceTU = degreeT<=degreeU ? ( degreeU==0.0 ? 1.0 : degreeT/degreeU) : degreeU/degreeT;
             
             //Lukasiewicz case:
             //resemblanceTU = Math.min( 1.0, Math.min(1.0-degreeT+degreeU,1.0-degreeU+degreeT));
@@ -225,7 +225,9 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
             degreeT = ((double)img.getRaster().getSample(t.x,t.y,0)) / 255.0;
             degreeU = ((double)img.getRaster().getSample(u.x,u.y,0)) / 255.0;
             //See the comments  about resemblance calculus in the previous apply method
-            resemblanceTU = degreeT<=degreeU ? degreeT/degreeU : degreeU/degreeT;            
+            resemblanceTU = degreeT<=degreeU ? ( degreeU==0.0 ? 1.0 : degreeT/degreeU) : degreeU/degreeT;                        
+            //Lukasiewicz case:
+            //resemblanceTU = Math.min( 1.0, Math.min(1.0-degreeT+degreeU,1.0-degreeU+degreeT));
             resemblance = Math.min(resemblance, resemblanceTU);
         }        
         return resemblance;
