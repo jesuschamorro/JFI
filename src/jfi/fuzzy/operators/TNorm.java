@@ -122,7 +122,7 @@ public interface TNorm extends BinaryOperator<Double>, Aggregation<Double,Double
          */
         @Override
         public Double apply(Double t, Double u) {
-            return Math.max(0, (t + u + (t * u * lambda) - 1.0) / 1.0 + lambda);
+            return Math.max(0, (t + u + (t * u * lambda) - 1.0) / (1.0 + lambda));
         }
 
         /**
