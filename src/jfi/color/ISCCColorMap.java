@@ -146,7 +146,7 @@ public class ISCCColorMap extends LinkedHashMap<String,Point3D>{
         new AbstractMap.SimpleEntry("Olive", new Point3D(102, 93, 30)),
         new AbstractMap.SimpleEntry("Yellow-Green", new Point3D(141, 182, 1)),
         new AbstractMap.SimpleEntry("Green", new Point3D(1, 136, 86)),
-        new AbstractMap.SimpleEntry("Blue", new Point3D(1, 161, 194)),
+        new AbstractMap.SimpleEntry("Blue", new Point3D(1, 103, 194)),
         new AbstractMap.SimpleEntry("Purple", new Point3D(154, 78, 174)),
         new AbstractMap.SimpleEntry("White", new Point3D(252, 252, 249)),
         new AbstractMap.SimpleEntry("Gray", new Point3D(135, 134, 134)),

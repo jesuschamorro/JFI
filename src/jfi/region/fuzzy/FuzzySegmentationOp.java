@@ -237,7 +237,7 @@ public class FuzzySegmentationOp {
      * Adds the specified seed to the list of seeds.
      *
      * @param seed seed to be appended to this list
-     * @return <tt>true</tt> (as specified by {@link Collection#add})
+     * @return <tt>true</tt> if added.
      */
     public boolean addSeed(Point seed) {
         return seeds.add(seed);
