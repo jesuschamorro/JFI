@@ -3,6 +3,7 @@ package jfi.texture.fuzzy;
 import java.awt.image.BufferedImage;
 import jfi.fuzzy.membershipfunction.MembershipFunction;
 import jfi.fuzzy.membershipfunction.PolynomialFunction;
+import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
 import jfi.texture.TextureMeasure;
 
 /**
@@ -26,6 +27,12 @@ public class TextureMembershipFunction implements MembershipFunction<BufferedIma
         this.measure2 = measure2;
     }
 
+    
+    public TextureMembershipFunction(TrapezoidalFunction mfunction, TextureMeasure measure1, TextureMeasure measure2){
+        //this.mfunction = mfunction;
+        this.measure1 = measure1;
+        this.measure2 = measure2;
+    }
     
     @Override
     public Double apply(BufferedImage image) {

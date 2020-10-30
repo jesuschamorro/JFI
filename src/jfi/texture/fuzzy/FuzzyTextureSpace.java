@@ -57,6 +57,17 @@ public class FuzzyTextureSpace extends FuzzySetCollection<FuzzyTexture,BufferedI
             return null;
         }
         
+        static public FuzzyTextureSpace getDefault2(){                       
+            FuzzyTextureSpace tSpace = new FuzzyTextureSpace();
+            
+            
+            TextureMembershipFunction mfunction = null;
+            FuzzyTexture ft = new FuzzyTexture(mfunction);
+            tSpace.add(ft);
+            
+            return tSpace;
+        }
+        
     } // End of factory
     
 }
