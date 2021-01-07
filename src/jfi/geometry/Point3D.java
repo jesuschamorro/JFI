@@ -184,21 +184,7 @@ public class Point3D {
     @Override
     public String toString() {
         return "Point3D[" + x + ", " + y + ", " + z +"]";
-    }
-
-    /**
-     * Indicates whether some other point is "equal to" this one.
-     *
-     * @param p reference point with which to compare.
-     * @return {@code true} if this point is the same as the argument;
-     * {@code false} otherwise.
-     */
-//    public boolean equals(Point3D p) {
-//        double EPSILON = 0.00001;
-//        return ( Math.abs(x-p.x)<EPSILON && 
-//                 Math.abs(y-p.y)<EPSILON && 
-//                 Math.abs(z-p.z)<EPSILON);
-//    }
+    }    
        
     /**
      * Indicates whether some other object is "equal to" this one.
@@ -209,9 +195,6 @@ public class Point3D {
      */
     @Override
     public boolean equals(Object obj) {
-        
-        //System.out.println(".");
-        
         if (obj instanceof Point3D) {
             Point3D p3d = (Point3D) obj;
             double EPSILON = 0.00001;
@@ -237,4 +220,36 @@ public class Point3D {
         return hash;
     }
     
+    /**
+     * Return the value of coordinate i of this point. Use this method (with a
+     * loop) if you want apply a repetitive operation to all coordinates. 0 is
+     * the x-coordinate 1 is the y-coordinate 2 is the z-coordinate
+     *
+     * @param i the index coordinate starting at 0.
+     * @return x-coordinate, y-coordinate or z-coordinate
+     */
+    public Double getValueOfCoordinate(int i) {
+        switch (i) {
+            case 0:
+                return x;
+            case 1:
+                return y;
+            case 2:
+                return z;
+            default:
+                break;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the point dimension
+     *
+     * @return always 3, since it is defined in 3D a space.
+     */
+    public int getDimension() {
+        return 3;
+    }
+
 }

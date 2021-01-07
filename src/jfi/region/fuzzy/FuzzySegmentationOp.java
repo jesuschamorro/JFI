@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
 import jfi.fuzzy.operators.TNorm;
@@ -64,6 +65,20 @@ public class FuzzySegmentationOp {
     public FuzzySegmentationOp(Point seed, Point... seeds){
         this.seeds =  new ArrayList(Arrays.asList(seeds));          
         this.seeds.add(0,seed);
+        this.candidates = new TreeSet();
+        this.auto = false;
+        this.resemblanceOp = DEFAULT_RESEMBLANCE;
+    }
+    
+    /**
+     * Constructs a new fuzzy segmentation operator using as seeds the ones in
+     * the given collection. The resemblance operator
+     * {@link #DEFAULT_RESEMBLANCE} is used by default.
+     *
+     * @param seeds list of seeds.
+     */
+    public FuzzySegmentationOp(Collection<Point> seeds){
+        this.seeds =  new ArrayList(seeds); //A copy is created
         this.candidates = new TreeSet();
         this.auto = false;
         this.resemblanceOp = DEFAULT_RESEMBLANCE;
