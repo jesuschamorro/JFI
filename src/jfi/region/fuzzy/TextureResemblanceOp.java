@@ -4,7 +4,6 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
-import jfi.fuzzy.operators.TNorm;
 import jfi.image.fuzzy.FuzzyMappingOp;
 import jfi.image.fuzzy.TiledFuzzyMappingOp;
 import jfi.texture.fuzzy.FuzzyTexture;
@@ -41,26 +40,10 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
      * Half of the previous height. It is used for efficiency purposes
      */
     private int half_height = height/2;
-     /**
-     * T-norm used to aggregate.
-     */
-    TNorm tnorm = TNorm.MIN;
     /**
      * Default coarseness measure used for building the texture fuzzy set
      */
-    private static final int DEFAULT_COARSENESS_TYPE = FuzzyTextureFactory.TYPE_COARSENESS_AMADASUN;
-    /**
-     * Flag associated to the Goguen implication operator.
-     */
-    public final static int GOGUEN_IMPLICATION_TYPE = 1;
-    /**
-     * Flag associated to the Lukasiewicz implication operator.
-     */
-    public final static int LUKASIEWICZ_IMPLICATION_TYPE = 2;
-    /**
-     * The default implication operator.
-     */
-    public static int DEFAULT_IMPLICATION_TYPE = GOGUEN_IMPLICATION_TYPE;
+    private static final int DEFAULT_COARSENESS_TYPE = FuzzyTextureFactory.TYPE_COARSENESS_AMADASUN;    
     /**
      * List of image maps.
      */
@@ -306,50 +289,5 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
      */
     public void analyzeBorder(boolean b) {
         this.analyzeBorder = b;
-    }
-    
-    /**
-     * To do....
-     * 
-     * @param ft1
-     * @param ft2
-     * @return 
-     */
-    private double resemblanceFuzzySet(FuzzyTexture ft1, FuzzyTexture ft2){
-        return ft1.equals(ft2) ? 1.0 : 0.0;
-    }
-    
-    /**
-     * Fuzzy implication operator. It measures the degree of 'a->b'
-     *
-     * @param a firts degree in 'a->b'
-     * @param b second degree in 'a->b'
-     * @param type type of implication operator.
-     * @return the 'a->b' implication degree.
-     */
-    private double implication(double a, double b, int type) {
-        switch (type) {
-            case GOGUEN_IMPLICATION_TYPE:
-                return a <= b ? 1 : b / a;
-            case LUKASIEWICZ_IMPLICATION_TYPE:
-                return Math.min(1.0, 1.0 - a + b);
-        }
-        return 0.0;
-
-    }
-    
-    /**
-     * Fuzzy inclusion operator. It measures the degree in which 'a/fa' is
-     * included in 'b/fb'.
-     *
-     * @param a first degree, which is asociated to the fuzzy set 'fta'.
-     * @param fta first fuzzy set.
-     * @param b second degree, which is asociated to the fuzzy set 'ftb'.    
-     * @param ftb seconf fuzzy set.
-     * @return 
-     */
-    private double inclusion(double a, FuzzyTexture fta, double b, FuzzyTexture ftb){
-        return tnorm.apply(this.implication(a, b, DEFAULT_IMPLICATION_TYPE),
-                           this.resemblanceFuzzySet(fta,ftb));
     }
 }
