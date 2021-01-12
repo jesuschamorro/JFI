@@ -382,7 +382,7 @@ public class FuzzySegmentationOp {
     /**
      * Functional (inner) class implementing a pixel resemblance operator.
      */
-    static class DefaultResemblanceOp implements PixelResemblanceOp<Point> {
+    static public class DefaultResemblanceOp implements PixelResemblanceOp<Point> {
         static private final double MAX_RGBDIST = 441.673; //~sqrt(255^2+255^2+255^2) 
         static private double NORMALIZATION_VALUE = MAX_RGBDIST;
         

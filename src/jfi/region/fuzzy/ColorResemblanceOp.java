@@ -30,6 +30,22 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
      * List of image maps.
      */
     private ArrayList<BufferedImage> maps = null;
+    /**
+     * Type of color resemblance applied
+     */
+    private int type = TYPE_AT_LEAST_ONE;    
+    /**
+     * Type of resemblance defines as the mean of individual resemblances.
+     */
+    public static final int TYPE_MEAN = 1;
+    /**
+     * Type of resemblance defines as "at least" one label is resemblant.
+     */
+    public static final int TYPE_AT_LEAST_ONE = 2;
+    /**
+     * Membership degree threshold used to consider a label as significant.
+     */
+    public static final double DEGREE_THRESHOLD = 0.0;
     
     /**
      * Constructs a new color resemblance operator using as fuzzy color space
@@ -42,7 +58,7 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
      * @param fcs the fuzzy color space
      */
     public ColorResemblanceOp(BufferedImage source, FuzzyColorSpace fcs) {
-        this.fcs = fcs;
+        this.fcs = fcs!=null ? fcs : FuzzyColorSpace.Factory.createSphereBasedFCS(new ISCCColorMap(ISCCColorMap.TYPE_BASIC), 0.5);
         this.source = source;
         if(source!=null) this.sourceMapping(); //The texture maps are calculated
     }    
@@ -68,7 +84,7 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
      * @param source image associated to this operator.
      */
     public ColorResemblanceOp(BufferedImage source) {
-        this(source, FuzzyColorSpace.Factory.createSphereBasedFCS(new ISCCColorMap(ISCCColorMap.TYPE_BASIC), 0.5));
+        this(source, null);
     }
     
     /**
@@ -76,7 +92,7 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
      * space the sphere based one with the basic ISCC set as prototypes..
      */
     public ColorResemblanceOp(){       
-        this((BufferedImage)null);
+        this(null,null);
     }
         
     /**
@@ -96,6 +112,24 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
     
     /**
+     * Returns the type of color resemblance applied.
+     * 
+     * @return the type of color resemblance applied.
+     */
+    public int getType() {
+        return type;
+    }
+
+    /**
+     * Set the type of color resemblance to be applied.
+     * 
+     * @param type the type of color resemblance to be applied.
+     */
+    public void setType(int type) {
+        this.type = type;
+    }
+    
+    /**
      * Apply this resemblance operator.
      * 
      * @param t the coordinates of the first pixel. 
@@ -107,25 +141,19 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     public Double apply(Point t, Point u, BufferedImage image) {
         //If the image is the one associated to this operator, the faster apply
         //method is used (in that case, the precalculated degrees will be used)
-        if(image == source ){
-            return apply(t,u);
+        if (image!=null && image == source) {
+            return apply(t, u);
         }
         Color ct = new Color(image.getRGB(t.x, t.y));
         Color cu = new Color(image.getRGB(u.x, u.y));
-
-        //The resemblance is calculated on the basis of the color fuzzy sets. 
-        //It is assumed that the resemblance between two fuzzy sets is 1.0 if
-        //and only if they are the same set, 0.0 in other case. This assumption
-        //simplifies the resemblance calculus
-        double degreeT, degreeU;
-        double resemblanceTU, resemblance = 0.0;
-        for (FuzzyColor fc : fcs) {
-            degreeT = fc.membershipDegree(ct);
-            degreeU = fc.membershipDegree(cu);
-
-            //Author´s proposal for the case of fuzzy colors
-            resemblanceTU = (degreeU > 0.25 && degreeT > 0.25) ? 1.0 - Math.abs(degreeU - degreeT) : 0.0;
-            resemblance = Math.max(resemblance, resemblanceTU);
+        double resemblance = 0.0;
+        switch (type) {
+            case TYPE_MEAN:
+                resemblance = applyMean(ct,cu);
+                break;
+            case TYPE_AT_LEAST_ONE:
+                resemblance = applyAtLeastOne(ct,cu);
+                break;
         }
         return resemblance;
     }
@@ -141,7 +169,52 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     public Double apply(Point t, Point u) {
         if (this.source == null) {
             throw new NullPointerException("There is not image associated to this operator");
+        }        
+        double resemblance = 0.0;
+        switch (type) {
+            case TYPE_MEAN:
+                resemblance = applyMean_Pre(t,u);
+                break;
+            case TYPE_AT_LEAST_ONE:
+                resemblance = applyAtLeastOne_Pre(t,u);
+                break;
         }
+        return resemblance;
+    }
+    
+    /**
+     * Apply this resemblance operator using the "at least one" approach.
+     * 
+     * @param ct the color of the first pixel.
+     * @param cu the color of the second pixel.
+     * @return the resemblance result.
+     */
+    private Double applyAtLeastOne(Color ct, Color cu){
+        //The resemblance is calculated on the basis of the color fuzzy sets. 
+        //It is assumed that the resemblance between two fuzzy sets is 1.0 if
+        //and only if they are the same set, 0.0 in other case. This assumption
+        //simplifies the resemblance calculus
+        double degreeT, degreeU;
+        double resemblanceTU, resemblance = 0.0;
+        for (FuzzyColor fc : fcs) {
+            degreeT = fc.membershipDegree(ct);
+            degreeU = fc.membershipDegree(cu);
+            //Author´s proposal: "At least one" approach            
+            resemblanceTU = (degreeU > DEGREE_THRESHOLD && degreeT > DEGREE_THRESHOLD) ? 1.0 - Math.abs(degreeU - degreeT) : 0.0;
+            resemblance = Math.max(resemblance, resemblanceTU);
+        }
+        return resemblance;
+    }
+    
+    /**
+     * Apply this resemblance operator using the "at least one" approach and the
+     * pre-calculated membership degrees associated to the source image.
+     *
+     * @param ct the color of the first pixel.
+     * @param cu the color of the second pixel.
+     * @return the resemblance result.
+     */
+    private Double applyAtLeastOne_Pre(Point t, Point u){
         //Since the membership degrees are precalculated, we just need to access
         //to the degree values in each fuzzy texture map.
         double degreeT, degreeU;
@@ -149,11 +222,62 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
         for(BufferedImage img: this.maps){
             degreeT = ((double)img.getRaster().getSample(t.x,t.y,0)) / 255.0;
             degreeU = ((double)img.getRaster().getSample(u.x,u.y,0)) / 255.0;
-            //See the comments  about resemblance calculus in the previous apply method
-            resemblanceTU = (degreeU > 0.25 && degreeT > 0.25) ? 1.0 - Math.abs(degreeU - degreeT) : 0.0;
+            //Author´s proposal: "At least one" approach
+            resemblanceTU = (degreeU > DEGREE_THRESHOLD && degreeT > DEGREE_THRESHOLD) ? 1.0 - Math.abs(degreeU - degreeT) : 0.0;
             resemblance = Math.max(resemblance, resemblanceTU);
-        }        
+        } 
         return resemblance;
     }
     
+    /**
+     * Apply this resemblance operator using the "mean" approach.
+     * 
+     * @param ct the color of the first pixel.
+     * @param cu the color of the second pixel.
+     * @return the resemblance result.
+     */
+    private Double applyMean(Color ct, Color cu){
+        //The resemblance is calculated on the basis of the color fuzzy sets. 
+        //It is assumed that the resemblance between two fuzzy sets is 1.0 if
+        //and only if they are the same set, 0.0 in other case. This assumption
+        //simplifies the resemblance calculus
+        double degreeT, degreeU;
+        double resemblance = 0.0;
+        int n_pair = 0;
+        for (FuzzyColor fc : fcs) {
+            degreeT = fc.membershipDegree(ct);
+            degreeU = fc.membershipDegree(cu);
+            //Author´s proposal: mean of resemblances  
+            if(degreeU > DEGREE_THRESHOLD && degreeT > DEGREE_THRESHOLD){                
+                resemblance += 1.0 - Math.abs(degreeU - degreeT);
+                n_pair++;
+            }            
+        }
+        return n_pair>0 ? resemblance/n_pair : 0.0;
+    }
+    
+    /**
+     * Apply this resemblance operator using the "mean" approach.
+     * 
+     * @param ct the color of the first pixel.
+     * @param cu the color of the second pixel.
+     * @return the resemblance result.
+     */
+    private Double applyMean_Pre(Point t, Point u){
+        //Since the membership degrees are precalculated, we just need to access
+        //to the degree values in each fuzzy texture map.
+        double degreeT, degreeU;
+        double resemblance = 0.0;
+        int n_pair = 0;       
+        for(BufferedImage img: this.maps){
+            degreeT = ((double)img.getRaster().getSample(t.x,t.y,0)) / 255.0;
+            degreeU = ((double)img.getRaster().getSample(u.x,u.y,0)) / 255.0;
+            //Author´s proposal: mean of resemblances  
+            if(degreeU > DEGREE_THRESHOLD && degreeT > DEGREE_THRESHOLD){                
+                resemblance += 1.0 - Math.abs(degreeU - degreeT);
+                n_pair++;
+            }  
+        } 
+        return n_pair>0 ? resemblance/n_pair : 0.0;
+    }
 }
