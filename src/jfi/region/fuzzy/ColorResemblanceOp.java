@@ -43,9 +43,14 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
      */
     public static final int TYPE_AT_LEAST_ONE = 2;
     /**
+     * Type of resemblance defines as "at least" one label is resemblant.
+     */
+    public static final int TYPE_EUCLIDEAN = 3;
+    /**
      * Membership degree threshold used to consider a label as significant.
      */
     public static final double DEGREE_THRESHOLD = 0.0;
+    
     
     /**
      * Constructs a new color resemblance operator using as fuzzy color space
@@ -154,6 +159,9 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
             case TYPE_AT_LEAST_ONE:
                 resemblance = applyAtLeastOne(ct,cu);
                 break;
+            case TYPE_EUCLIDEAN:
+                resemblance = applyEuclidean(ct,cu);
+                break;    
         }
         return resemblance;
     }
@@ -178,6 +186,9 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
             case TYPE_AT_LEAST_ONE:
                 resemblance = applyAtLeastOne_Pre(t,u);
                 break;
+            case TYPE_EUCLIDEAN:
+                resemblance = applyEuclidean_Pre(t,u);
+                break;    
         }
         return resemblance;
     }
@@ -257,8 +268,9 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
     
     /**
-     * Apply this resemblance operator using the "mean" approach.
-     * 
+     * Apply this resemblance operator using the "mean" approach and the
+     * pre-calculated membership degrees associated to the source image.
+     *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
      * @return the resemblance result.
@@ -279,5 +291,52 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
             }  
         } 
         return n_pair>0 ? resemblance/n_pair : 0.0;
+    }
+    
+    /**
+     * Apply this resemblance operator using the "Euclidean" approach.
+     * 
+     * @param ct the color of the first pixel.
+     * @param cu the color of the second pixel.
+     * @return the resemblance result.
+     */
+    private Double applyEuclidean(Color ct, Color cu){
+        //The resemblance is calculated on the basis of the color fuzzy sets. 
+        //It is assumed that the resemblance between two fuzzy sets is 1.0 if
+        //and only if they are the same set, 0.0 in other case. This assumption
+        //simplifies the resemblance calculus
+        double NORMALIZATION_VALUE = Math.sqrt(fcs.size());
+        double degreeT, degreeU;
+        double resemblance = 0.0;
+        for (FuzzyColor fc : fcs) {
+            degreeT = fc.membershipDegree(ct);
+            degreeU = fc.membershipDegree(cu);            
+            resemblance += Math.pow(degreeU-degreeT,2);
+        }
+        resemblance = Math.sqrt(resemblance);
+        return 1.0-( Math.min(1.0,resemblance/NORMALIZATION_VALUE));
+    }
+    
+    /**
+     * Apply this resemblance operator using the "Euclidean" approach and the
+     * pre-calculated membership degrees associated to the source image.
+     *
+     * @param ct the color of the first pixel.
+     * @param cu the color of the second pixel.
+     * @return the resemblance result.
+     */
+    private Double applyEuclidean_Pre(Point t, Point u){
+        //Since the membership degrees are precalculated, we just need to access
+        //to the degree values in each fuzzy texture map.
+        double NORMALIZATION_VALUE = Math.sqrt(fcs.size());
+        double degreeT, degreeU;
+        double resemblance = 0.0;
+        for(BufferedImage img: this.maps){
+            degreeT = ((double)img.getRaster().getSample(t.x,t.y,0)) / 255.0;
+            degreeU = ((double)img.getRaster().getSample(u.x,u.y,0)) / 255.0;
+            resemblance += Math.pow(degreeU-degreeT,2);
+        } 
+        resemblance = Math.sqrt(resemblance);
+        return 1.0-( Math.min(1.0,resemblance/NORMALIZATION_VALUE));
     }
 }
