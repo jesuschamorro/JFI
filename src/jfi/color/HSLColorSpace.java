@@ -26,7 +26,7 @@ public class HSLColorSpace extends ColorSpace {
     /**
      * Constant 2PI
      */
-    protected static final double PI2 = Math.PI * 2.0;
+    protected static final double PIx2 = Math.PI * 2.0;
 
     /**
      * Constructs a new grey level color space. It is one-component color space
@@ -216,7 +216,7 @@ public class HSLColorSpace extends ColorSpace {
         }
         switch (component) {
             case 0:
-                return (float)PI2;
+                return (float)PIx2;
             case 1:
                 return 1.0f;
             case 2:

@@ -17,11 +17,22 @@ public class HSIColorSpace extends ColorSpace {
     /**
      * Inner CIE XYZ color space used for transforms from/to this color space.
      */
-    private static final ICC_ColorSpace XYZCS = (ICC_ColorSpace) ColorSpace.getInstance(CS_CIEXYZ);
+    private static final ICC_ColorSpace XYZCS = (ICC_ColorSpace) ColorSpace.getInstance(CS_CIEXYZ);    
     /**
      * Constant 
      */
-    protected static final double PI2 = Math.PI * 2.0;
+    protected static final double PI2 = Math.PI / 2.0;
+    /**
+     * Constant equals to square root of three
+     */
+    private static final double SQRT3 = Math.sqrt(3);
+    /**
+     * Constant equals to square root of two
+     */
+    private static final double SQRT2 = Math.sqrt(2);
+    /**
+     * Number PI normalizez to [0,255] with 255 being 2PI
+     */
 
     /**
      * Constructs a new grey level color space. It is one-component color space
@@ -49,7 +60,6 @@ public class HSIColorSpace extends ColorSpace {
         throw new UnsupportedOperationException("Transform to RGB from HSL is not supported yet."); 
     }
     
-    
 
     /**
      * Transforms a color value assumed to be in the RGB color space into this
@@ -60,51 +70,17 @@ public class HSIColorSpace extends ColorSpace {
      * @throws ArrayIndexOutOfBoundsException if array length is not at least 3
      */
     @Override
-    public float[] fromRGB(float[] rgbvalue) {
-        float H = 0, S, L;
-        float var_R = rgbvalue[0];
-        float var_G = rgbvalue[1];
-        float var_B = rgbvalue[2];
-
-        float var_Max = (float) Math.max(var_R, Math.max(var_G, var_B));
-        float var_Min = (float) Math.min(var_R, Math.min(var_G, var_B));
-        float del_Max = var_Max - var_Min; //Delta RGB value
-
-        L = (var_Max + var_Min) / 2.0f;
-
-        if (del_Max == 0) { //This is a gray, no chroma...
-            H = 0; //HSL results = 0 1
-            S = 0;
-        } else { //Chromatic data...
-            if (L < 0.5f) {
-                S = del_Max / (var_Max + var_Min);
-            } else {
-                S = del_Max / (2.0f - var_Max - var_Min);
-            }
-
-            float del_R = (((var_Max - var_R) / 6.0f) + (del_Max / 2.0f)) / del_Max;
-            float del_G = (((var_Max - var_G) / 6.0f) + (del_Max / 2.0f)) / del_Max;
-            float del_B = (((var_Max - var_B) / 6.0f) + (del_Max / 2.0f)) / del_Max;
-            if (var_R == var_Max) {
-                H = del_B - del_G;
-            } else if (var_G == var_Max) {
-                H = (1.0f / 3.0f) + del_R - del_B;
-            } else if (var_B == var_Max) {
-                H = (2.0f / 3.0f) + del_G - del_R;
-            }
-
-            if (H < 0.0f) {
-                H += 1.0f;
-            }
-            if (H > 1.0f) {
-                H -= 1.0f;
-            }
-        }
+    public float[] fromRGB(float[] rgbvalue) {        
+        float r = rgbvalue[0];
+        float g = rgbvalue[1];
+        float b = rgbvalue[2];
 
         float[] hsl = new float[3];
-        hsl[0] = H * (float) this.getMaxValue(0);
-        hsl[1] = S * (float) this.getMaxValue(1);
-        hsl[2] = L * (float) this.getMaxValue(2);
+        float h = (float)Math.atan( (SQRT3*(g+b)) / (2.0*r + g + b)); //In [-PI/2, PI/2]
+        hsl[0] = (float)((h+PI2)/Math.PI); //In [0,1] 
+        float i = (r+g+b) / 3.0f;  //In [0,1] 
+        hsl[1] = 1.0f - (Math.min(r, Math.min(g, b))/i); //In [0,1];
+        hsl[2] = i; //In [0,1];
         
         return hsl;
     }
@@ -161,7 +137,7 @@ public class HSIColorSpace extends ColorSpace {
         }
         switch (component) {
             case 0:
-                return (float)PI2;
+                return (float)1.0;
             case 1:
                 return 1.0f;
             case 2:

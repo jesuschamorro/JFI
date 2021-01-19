@@ -354,7 +354,8 @@ public class FuzzySegmentationOp {
         @Override
         public int compareTo(PointData p) {
             if(x==p.x && y==p.y) return 0;
-            int comparation = resemblance.compareTo(p.resemblance);
+            //int comparation = resemblance.compareTo(p.resemblance);
+            int comparation = degree.compareTo(p.degree);            
             if(comparation==0){ //Different coordinates, but same data value
                 if (y==p.y) return x<p.x ? -1 : 1;
                 return y<p.y ? -1 : 1;
