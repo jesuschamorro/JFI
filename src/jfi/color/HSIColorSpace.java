@@ -19,20 +19,29 @@ public class HSIColorSpace extends ColorSpace {
      */
     private static final ICC_ColorSpace XYZCS = (ICC_ColorSpace) ColorSpace.getInstance(CS_CIEXYZ);    
     /**
-     * Constant 
+     * Constant PI/2
      */
     protected static final double PI2 = Math.PI / 2.0;
+    /**
+     * Constant 2*PI
+     */
+    protected static final double PIx2 = Math.PI * 2.0;
     /**
      * Constant equals to square root of three
      */
     private static final double SQRT3 = Math.sqrt(3);
     /**
-     * Constant equals to square root of two
+     * The formula used to calculate the hue value is based on a atan equation.
      */
-    private static final double SQRT2 = Math.sqrt(2);
+    public static final int HUE_TYPE_ATAN = 1;
     /**
-     * Number PI normalizez to [0,255] with 255 being 2PI
+     * The formula used to calculate the hue value is based on a acos equation.
      */
+    public static final int HUE_TYPE_ACOS = 2;
+    /**
+     * Formula used to calculate the hue value.
+     */
+    private int hue_type = HUE_TYPE_ACOS;
 
     /**
      * Constructs a new grey level color space. It is one-component color space
@@ -57,7 +66,7 @@ public class HSIColorSpace extends ColorSpace {
      */
     @Override
     public float[] toRGB(float[] hsi) {
-        throw new UnsupportedOperationException("Transform to RGB from HSL is not supported yet."); 
+        throw new UnsupportedOperationException("Transform to RGB from HSI is not supported yet."); 
     }
     
 
@@ -74,14 +83,22 @@ public class HSIColorSpace extends ColorSpace {
         float r = rgbvalue[0];
         float g = rgbvalue[1];
         float b = rgbvalue[2];
-
-        float[] hsl = new float[3];
-        float h = (float)Math.atan( (SQRT3*(g+b)) / (2.0*r + g + b)); //In [-PI/2, PI/2]
-        hsl[0] = (float)((h+PI2)/Math.PI); //In [0,1] 
+                
+        float[] hsl = new float[3];    
         float i = (r+g+b) / 3.0f;  //In [0,1] 
         hsl[1] = 1.0f - (Math.min(r, Math.min(g, b))/i); //In [0,1];
-        hsl[2] = i; //In [0,1];
-        
+        hsl[2] = i; //In [0,1];      
+        if (hue_type == HUE_TYPE_ATAN) {
+            //Transformation from paper “Fuzzy Homogeneity Measures for  
+            //Path-based Colour Image Segmentation”, FuzzIEEE 2005
+            float h = (float) Math.atan((SQRT3 * (g + b)) / (2.0 * r + g + b)); //In [-PI/2, PI/2]
+            hsl[0] = (float) ((h + PI2) / Math.PI); //In [0,1] 
+        } else {
+            //Transformation from Belen´s thesis (only hue changes)
+            float delta = (float) Math.acos(((r - g) + (r - b)) / (2.0 * Math.sqrt((r - g) * (r - g) + (r - b) * (g - b)))); //In [0, PI]
+            float h = b < g ? delta : (float) PIx2 - delta;
+            hsl[0] = (float) (h / PIx2); //In [0,1]
+        }        
         return hsl;
     }
 
@@ -166,6 +183,19 @@ public class HSIColorSpace extends ColorSpace {
                 return super.getMinValue(component);
         }
     }
+
+    /**
+     * Set the formula type used to calculate the hue value.
+     * @param hue_type 
+     */
+    public void setHueType(int hue_type) {
+        if (hue_type != HUE_TYPE_ATAN && hue_type != HUE_TYPE_ACOS) {
+            throw new IllegalArgumentException("Hue type no valid");
+        }
+        this.hue_type = hue_type;
+    }
     
 
+    
+    
 }

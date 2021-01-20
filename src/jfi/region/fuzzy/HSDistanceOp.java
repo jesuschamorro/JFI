@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 import jfi.color.HSLColorSpace;
 import java.awt.color.ColorSpace;
+import jfi.color.HSIColorSpace;
 
 /**
  * Class representing a pixel resemblance operator where the resemblance is
@@ -11,7 +12,7 @@ import java.awt.color.ColorSpace;
  *
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-public class HSLDistanceOp implements PixelResemblanceOp<Point> {
+public class HSDistanceOp implements PixelResemblanceOp<Point> {
     /**
      * A source image associated to this operator (if available).
      */
@@ -55,11 +56,11 @@ public class HSLDistanceOp implements PixelResemblanceOp<Point> {
      * 
      * @param source source image.
      */
-    public HSLDistanceOp(BufferedImage source) {
+    public HSDistanceOp(BufferedImage source) {
         this.source = source;
         if(source!=null){
             //The source image is transformed to HSL
-            ColorSpace cs = new HSLColorSpace();
+            ColorSpace cs = new HSIColorSpace();
             jfi.color.ColorConvertOp op = new jfi.color.ColorConvertOp(cs, null);
             source_hsl = op.filter(source, null, false); //XYZ is not used
         }

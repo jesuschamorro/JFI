@@ -208,10 +208,10 @@ public class FuzzySegmentationOp {
                         isAdded = candidates.add(pcandidate);
                         if (!isAdded) {
                             //If the candidate is already in the list, we must 
-                            //check the resemblance. The canddidate "access" to 
-                            //the region should be "higher resemblance" one                     
+                            //check the degree. The canddidate "access" to 
+                            //the region should be "higher degree" one                     
                             pcurrent = candidates.ceiling(pcandidate);
-                            if (pcurrent.resemblance < resemblance) {
+                            if (pcurrent.degree < degree) {
                                 //If we only updated the resemblance value of the
                                 //current point, the list would not be ordered.
                                 //We have to remove and add again.
@@ -221,7 +221,7 @@ public class FuzzySegmentationOp {
                                 //two points with the same coordinates could be 
                                 //in the same set (that is, two equal points 
                                 //according to equals method). In any case, the  
-                                //one with the greatest resemblance will be at the 
+                                //one with the greatest degree will be at the 
                                 //end (the others will be ignored if it has been 
                                 //previously checked)
                                 //if (!okadd) {
@@ -354,7 +354,6 @@ public class FuzzySegmentationOp {
         @Override
         public int compareTo(PointData p) {
             if(x==p.x && y==p.y) return 0;
-            //int comparation = resemblance.compareTo(p.resemblance);
             int comparation = degree.compareTo(p.degree);            
             if(comparation==0){ //Different coordinates, but same data value
                 if (y==p.y) return x<p.x ? -1 : 1;
@@ -376,7 +375,7 @@ public class FuzzySegmentationOp {
          */
         @Override
         public String toString() {
-            return "[" + x + "," + y + "]("+resemblance+")";
+            return "[" + x + "," + y + "]("+degree+")";
         }
     }
     
