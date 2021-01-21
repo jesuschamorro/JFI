@@ -2,7 +2,6 @@ package jfi.region.fuzzy;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
-import jfi.color.HSLColorSpace;
 import java.awt.color.ColorSpace;
 import jfi.color.HSIColorSpace;
 
@@ -32,7 +31,7 @@ public class HSDistanceOp implements PixelResemblanceOp<Point> {
     /**
      * Threshold to delimit the achromatic area
      */
-    private static final float THRESHOLD_TI = 85f; //In [0,255]
+    private static final float THRESHOLD_TI = 60f; //In [0,255]
     /**
      * Constant equals to square root of three
      */
@@ -52,19 +51,36 @@ public class HSDistanceOp implements PixelResemblanceOp<Point> {
     
 
     /**
-     * Constructs a new HSL-based resemblance operator.
+     * Constructs a new HS-based resemblance operator.
      * 
      * @param source source image.
      */
     public HSDistanceOp(BufferedImage source) {
+        this(source,new HSIColorSpace(),true);
+    }
+    
+    /**
+     * Constructs a new HS-based resemblance operator.
+     *
+     * @param source source image.
+     * @param cs a color space based on hue and saturation (HSI, HSV, HSL)
+     * @param useChromaticAreas <tt>true</tt> if the chromatic areas want to be
+     * used in the distance calculos, <tt>false</tt> for a standard euclidean
+     * distance between components.
+     */
+    public HSDistanceOp(BufferedImage source, ColorSpace cs, boolean useChromaticAreas) {
+        if (cs.getType() != ColorSpace.TYPE_HLS && cs.getType() != ColorSpace.TYPE_HSV) {
+            throw new IllegalArgumentException("The color space must be a HSI/HSL/HSV color space");
+        }
         this.source = source;
-        if(source!=null){
-            //The source image is transformed to HSL
-            ColorSpace cs = new HSIColorSpace();
+        this.useChromaticAreas = useChromaticAreas;
+        if (source != null) {
+            //The source image is transformed to HS*
             jfi.color.ColorConvertOp op = new jfi.color.ColorConvertOp(cs, null);
             source_hsl = op.filter(source, null, false); //XYZ is not used
         }
     }
+    
  
     /**
      * Apply this pixel resemblance operator. By default, the distance is
@@ -210,4 +226,5 @@ public class HSDistanceOp implements PixelResemblanceOp<Point> {
         this.useChromaticAreas = useChromaticAreas;
     }
 
+    
 }

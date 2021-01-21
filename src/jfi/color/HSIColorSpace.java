@@ -193,9 +193,5 @@ public class HSIColorSpace extends ColorSpace {
             throw new IllegalArgumentException("Hue type no valid");
         }
         this.hue_type = hue_type;
-    }
-    
-
-    
-    
+    }    
 }
