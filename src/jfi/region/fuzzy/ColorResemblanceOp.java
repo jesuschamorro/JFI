@@ -13,7 +13,7 @@ import java.awt.Color;
 import jfi.fuzzy.membershipfunction.TrapezoidalFunction;
 
 /**
- * Class representing a pixel sigma_count operator where the sigma_count is
+ * Class representing a pixel resemblance operator where the resemblance is
  calculated on the basis of fuzzy colors.
  *
  * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
@@ -33,23 +33,23 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
      */
     private ArrayList<BufferedImage> maps = null;
     /**
-     * Type of color sigma_count applied
+     * Type of color resemblance applied
      */
     private int type = TYPE_AT_LEAST_ONE;
     /**
-     * Type of sigma_count defines as the mean of individual resemblances.
+     * Type of resemblance defines as the mean of individual resemblances.
      */
     public static final int TYPE_MEAN = 1;
     /**
-     * Type of sigma_count defines as "at least" one label is resemblant.
+     * Type of resemblance defines as "at least" one label is resemblant.
      */
     public static final int TYPE_AT_LEAST_ONE = 2;
     /**
-     * Type of sigma_count defines as "at least" one label is resemblant.
+     * Type of resemblance defines as "at least" one label is resemblant.
      */
     public static final int TYPE_EUCLIDEAN = 3;
     /**
-     * Type of sigma_count defines as "fuzzy majority" labels are resemblants.
+     * Type of resemblance defines as "fuzzy majority" labels are resemblants.
      */
     public static final int TYPE_MAJORITY = 4;
     /**
@@ -61,7 +61,7 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
      */
     public static final double BETA_MAJORITY = 0.7;
     /**
-     * Type of sigma_count defines as "weighted mean" labels are resemblants.
+     * Type of resemblance defines as "weighted mean" labels are resemblants.
      */
     public static final int TYPE_WEIGHTED_MEAN = 5;
     /**
@@ -88,7 +88,7 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Constructs a new color sigma_count operator using as fuzzy color space
+     * Constructs a new color resemblance operator using as fuzzy color space
  the one given by parameter.
      *
      * @param fcs the fuzzy color space
@@ -112,7 +112,7 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Constructs a new color sigma_count operator using as default fuzzy color
+     * Constructs a new color resemblance operator using as default fuzzy color
  space the sphere based one with the basic ISCC set as prototypes..
      */
     public ColorResemblanceOp() {
@@ -136,30 +136,30 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Returns the type of color sigma_count applied.
+     * Returns the type of color resemblance applied.
      *
-     * @return the type of color sigma_count applied.
+     * @return the type of color resemblance applied.
      */
     public int getType() {
         return type;
     }
 
     /**
-     * Set the type of color sigma_count to be applied.
+     * Set the type of color resemblance to be applied.
      *
-     * @param type the type of color sigma_count to be applied.
+     * @param type the type of color resemblance to be applied.
      */
     public void setType(int type) {
         this.type = type;
     }
 
     /**
-     * Apply this sigma_count operator.
+     * Apply this resemblance operator.
      *
      * @param t the coordinates of the first pixel.
      * @param u the coordinates of the second pixel.
      * @param image the image associated to the pixel coordinates.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     @Override
     public Double apply(Point t, Point u, BufferedImage image) {
@@ -192,11 +192,11 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator to the associated image (if available).
+     * Apply this resemblance operator to the associated image (if available).
      *
      * @param t the coordinates of the first pixel.
      * @param u the coordinates of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      * @throws NullPointerException if there is not image associated to this
      * operator.
      */
@@ -226,17 +226,17 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator using the "at least one" approach.
+     * Apply this resemblance operator using the "at least one" approach.
      *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     private Double applyAtLeastOne(Color ct, Color cu) {
-        //The sigma_count is calculated on the basis of the color fuzzy sets. 
-        //It is assumed that the sigma_count between two fuzzy sets is 1.0 if
+        //The resemblance is calculated on the basis of the color fuzzy sets. 
+        //It is assumed that the resemblance between two fuzzy sets is 1.0 if
         //and only if they are the same set, 0.0 in other case. This assumption
-        //simplifies the sigma_count calculus
+        //simplifies the resemblance calculus
         double degreeT, degreeU;
         double resemblanceTU, resemblance = 0.0;
         for (FuzzyColor fc : fcs) {
@@ -250,12 +250,12 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator using the "at least one" approach and the
+     * Apply this resemblance operator using the "at least one" approach and the
  pre-calculated membership degrees associated to the source image.
      *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     private Double applyAtLeastOne_Pre(Point t, Point u) {
         //Since the membership degrees are precalculated, we just need to access
@@ -273,17 +273,17 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator using the "mean" approach.
+     * Apply this resemblance operator using the "mean" approach.
      *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     private Double applyMean(Color ct, Color cu) {
-        //The sigma_count is calculated on the basis of the color fuzzy sets. 
-        //It is assumed that the sigma_count between two fuzzy sets is 1.0 if
+        //The resemblance is calculated on the basis of the color fuzzy sets. 
+        //It is assumed that the resemblance between two fuzzy sets is 1.0 if
         //and only if they are the same set, 0.0 in other case. This assumption
-        //simplifies the sigma_count calculus
+        //simplifies the resemblance calculus
         double degreeT, degreeU;
         double resemblance = 0.0;
         int n_pair = 0;
@@ -300,12 +300,12 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator using the "mean" approach and the
+     * Apply this resemblance operator using the "mean" approach and the
  pre-calculated membership degrees associated to the source image.
      *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     private Double applyMean_Pre(Point t, Point u) {
         //Since the membership degrees are precalculated, we just need to access
@@ -326,17 +326,17 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator using the "Euclidean" approach.
+     * Apply this resemblance operator using the "Euclidean" approach.
      *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     private Double applyEuclidean(Color ct, Color cu) {
-        //The sigma_count is calculated on the basis of the color fuzzy sets. 
-        //It is assumed that the sigma_count between two fuzzy sets is 1.0 if
+        //The resemblance is calculated on the basis of the color fuzzy sets. 
+        //It is assumed that the resemblance between two fuzzy sets is 1.0 if
         //and only if they are the same set, 0.0 in other case. This assumption
-        //simplifies the sigma_count calculus
+        //simplifies the resemblance calculus
         double NORMALIZATION_VALUE = Math.sqrt(fcs.size());
         double degreeT, degreeU;
         double resemblance = 0.0;
@@ -350,12 +350,12 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator using the "Euclidean" approach and the
+     * Apply this resemblance operator using the "Euclidean" approach and the
  pre-calculated membership degrees associated to the source image.
      *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     private Double applyEuclidean_Pre(Point t, Point u) {
         //Since the membership degrees are precalculated, we just need to access
@@ -402,7 +402,7 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
      *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     private Double applyMajority_Pre(Point t, Point u) {
         //Since the membership degrees are precalculated, we just need to access
