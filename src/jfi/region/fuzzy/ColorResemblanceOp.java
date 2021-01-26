@@ -373,11 +373,11 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator using the "majority" approach.
+     * Apply this color resemblance operator using the "majority" approach.
      *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     private Double applyMajority(Color ct, Color cu) {
         double degreeT, degreeU;
@@ -397,7 +397,7 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator using the "majority" approach and the
+     * Apply this color resemblance operator using the "majority" approach and the
  pre-calculated membership degrees associated to the source image.
      *
      * @param ct the color of the first pixel.
@@ -430,11 +430,11 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator using the "weigthed mean" approach.
+     * Apply this color resemblance operator using the "weigthed mean" approach.
      *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     private Double applyWeightedMean(Color ct, Color cu) {
         double resemblance = 0;
@@ -459,12 +459,12 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
     }
 
     /**
-     * Apply this sigma_count operator using the "weigthed mean" approach and
+     * Apply this color resemblance operator using the "weigthed mean" approach and
  the pre-calculated membership degrees associated to the source image.
      *
      * @param ct the color of the first pixel.
      * @param cu the color of the second pixel.
-     * @return the sigma_count result.
+     * @return the resemblance result.
      */
     private Double applyWeightedMean_Pre(Point t, Point u) {
         //Since the membership degrees are precalculated, we just need to access
