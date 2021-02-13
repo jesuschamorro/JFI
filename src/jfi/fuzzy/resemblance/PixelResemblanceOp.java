@@ -1,20 +1,21 @@
 
-package jfi.region.fuzzy;
+package jfi.fuzzy.resemblance;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import jfi.fuzzy.FuzzySet;
-import jfi.fuzzy.operators.TNorm;
+import jfi.fuzzy.operator.Aggregation;
+import jfi.fuzzy.operator.TNorm;
 
 /**
  * Represents a fuzzy resemblance of two pixels (the arguments) within an image. 
  *
- * @param <T> the type of the argument descriptors
+ * @param <T> the type of the elements to be compared
  *
- * * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
+ * @author Jesús Chamorro Martínez (jesus@decsai.ugr.es)
  */
-@FunctionalInterface 
-public interface PixelResemblanceOp<T extends Point> {
+public interface PixelResemblanceOp<T extends Point> extends ResemblanceOp<T>{
     /**
      * Flag associated to the Goguen implication operator.
      */
@@ -37,6 +38,7 @@ public interface PixelResemblanceOp<T extends Point> {
      * @return the function result
      */
     Double apply(T t, T u, BufferedImage image);
+    
     
     /**
      * Calculates the resemblance between two fuzzy sets. By default, the
@@ -85,4 +87,31 @@ public interface PixelResemblanceOp<T extends Point> {
         return tnorm.apply(this.implication(a, b, DEFAULT_IMPLICATION_TYPE),
                            this.resemblanceFuzzySet(fsa,fsb));
     }
+    
+    
+    /**
+     * 
+     * @param <T>
+     */
+    public class Collection<T extends Point> extends ResemblanceOp.Collection<T> implements PixelResemblanceOp<T>{
+        /**
+         * 
+         * @param aggregator 
+         */
+        public Collection(Aggregation<Double, Double> aggregator){
+            super(aggregator);            
+        }
+
+        @Override
+        public Double apply(T t, T u, BufferedImage image) {
+            Double resemblance = -1.0, resemblance_i;
+            for(ResemblanceOp op:this){                
+                resemblance_i = ((PixelResemblanceOp)op).apply(t, u, image);
+                resemblance = resemblance<0.0 ? resemblance_i : aggregator.apply(resemblance, resemblance_i);
+            }
+            return Math.max(0, resemblance); //If empty, 0 is returned
+        }
+    }
+    
+    
 }

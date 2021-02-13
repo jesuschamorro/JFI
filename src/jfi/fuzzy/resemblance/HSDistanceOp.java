@@ -1,4 +1,4 @@
-package jfi.region.fuzzy;
+package jfi.fuzzy.resemblance;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -103,6 +103,18 @@ public class HSDistanceOp implements PixelResemblanceOp<Point> {
         return useChromaticAreas ? applyUsingChromaticAreas(t,u) : applyEuclidean(t,u);
     }
 
+    /**
+     * Apply this pixel resemblance operator. 
+     *
+     * @param t first point.
+     * @param u second point.
+     * @return the resemblance between pixels.
+     */
+    @Override
+    public Double apply(Point t, Point u) {
+        return apply(t,u,source);
+    }
+    
     /**
      * Apply this pixel resemblance operator on the basis of the eucliden
      * distance without taking into account the chromatic areas.
@@ -225,6 +237,5 @@ public class HSDistanceOp implements PixelResemblanceOp<Point> {
     public void setUseChromaticAreas(boolean useChromaticAreas) {
         this.useChromaticAreas = useChromaticAreas;
     }
-
     
 }

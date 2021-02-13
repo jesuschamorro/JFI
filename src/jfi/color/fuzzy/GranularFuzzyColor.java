@@ -7,7 +7,7 @@ import java.util.List;
 import jfi.fuzzy.FuzzySet;
 import jfi.fuzzy.GranularFuzzySet;
 import jfi.fuzzy.membershipfunction.SphericalFunction;
-import jfi.fuzzy.operators.TConorm;
+import jfi.fuzzy.operator.TConorm;
 import jfi.geometry.Point3D;
 import jfi.utils.Pair;
 import jfi.utils.Prototyped;

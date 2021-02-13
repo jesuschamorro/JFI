@@ -1,5 +1,6 @@
 package jfi.region.fuzzy;
 
+import jfi.fuzzy.resemblance.PixelResemblanceOp;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -11,7 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.TreeSet;
-import jfi.fuzzy.operators.TNorm;
+import jfi.fuzzy.operator.TNorm;
 
 /**
  * Class implementing a fuzyy segmentation based on a region growing process.
@@ -413,6 +414,19 @@ public class FuzzySegmentationOp {
         }
         
         /**
+         * Not aplicable for this operator, where an image is always needed.
+         *
+         *
+         * @param t first point.
+         * @param u second point.
+         * @return the resemblance between pixels.
+         */
+        @Override
+        public Double apply(Point t, Point u) {
+            throw new UnsupportedOperationException("Not supported. An image is always needed");
+        }
+
+        /**
          * Set the normalization value used to calculate the resemblance degree.
          *
          * @param value the normalization value. It must be a value between 1
@@ -422,6 +436,8 @@ public class FuzzySegmentationOp {
         public void setNormalizationValue(double value){
             NORMALIZATION_VALUE = Math.max( Math.min(value, MAX_RGBDIST) , 1.0);
         }
+
+       
     }
     
 }

@@ -1,4 +1,4 @@
-package jfi.region.fuzzy;
+package jfi.fuzzy.resemblance;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -62,5 +62,10 @@ public class EuclideanDistanceOp implements PixelResemblanceOp<Point> {
         double dif = Math.sqrt(difx + dify);
 
         return 1.0 - (Math.min(1.0, dif / MAX));
+    }
+
+    @Override
+    public Double apply(Point t, Point u) {
+        throw new UnsupportedOperationException("Not supported."); 
     }
 }

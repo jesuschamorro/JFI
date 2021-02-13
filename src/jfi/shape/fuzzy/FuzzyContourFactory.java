@@ -8,8 +8,8 @@ import jfi.fuzzy.membershipfunction.TriangularFunction;
 import jfi.shape.Contour;
 import jfi.shape.ContourIterator;
 import jfi.shape.ContourSegment;
-import jfi.fuzzy.operators.Hedge;
-import jfi.fuzzy.operators.TNorm;
+import jfi.fuzzy.operator.Hedge;
+import jfi.fuzzy.operator.TNorm;
 import jfi.utils.FuzzyUtils;
 import jfi.utils.JFIMath;
 

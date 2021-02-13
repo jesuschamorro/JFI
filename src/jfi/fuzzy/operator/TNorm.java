@@ -1,4 +1,4 @@
-package jfi.fuzzy.operators;
+package jfi.fuzzy.operator;
 
 import java.security.InvalidParameterException;
 import java.util.function.BinaryOperator;

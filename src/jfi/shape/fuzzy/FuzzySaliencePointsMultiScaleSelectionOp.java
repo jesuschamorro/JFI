@@ -7,7 +7,7 @@ import jfi.utils.Pair;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import jfi.fuzzy.operators.TNorm;
+import jfi.fuzzy.operator.TNorm;
 
 
 /**

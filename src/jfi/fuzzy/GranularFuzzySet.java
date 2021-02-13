@@ -1,7 +1,7 @@
 package jfi.fuzzy;
 
 import java.util.Arrays;
-import jfi.fuzzy.operators.TConorm;
+import jfi.fuzzy.operator.TConorm;
 
 /**
  * Class representing a fuzzy set defined as the union of other fuzzy sets.

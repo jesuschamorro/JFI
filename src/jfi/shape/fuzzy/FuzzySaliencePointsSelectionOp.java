@@ -4,7 +4,7 @@ import java.awt.geom.Point2D;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Map;
-import jfi.fuzzy.operators.TNorm;
+import jfi.fuzzy.operator.TNorm;
 import jfi.shape.Contour;
 
 /**

@@ -1,4 +1,4 @@
-package jfi.region.fuzzy;
+package jfi.fuzzy.resemblance;
 
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -200,6 +200,7 @@ public class ColorResemblanceOp implements PixelResemblanceOp<Point> {
      * @throws NullPointerException if there is not image associated to this
      * operator.
      */
+    @Override
     public Double apply(Point t, Point u) {
         if (this.source == null) {
             throw new NullPointerException("There is not image associated to this operator");
