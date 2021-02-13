@@ -80,9 +80,10 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
      * @param fts the other fuzzy testure sets.
      */
     public TextureResemblanceOp(BufferedImage source, FuzzyTexture ft, FuzzyTexture... fts) {
-        this(ft,fts);
+        this.fuzzyTextures =  new ArrayList(Arrays.asList(fts));          
+        this.fuzzyTextures.add(0,ft);
         this.source = source;
-        this.sourceMapping(); //The texture maps are calculated
+        if(source!=null) this.sourceMapping(); //The texture maps are calculated
     }    
     
     /**
@@ -93,8 +94,7 @@ public class TextureResemblanceOp implements PixelResemblanceOp<Point> {
      * @param fts the other fuzzy testure sets.
      */
     public TextureResemblanceOp(FuzzyTexture ft, FuzzyTexture... fts){
-        this.fuzzyTextures =  new ArrayList(Arrays.asList(fts));          
-        this.fuzzyTextures.add(0,ft);
+        this(null,ft,fts);
     }
     
     /**
